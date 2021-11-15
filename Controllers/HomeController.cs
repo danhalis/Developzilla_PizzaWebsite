@@ -23,6 +23,14 @@ namespace PizzaWebsite.Controllers
             return View();
         }
 
+        [HttpGet("AboutUs")]
+        public IActionResult AboutUs()
+        {
+            ViewBag.Title = "About Us";
+
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
