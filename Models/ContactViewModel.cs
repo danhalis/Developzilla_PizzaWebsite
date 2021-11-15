@@ -28,34 +28,19 @@ namespace PizzaWebsite.Models
             "Sponsorship and donations"
         };
 
-        private const int MIN_LENGTH = 2;
-        private const int NAME_MAX_LENGTH = 50;
-
         [Required]
         [RegularExpression("^[^0-9]+$", ErrorMessage = "First name cannot contain numbers.")]
-        [MinLength(MIN_LENGTH, ErrorMessage = "First name must have at least 2 characters.")]
-        [MaxLength(NAME_MAX_LENGTH, ErrorMessage = "First name cannot exceed 50 characters.")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [Required]
         [RegularExpression("^[^0-9]+$", ErrorMessage = "Last name cannot contain numbers.")]
-        [MinLength(MIN_LENGTH, ErrorMessage = "Last name must have at least 2 characters.")]
-        [MaxLength(NAME_MAX_LENGTH, ErrorMessage = "Last name cannot exceed 50 characters.")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
         [Required]
-        [RegularExpression(@"^([A-Y]\d[A-Z])\ {0,1}(\d[A-Z]\d)$", ErrorMessage = "Please enter a valid postal code.")]
-        [Display(Name = "Postal Code")]
-        public string PostalCode { get; set; }
-
-        [Required]
-        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Please enter a valid email address.")]
-        [MinLength(MIN_LENGTH, ErrorMessage = "Email address must have at least 2 characters.")]
-        [MaxLength(30, ErrorMessage = "Email address cannot exceed 30 characters.")]
+        [RegularExpression(@".*@.*\.\w{2,}", ErrorMessage = "Please enter a valid email address.")]
         [DataType(DataType.EmailAddress)]
-        [Display(Name = "Email")]
         public string Email { get; set; }
 
         /// <summary>

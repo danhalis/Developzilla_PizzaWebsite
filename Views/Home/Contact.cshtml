@@ -7,32 +7,30 @@
 <h1>Contact Us</h1>
 
 <hr />
+<span>(*) means required.</span>
+<br />
+<br />
 <div class="row">
     <div class="col-md-4">
         <form id="form-contact" asp-action="ContactSuccess">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
+                <label asp-for="FirstName" class="control-label required-label"></label>
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
+                <label asp-for="LastName" class="control-label required-label"></label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PostalCode" class="control-label"></label>
-                <input asp-for="PostalCode" class="form-control" />
-                <span asp-validation-for="PostalCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
+                <label asp-for="Email" class="control-label required-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Topic" class="control-label"></label>
+                <label asp-for="Topic" class="control-label required-label"></label>
                 <select asp-for="Topic" class="form-control">
                     <option value="" disabled selected>Select a topic</option>
                     @foreach (string topic in ContactViewModel.Topics)
@@ -43,12 +41,7 @@
                 <span asp-validation-for="Topic" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Message" class="control-label"></label>
+                <label asp-for="Message" class="control-label required-label"></label>
                 <input asp-for="Message" class="form-control" />
                 <span asp-validation-for="Message" class="text-danger"></span>
             </div>
@@ -72,7 +65,7 @@
             </div>
         </form>
 
-       
+
     </div>
 </div>
 

@@ -92,10 +92,8 @@ namespace PizzaWebsite.Controllers
             {
                 FirstName = contactViewModel.FirstName,
                 LastName = contactViewModel.LastName,
-                PostalCode = contactViewModel.PostalCode,
                 Email = contactViewModel.Email,
                 Topic = contactViewModel.Topic,
-                Phone = contactViewModel.Phone,
                 Message = contactViewModel.Message,
                 CreatedAt = DateTime.Now
             };
