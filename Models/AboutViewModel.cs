@@ -1,6 +1,6 @@
 ﻿namespace PizzaWebsite.Models
 {
-    public class AboutUsModel
+    public class AboutViewModel
     {
 
     }
