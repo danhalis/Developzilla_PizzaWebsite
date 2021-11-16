@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PizzaWebsite.Data;
+using PizzaWebsite.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,8 +33,12 @@ namespace PizzaWebsite
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<UserViewModel, IdentityRole>()
+             .AddEntityFrameworkStores<ApplicationDbContext>()
+             .AddDefaultUI()
+             .AddDefaultTokenProviders();
+            // services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //      .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
         }
 
