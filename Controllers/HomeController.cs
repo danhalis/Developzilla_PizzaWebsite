@@ -99,6 +99,14 @@ namespace PizzaWebsite.Controllers
             };
         }
 
+        [HttpGet("About")]
+        public IActionResult About()
+        {
+            ViewBag.Title = "About Us";
+            
+            return View();
+        }
+
         [HttpGet("Privacy")]
         public IActionResult Privacy()
         {
