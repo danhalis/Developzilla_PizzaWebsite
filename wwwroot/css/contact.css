@@ -1,0 +1,17 @@
+﻿.required-label::after {
+    content: "*";
+}
+
+#btn-group-form {
+    display: flex;
+    justify-content: end;
+}
+
+.btn-primary {
+    margin-right: 15px;
+}
+
+.g-recaptcha {
+    display: flex;
+    justify-content: end;
+}
