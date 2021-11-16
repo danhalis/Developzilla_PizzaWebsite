@@ -54,20 +54,36 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
+
         <main role="main" class="pb-3">
+
             @RenderBody()
+
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+
+    <!--This is REQUIRED as we need to include sources whenever the navbar is displayed for the use of the icons-->
+    <!--TODO PLACE THIS IN ABOUT US-->
+    <partial name="Other/_SourcesPartial" />
+
+
+    <footer class="footer footer- border-top border-bottom border-right border-left footer text-muted">
+
+        <!--#FF697B-->
         <div class="container">
-            &copy; 2021 - PizzaWebsite - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <partial name="Footer/_SocialMediaPartial" />
         </div>
+
     </footer>
+
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
