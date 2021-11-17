@@ -14,6 +14,16 @@
 
 .product-category-label {
     position: absolute;
-    top: 1em;
-    left: 2em;
+    top: 0.5em;
+    left: 1em;
+    color: #39ff14;
+}
+
+.product-category:hover img {
+    /* Assisted by https://www.dailysmarty.com/posts/how-to-darken-an-image-with-css */
+    filter: brightness(50%);
+}
+
+.product-category:hover .product-category-label {
+    color: #FFFFFF;
 }
