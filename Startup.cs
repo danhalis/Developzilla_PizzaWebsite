@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data;
+using PizzaWebsite.Data.Repositories;
+using PizzaWebsite.Data.Seeder;
 using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
 using PizzaWebsite.Services.SendGrid;
@@ -39,6 +41,12 @@ namespace PizzaWebsite
                         .EnableSensitiveDataLogging() // Logging is built into ASP.NET Core
                         .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // no entity tracking to improve performance
             });
+
+            // add repository
+            services.AddScoped<IPizzaWebsiteRepository, PizzaWebsiteRepository>();
+
+            // add data seeder
+            services.AddTransient<PizzaWebsiteDataSeeder>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

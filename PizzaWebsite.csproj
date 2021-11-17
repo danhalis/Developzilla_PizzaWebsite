@@ -57,6 +57,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\SampleData\" />
     <Folder Include="wwwroot\images\menu\burger-menu\" />
     <Folder Include="wwwroot\images\menu\drink-menu\" />
     <Folder Include="wwwroot\images\menu\pizza-menu\" />
