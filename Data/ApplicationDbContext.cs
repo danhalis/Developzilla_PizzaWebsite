@@ -14,8 +14,17 @@ namespace PizzaWebsite.Data
             : base(options)
         {
         }
+       public DbSet<OrderViewModel> Orders { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
+         /*   builder.Entity<OrderViewModel>()
+                .HasData(
+                new OrderViewModel()
+                {
+
+
+                });
+          */  
             base.OnModelCreating(builder);
             builder.HasDefaultSchema("Identity");
             builder.Entity<UserViewModel>(entity =>
@@ -46,6 +55,7 @@ namespace PizzaWebsite.Data
             {
                 entity.ToTable("UserTokens");
             });
+
         }
     }
 }

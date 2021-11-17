@@ -36,6 +36,11 @@
                 <input asp-for="Input.Email" class="form-control" />
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="Input.DeliveryAddress"></label>
+                <input asp-for="Input.DeliveryAddress" class="form-control" />
+                <span asp-validation-for="Input.DeliveryAddress" class="text-danger"></span>
+            </div>
             <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
 
         </div>

@@ -44,6 +44,9 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Delivery Address")]
+            public string DeliveryAddress { get; set; }
             public string Email { get; set; }
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
@@ -55,6 +58,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             var firstName = user.FirstName;
             var lastName = user.LastName;
             var profilePicture = user.ProfilePicture;
+            var deliveryAddress = user.DeliveryAddress;
             var email = await _userManager.GetEmailAsync(user);
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -68,8 +72,8 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                 FirstName = firstName,
                 LastName = lastName,
                 Email = email,
-                ProfilePicture = profilePicture
-                
+                ProfilePicture = profilePicture,
+                DeliveryAddress = deliveryAddress
             };
         }
 
@@ -91,6 +95,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             var firstName = user.FirstName;
             var lastName = user.LastName;
+            var deliveryAddress = user.DeliveryAddress;
             if (Input.FirstName != firstName)
             {
                 user.FirstName = Input.FirstName;
@@ -99,6 +104,11 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             if (Input.LastName != lastName)
             {
                 user.LastName = Input.LastName;
+                await _userManager.UpdateAsync(user);
+            }
+            if (Input.DeliveryAddress != deliveryAddress)
+            {
+                user.DeliveryAddress = Input.DeliveryAddress;
                 await _userManager.UpdateAsync(user);
             }
             if (user == null)
@@ -111,6 +121,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+
             var email = await _userManager.GetEmailAsync(user);
             if (Input.Email != email)
             {
@@ -121,6 +132,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+           
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
