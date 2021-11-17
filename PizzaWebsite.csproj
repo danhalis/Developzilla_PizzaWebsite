@@ -17,4 +17,11 @@
     <PackageReference Include="SendGrid" Version="9.24.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\menu\burger-menu\" />
+    <Folder Include="wwwroot\images\menu\drink-menu\" />
+    <Folder Include="wwwroot\images\menu\pizza-menu\" />
+    <Folder Include="wwwroot\images\menu\side-menu\" />
+  </ItemGroup>
+
 </Project>
