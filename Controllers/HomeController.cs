@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data;
 using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Models;
+using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
 using System;
 using System.Diagnostics;
@@ -16,14 +17,16 @@ namespace PizzaWebsite.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly PizzaWebsiteContext _context;
         private readonly IReCaptchaVerifier _reCaptchaVerifier;
+        private readonly IGeocoder _geocoder;
         private readonly IEmailSender _emailSender;
 
 
-        public HomeController(ILogger<HomeController> logger, PizzaWebsiteContext context, IReCaptchaVerifier reCaptchaVerifier, IEmailSender emailSender)
+        public HomeController(ILogger<HomeController> logger, PizzaWebsiteContext context, IReCaptchaVerifier reCaptchaVerifier, IGeocoder geocoder, IEmailSender emailSender)
         {
             _logger = logger;
             _context = context;
             _reCaptchaVerifier = reCaptchaVerifier;
+            _geocoder = geocoder;
             _emailSender = emailSender;
         }
 
@@ -41,6 +44,15 @@ namespace PizzaWebsite.Controllers
         [HttpGet("Contact")]
         public IActionResult Contact()
         {
+            // get Google Maps api key
+            ViewData["GoogleMapsApiKey"] = _geocoder.GetApiKey();
+
+            // get company location & address
+            Location location = _geocoder.GetCompanyGeometryLocation();
+            ViewData["CompanyAddress"] = _geocoder.GetCompanyAddress();
+            ViewData["Latitude"] = location.Latitude;
+            ViewData["Longitude"] = location.Longitude;
+
             // get reCAPTCHA site key
             ViewData["ReCaptchaSiteKey"] = _reCaptchaVerifier.GetSiteKey();
 

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data;
+using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
 using PizzaWebsite.Services.SendGrid;
 using System;
@@ -52,6 +53,15 @@ namespace PizzaWebsite
                 options.SiteKey = Configuration["ExternalProviders:reCAPTCHA_v2:SiteKey"];
                 options.SecretKey = Configuration["ExternalProviders:reCAPTCHA_v2:SecretKey"];
             });
+
+            // set up Google Maps options
+            services.Configure<GoogleMapsOptions>(options =>
+            {
+                options.ApiKey = Configuration["ExternalProviders:GoogleMaps:ApiKey"];
+                options.CompanyAddress = Configuration["ExternalProviders:GoogleMaps:CompanyAddress"];
+            });
+
+            services.AddTransient<IGeocoder, Geocoder>();
 
             // add SendGrid email sender to controller
             services.AddTransient<IEmailSender, SendGridEmailSender>();

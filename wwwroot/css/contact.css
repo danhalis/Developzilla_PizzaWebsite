@@ -15,3 +15,11 @@
     display: flex;
     justify-content: end;
 }
+
+.right-border {
+    border-right: rgb(206,212,218) solid 1px;
+}
+
+.left-border {
+    border-left: rgb(206,212,218) solid 1px;
+}
