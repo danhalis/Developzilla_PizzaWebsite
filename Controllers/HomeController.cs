@@ -117,6 +117,46 @@ namespace PizzaWebsite.Controllers
             };
         }
 
+        [HttpGet("About")]
+        public IActionResult About()
+        {
+            ViewBag.Title = "About Us";
+            
+            return View();
+        }
+
+        [HttpGet("Pizzas")]
+        public IActionResult Pizzas()
+        {
+            ViewBag.Title = "Pizza Menu";
+
+            return View();
+        }
+
+        [HttpGet("Drinks")]
+        public IActionResult Drinks()
+        {
+            ViewBag.Title = "Drink Menu";
+
+            return View();
+        }
+
+        [HttpGet("Burgers")]
+        public IActionResult Burgers()
+        {
+            ViewBag.Title = "Burger Menu";
+
+            return View();
+        }
+
+        [HttpGet("Sides")]
+        public IActionResult Sides()
+        {
+            ViewBag.Title = "Side Menu";
+
+            return View();
+        }
+
         [HttpGet("Privacy")]
         public IActionResult Privacy()
         {
