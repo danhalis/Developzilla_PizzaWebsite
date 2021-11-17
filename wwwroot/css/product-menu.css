@@ -2,28 +2,19 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: 1fr;
-    grid-gap: 1em;
-    padding: 1em;
+    grid-gap: 5em;
 }
 
-.product-category {
+.product-display {
     position: relative;
+}
+
+.product-name {
     text-align: center;
-    color: white;
 }
 
-.product-category-label {
-    position: absolute;
-    top: 0.5em;
-    left: 1em;
-    color: #39ff14;
-}
-
-.product-category:hover img {
-    /* Assisted by https://www.dailysmarty.com/posts/how-to-darken-an-image-with-css */
-    filter: brightness(50%);
-}
-
-.product-category:hover .product-category-label {
-    color: #FFFFFF;
+.product-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

@@ -1,28 +1,75 @@
 ﻿@{
-    ViewData["Title"] = "Menu";
+    ViewData["Title"] = "Pizza Menu";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Please select a Category.</h1>
+    <h1 class="display-4">@ViewData["Title"]</h1>
 </div>
 
 <!-- Assisted by: https://www.w3schools.com/css/tryit.asp?filename=trycss_grid_layout_named -->
 <div class="grid-container">
-    <div class="product-category">
+    <div class="product-display">
+        <h1 class="product-name">Pepperoni</h1>
+        <!-- Source: https://yesofcorsa.com/pepperoni-pizza/ -->
+        <img src="~/images/menu/pizza-menu/pepperoni-pizza.jpg" alt="Pepperoni Pizza" />
+        <div class="product-details">
+            <h3 class="product-price">$9.00-$10.00-$11.00</h3>
+            <h3 class="product-sizes">Small-Medium-Large</h3>
+        </div>
+    </div>
+    <div class="product-display">
+        <h1 class="product-name">Cheese</h1>
+        <!-- Source: https://bellassubpizza.com/product/16-large-cheese-pizza/ -->
+        <img src="~/images/menu/pizza-menu/cheese-pizza.jpg" alt="Cheese Pizza" />
+        <div class="product-details">
+            <h3 class="product-price">$8.50-$9.00-$9.50</h3>
+            <h3 class="product-sizes">Small-Medium-Large</h3>
+        </div>
+    </div>
+    <div class="product-display">
+        <h1 class="product-name">All-Dressed</h1>
+        <!-- Source: https://www.tripadvisor.ca/LocationPhotoDirectLink-g155019-d8460552-i153287670-Jz_s_Pizza-Toronto_Ontario.html -->
+        <img src="~/images/menu/pizza-menu/all-dressed-pizza.jpg" alt="All-Dressed Pizza" />
+        <div class="product-details">
+            <h3 class="product-price">$10.00-$11.00-$12.00</h3>
+            <h3 class="product-sizes">Small-Medium-Large</h3>
+        </div>
+    </div>
+    <div class="product-display">
+        <h1 class="product-name">Vegetarian</h1>
+        <!-- Source: https://www.wallpaperbetter.com/food-wallpaper/veggie-pizza-3090 -->
+        <img src="~/images/menu/pizza-menu/vegetarian-pizza.jpg" alt="Vegetarian Pizza" />
+        <div class="product-details">
+            <h3 class="product-price">$15.00-$16.50-$18.00</h3>
+            <h3 class="product-sizes">Small-Medium-Large</h3>
+        </div>
+    </div>
+    <div class="product-display">
+        <h1 class="product-name">Poutine</h1>
+        <!-- Source: http://www.immadeofsugar.com/2014/01/poutine-pizza-from-pizza-hut.html -->
+        <img src="~/images/menu/pizza-menu/poutine-pizza.jpg" alt="Poutine Pizza" />
+        <div class="product-details">
+            <h3 class="product-price">$13.00-$15.00-$17.00</h3>
+            <h3 class="product-sizes">Small-Medium-Large</h3>
+        </div>
+    </div>
+    <div class="product-display">
+        <h1 class="product-name">Meat-Lovers</h1>
         <!-- Source: https://www.huffpost.com/entry/xbox-pizza-hut_n_4570898 -->
-        <img src="~/images/menu/meat-lovers-pizza.jpg" alt="Pizza" />
+        <img src="~/images/menu/pizza-menu/meat-lovers-pizza.jpg" alt="Meat-Lovers Pizza" />
+        <div class="product-details">
+            <h3 class="product-price">$12.00-$13.00-$14.00</h3>
+            <h3 class="product-sizes">Small-Medium-Large</h3>
+        </div>
     </div>
-    <div class="product-category">
-        <!-- Source: https://www.livestrong.com/article/306908-how-many-calories-does-soda-have/ -->
-        <img src="~/images/menu/fanta.jpg" alt="Drink" />
-    </div>
-    <div class="product-category">
-        <!-- Source: https://www.thelist.com/227723/this-is-the-trick-to-making-juicy-burgers/ -->
-        <img src="~/images/menu/all-dressed-burger.jpg" alt="Burger" />
-    </div>
-    <div class="product-category">
-        <!-- Source: https://www.delish.com/cooking/recipe-ideas/a28349714/double-fried-french-fries-recipe/ -->
-        <img src="~/images/menu/french-fries.jpg" alt="Side Dish" />
+    <div class="product-display">
+        <h1 class="product-name">Vegan</h1>
+        <!-- Source: https://www.thetastyk.com/2016/07/26/healthy-vegan-pizza/ -->
+        <img src="~/images/menu/pizza-menu/vegan-pizza.jpg" alt="Vegan Pizza" />
+        <div class="product-details">
+            <h3 class="product-price">$20.00-$22.00-$24.00</h3>
+            <h3 class="product-sizes">Small-Medium-Large</h3>
+        </div>
     </div>
 </div>
 
