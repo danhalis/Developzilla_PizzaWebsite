@@ -35,6 +35,12 @@ namespace PizzaWebsite.Controllers
             return View();
         }
 
+        [HttpGet("Menu")]
+        public IActionResult Menu()
+        {
+            return View();
+        }
+
         [HttpGet("Contact")]
         public IActionResult Contact()
         {
