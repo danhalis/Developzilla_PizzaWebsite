@@ -15,7 +15,8 @@ namespace PizzaWebsite.Models
 
         public string DeliveryAddress { get; set; }
 
-      public List<OrderViewModel> orders { get; set; }
+       
+       public List<OrderViewModel> Orders { get; set; } 
 
     }
 }

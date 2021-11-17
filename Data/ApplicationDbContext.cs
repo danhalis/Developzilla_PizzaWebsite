@@ -8,23 +8,16 @@ using System.Text;
 
 namespace PizzaWebsite.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<UserViewModel>
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
-       public DbSet<OrderViewModel> Orders { get; set; }
+        public DbSet<OrderViewModel> Orders { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-         /*   builder.Entity<OrderViewModel>()
-                .HasData(
-                new OrderViewModel()
-                {
 
-
-                });
-          */  
             base.OnModelCreating(builder);
             builder.HasDefaultSchema("Identity");
             builder.Entity<UserViewModel>(entity =>
@@ -57,5 +50,6 @@ namespace PizzaWebsite.Data
             });
 
         }
+   
     }
 }

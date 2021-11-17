@@ -1,7 +1,7 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Account Details";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
@@ -64,9 +64,33 @@
                        onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
                 <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
             </div>
-            </div>
         </div>
+    </div>
+
 </form>
+<h1>orders</h1>
+<div class="row">
+
+    @foreach (var item in Model.Input.Orders)
+    {
+        <div class="col-md-3">
+            <div class="border bd-light rounded p-1">
+
+
+                <ul>
+                    <li>OrderDate: @item.OrderDate</li>
+                    <li>OrderNumber: @item.OrderNumber</li>
+                    <li>Status: @item.Status</li>
+                </ul>
+
+            </div>
+
+        </div>
+    }
+</div>
+
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+}
 }

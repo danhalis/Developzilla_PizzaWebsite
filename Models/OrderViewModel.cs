@@ -14,5 +14,6 @@ namespace PizzaWebsite.Models
         public string OrderNumber { get; set; }
         public string Status { get; set; }
         public UserViewModel User { get; set; }
+        public string UserId { get; internal set; }
     }
 }

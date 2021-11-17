@@ -34,9 +34,9 @@ namespace PizzaWebsite
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddIdentity<UserViewModel, IdentityRole>()
-             .AddEntityFrameworkStores<ApplicationDbContext>()
-             .AddDefaultUI()
-             .AddDefaultTokenProviders();
+              .AddEntityFrameworkStores<ApplicationDbContext>()
+              .AddDefaultUI()
+              .AddDefaultTokenProviders();
             // services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
             //      .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();

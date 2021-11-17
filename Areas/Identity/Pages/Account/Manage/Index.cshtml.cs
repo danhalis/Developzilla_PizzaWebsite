@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PizzaWebsite.Data;
 using PizzaWebsite.Models;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
@@ -16,13 +17,15 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<UserViewModel> _userManager;
         private readonly SignInManager<UserViewModel> _signInManager;
-
+        private readonly ApplicationDbContext _ApplicationDbContext;
         public IndexModel(
             UserManager<UserViewModel> userManager,
-            SignInManager<UserViewModel> signInManager)
+            SignInManager<UserViewModel> signInManager,
+           ApplicationDbContext ApplicationDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _ApplicationDbContext = ApplicationDbContext;
         }
 
         public string Username { get; set; }
@@ -48,9 +51,10 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Delivery Address")]
             public string DeliveryAddress { get; set; }
             public string Email { get; set; }
+
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
-
+            public List<OrderViewModel> Orders { get; set; }
         }
 
         private async Task LoadAsync(UserViewModel user)
@@ -62,7 +66,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
+            var orders = _ApplicationDbContext.Orders.Where(O => O.UserId == user.Id).ToList();
             Username = userName;
 
             Input = new InputModel
@@ -73,10 +77,21 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                 LastName = lastName,
                 Email = email,
                 ProfilePicture = profilePicture,
-                DeliveryAddress = deliveryAddress
+                DeliveryAddress = deliveryAddress,
+                Orders = orders
             };
         }
+        public async Task<IActionResult> OnGetOrders()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
 
+            await LoadAsync(user);
+            return Page();
+        }
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -91,11 +106,12 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
-            
+
             var user = await _userManager.GetUserAsync(User);
             var firstName = user.FirstName;
             var lastName = user.LastName;
             var deliveryAddress = user.DeliveryAddress;
+
             if (Input.FirstName != firstName)
             {
                 user.FirstName = Input.FirstName;
@@ -132,7 +148,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
-           
+
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
@@ -159,3 +175,4 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
         }
     }
 }
+
