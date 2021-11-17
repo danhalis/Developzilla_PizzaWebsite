@@ -32,6 +32,12 @@ namespace PizzaWebsite.Controllers
             return View();
         }
 
+        [HttpGet("Menu")]
+        public IActionResult Menu()
+        {
+            return View();
+        }
+
         [HttpGet("Contact")]
         public IActionResult Contact()
         {
@@ -97,6 +103,14 @@ namespace PizzaWebsite.Controllers
                 Message = contactViewModel.Message,
                 CreatedAt = DateTime.Now
             };
+        }
+
+        [HttpGet("About")]
+        public IActionResult About()
+        {
+            ViewBag.Title = "About Us";
+            
+            return View();
         }
 
         [HttpGet("Privacy")]
