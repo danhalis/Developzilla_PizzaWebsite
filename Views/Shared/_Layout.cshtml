@@ -9,38 +9,41 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PizzaWebsite</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3 fixed-top navbar-light custom-header-bar">
+
+                <a class="nav-item nav-link navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PizzaWebsite</a>
+
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-lg-grow-1">
 
                         <li class="nav-item">
 
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
 
                         </li>
 
                         <li class="nav-item">
 
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
 
                         </li>
 
                         <li class="nav-item">
 
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Contact">Contact Us</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact">Contact Us</a>
 
                         </li>
 
 
                         <li class="nav-item">
 
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
 
                         </li>
 
@@ -51,7 +54,7 @@
 
                     <partial name="Navbar/_LoginPartial" />
                 </div>
-            </div>
+      
         </nav>
     </header>
 
@@ -65,14 +68,8 @@
     </div>
 
 
-    <!--This is REQUIRED as we need to include sources whenever the navbar is displayed for the use of the icons-->
-    <!--TODO PLACE THIS IN ABOUT US-->
-    <partial name="Other/_SourcesPartial" />
+    <footer class="footer border-top footer text-muted">
 
-
-    <footer class="footer footer- border-top border-bottom border-right border-left footer text-muted">
-
-        <!--#FF697B-->
         <div class="container">
             <partial name="Footer/_SocialMediaPartial" />
         </div>
