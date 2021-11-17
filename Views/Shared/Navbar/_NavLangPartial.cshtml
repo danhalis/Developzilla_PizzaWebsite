@@ -1,12 +1,20 @@
-﻿@if (true)
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Language">English</a>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Language">French</a>
-    </li>
-}
+<ul class="navbar-nav">
+
+    @if (true)
+    {
+        <li class="nav-item">
+
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Language">English</a>
+        
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Language">French</a>
+        
+        </li>
+    }
+
+</ul>
