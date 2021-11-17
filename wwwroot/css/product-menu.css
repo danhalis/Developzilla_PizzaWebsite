@@ -5,7 +5,16 @@
     grid-gap: 5em;
 }
 
-.product-section {
+.product-display {
     position: relative;
-    text-align: left;
+}
+
+.product-name {
+    text-align: center;
+}
+
+.product-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
