@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PizzaWebsite.Data;
+using PizzaWebsite.Data.Entities;
+using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Models;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
@@ -17,13 +19,15 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<UserViewModel> _userManager;
         private readonly SignInManager<UserViewModel> _signInManager;
-       // private readonly PizzaWebsiteContext _pizzaWebsiteContext;
+        private readonly PizzaWebsiteContext _pizzaWebsiteContext;
         public IndexModel(
             UserManager<UserViewModel> userManager,
-            SignInManager<UserViewModel> signInManager)
+            SignInManager<UserViewModel> signInManager,
+           PizzaWebsiteContext pizzaWebsiteContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _pizzaWebsiteContext = pizzaWebsiteContext;
         }
 
         public string Username { get; set; }
@@ -52,11 +56,11 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
-            //TODO
-            //   public List<OrderViewModel> Orders
-            //   {
-            //       get; set;
-            //   }
+            //test
+            public List<Product> Orders
+              {
+                   get; set;
+              }
         }
         private async Task LoadAsync(UserViewModel user)
         {
@@ -67,7 +71,8 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-          //  var orders = _ApplicationDbContext.Orders.Where(O => O.UserId == user.Id).ToList();
+            //  var orders = _ApplicationDbContext.Orders.Where(O => O.UserId == user.Id).ToList();
+            var orders = _pizzaWebsiteContext.Products.ToList();//test
             Username = userName;
 
             Input = new InputModel
@@ -79,8 +84,8 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                 Email = email,
                 ProfilePicture = profilePicture,
                 DeliveryAddress = deliveryAddress,
-              //  Orders = orders
-            };
+              Orders = orders
+        };
         }
 
         public async Task<IActionResult> OnGetAsync()
