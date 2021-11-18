@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data;
 using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Data.Seeder;
+using PizzaWebsite.Models;
 using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
 using PizzaWebsite.Services.SendGrid;
@@ -50,8 +51,10 @@ namespace PizzaWebsite
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<UserViewModel, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultUI()
+            .AddDefaultTokenProviders();
 
             // add reCAPTCHA verfier to controller
             services.AddTransient<IReCaptchaVerifier, ReCaptchaVerifier>();
