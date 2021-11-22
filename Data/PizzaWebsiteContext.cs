@@ -25,5 +25,7 @@ namespace PizzaWebsite.Data
                 .Property(p => p.Price)
                 .HasColumnType("money");
         }
+
+        public DbSet<PizzaWebsite.Data.Entities.CartItem> CartItem { get; set; }
     }
 }
