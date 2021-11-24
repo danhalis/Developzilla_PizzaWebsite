@@ -1,0 +1,67 @@
+[
+    {
+        "Name": "Pepperoni Pizza",
+        "Description": "Pizza with pepperoni",
+        "Price": "20.00"
+    },
+    {
+        "Name": "Cheese Pizza",
+        "Description": "Pizza with cheese",
+        "Price": "15.00"
+    },
+    {
+        "Name": "All-dressed Pizza",
+        "Description": "Pizza with all ingredients",
+        "Price": "25.00"
+    },
+    {
+        "Name": "Vegetarian Pizza",
+        "Description": "Pizza with veggies",
+        "Price": "20.00"
+    },
+    {
+        "Name": "Cheese Burger",
+        "Description": "Burger with cheese",
+        "Price": "10.00"
+    },
+    {
+        "Name": "French Fries",
+        "Description": "Fries from French",
+        "Price": "7.00"
+    },
+    {
+        "Name": "Water",
+        "Description": "A water bottle",
+        "Price": "5.00"
+    },
+    {
+        "Name": "Pepsi",
+        "Description": "A Pepsi bottle",
+        "Price": "8.00"
+    },
+    {
+        "Name": "Diet Pepsi",
+        "Description": "A Diet Pepsi bottle",
+        "Price": "7.50"
+    },
+    {
+        "Name": "Coke",
+        "Description": "A Coke bottle",
+        "Price": "8.00"
+    },
+    {
+        "Name": "Diet Coke",
+        "Description": "A Diet Coke bottle",
+        "Price": "7.50"
+    },
+    {
+        "Name": "7-Up",
+        "Description": "A 7-Up bottle",
+        "Price": "6.00"
+    },
+    {
+        "Name": "Ginger Ale",
+        "Description": "A Ginger Ale bottle",
+        "Price": "6.00"
+    }
+]

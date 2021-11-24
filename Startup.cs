@@ -7,7 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PizzaWebsite.Data.Repositories;
+using PizzaWebsite.Models.Seeder;
 using PizzaWebsite.Data;
+using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
 using PizzaWebsite.Services.SendGrid;
@@ -40,10 +43,18 @@ namespace PizzaWebsite
                         .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // no entity tracking to improve performance
             });
 
+            // add repository
+            services.AddScoped<IPizzaWebsiteRepository, PizzaWebsiteRepository>();
+
+            // add data seeder
+            services.AddTransient<PizzaWebsiteDataSeeder>();
+
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<WebsiteUser, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultUI()
+            .AddDefaultTokenProviders();
 
             // add reCAPTCHA verfier to controller
             services.AddTransient<IReCaptchaVerifier, ReCaptchaVerifier>();
