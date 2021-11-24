@@ -13,6 +13,19 @@ namespace PizzaWebsite.Data
         {
         }
 
-    public DbSet<Contact> Contacts { get; set; }
-}
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.Price)
+                .HasColumnType("money");
+        }
+
+        public DbSet<CartItem> CartItem { get; set; }
+    }
 }
