@@ -8,21 +8,21 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PizzaWebsite.Data;
+using PizzaWebsite.Models;
 using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Data.Repositories;
-using PizzaWebsite.Models;
+using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
-        private readonly UserManager<UserViewModel> _userManager;
-        private readonly SignInManager<UserViewModel> _signInManager;
+        private readonly UserManager<WebsiteUser> _userManager;
+        private readonly SignInManager<WebsiteUser> _signInManager;
         private readonly PizzaWebsiteContext _pizzaWebsiteContext;
         public IndexModel(
-            UserManager<UserViewModel> userManager,
-            SignInManager<UserViewModel> signInManager,
+            UserManager<WebsiteUser> userManager,
+            SignInManager<WebsiteUser> signInManager,
            PizzaWebsiteContext pizzaWebsiteContext)
         {
             _userManager = userManager;
@@ -62,7 +62,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                    get; set;
               }
         }
-        private async Task LoadAsync(UserViewModel user)
+        private async Task LoadAsync(WebsiteUser user)
         {
             var firstName = user.FirstName;
             var lastName = user.LastName;

@@ -26,6 +26,6 @@ namespace PizzaWebsite.Data
                 .HasColumnType("money");
         }
 
-        public DbSet<PizzaWebsite.Data.Entities.CartItem> CartItem { get; set; }
+        public DbSet<CartItem> CartItem { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PizzaWebsite.Models;
+using PizzaWebsite.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +18,7 @@ namespace PizzaWebsite.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema("Identity");
-            builder.Entity<UserViewModel>(entity =>
+            builder.Entity<WebsiteUser>(entity =>
             {
                 entity.ToTable(name: "User");
             });

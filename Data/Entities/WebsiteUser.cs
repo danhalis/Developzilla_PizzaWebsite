@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PizzaWebsite.Models
+namespace PizzaWebsite.Data.Entities
 {
-    public class UserViewModel : IdentityUser
+    public class WebsiteUser : IdentityUser
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

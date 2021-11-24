@@ -7,10 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PizzaWebsite.Data;
 using PizzaWebsite.Data.Repositories;
-using PizzaWebsite.Data.Seeder;
-using PizzaWebsite.Models;
+using PizzaWebsite.Models.Seeder;
+using PizzaWebsite.Data;
+using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
 using PizzaWebsite.Services.SendGrid;
@@ -51,7 +51,7 @@ namespace PizzaWebsite
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddIdentity<UserViewModel, IdentityRole>()
+            services.AddIdentity<WebsiteUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultUI()
             .AddDefaultTokenProviders();

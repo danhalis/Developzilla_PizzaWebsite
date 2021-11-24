@@ -1,4 +1,6 @@
-﻿@inject SignInManager<UserViewModel> SignInManager
+﻿@using PizzaWebsite.Data.Entities
+
+@inject SignInManager<WebsiteUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

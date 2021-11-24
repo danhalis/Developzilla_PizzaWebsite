@@ -13,19 +13,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Models;
 using System.Net.Mail;
+using PizzaWebsite.Data.Entities;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly UserManager<UserViewModel> _userManager;
-        private readonly SignInManager<UserViewModel> _signInManager;
+        private readonly UserManager<WebsiteUser> _userManager;
+        private readonly SignInManager<WebsiteUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<UserViewModel> signInManager, 
+        public LoginModel(SignInManager<WebsiteUser> signInManager, 
             ILogger<LoginModel> logger,
-            UserManager<UserViewModel> userManager)
+            UserManager<WebsiteUser> userManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

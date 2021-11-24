@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PizzaWebsite.Data;
 
 [assembly: HostingStartup(typeof(PizzaWebsite.Areas.Identity.IdentityHostingStartup))]
 namespace PizzaWebsite.Areas.Identity

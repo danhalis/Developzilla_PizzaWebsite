@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Models;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account
@@ -15,10 +16,10 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ConfirmEmailChangeModel : PageModel
     {
-        private readonly UserManager<UserViewModel> _userManager;
-        private readonly SignInManager<UserViewModel> _signInManager;
+        private readonly UserManager<WebsiteUser> _userManager;
+        private readonly SignInManager<WebsiteUser> _signInManager;
 
-        public ConfirmEmailChangeModel(UserManager<UserViewModel> userManager, SignInManager<UserViewModel> signInManager)
+        public ConfirmEmailChangeModel(UserManager<WebsiteUser> userManager, SignInManager<WebsiteUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
