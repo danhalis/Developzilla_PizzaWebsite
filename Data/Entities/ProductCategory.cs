@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace PizzaWebsite.Data.Entities
 {
+    /// <summary>
+    /// Represents a category of products.
+    /// </summary>
     public class ProductCategory
     {
         public int Id { get; set; }

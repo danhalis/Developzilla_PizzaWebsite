@@ -8,16 +8,18 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PizzaWebsite.Models.Seeder
+namespace PizzaWebsite.Data.Seeder
 {
     public class PizzaWebsiteDataSeeder
     {
         private readonly IWebHostEnvironment _host;
-        private readonly PizzaWebsiteContext _context;
+        private readonly UserIdentityDbContext _identityContext;
+        private readonly PizzaWebsiteDbContext _context;
 
-        public PizzaWebsiteDataSeeder(IWebHostEnvironment host, PizzaWebsiteContext context)
+        public PizzaWebsiteDataSeeder(IWebHostEnvironment host, UserIdentityDbContext identityContext, PizzaWebsiteDbContext context)
         {
             _host = host;
+            _identityContext = identityContext;
             _context = context;
         }
 
@@ -25,6 +27,31 @@ namespace PizzaWebsite.Models.Seeder
         {
             // ensure that the database exists
             _context.Database.EnsureCreated();
+
+            // if there are no user datas
+            if (!_context.UserDatas.Any())
+            {
+                var userdatasFile = Path.Combine(_host.ContentRootPath, "Data/SampleData/userdatas.json");
+                
+                var userdatasJson = File.ReadAllText(userdatasFile);
+                
+                var userdatas = JsonConvert.DeserializeObject<IEnumerable<UserData>>(userdatasJson).ToList();
+
+                _context.UserDatas.AddRange(userdatas);
+
+                var users = _identityContext.Users.ToList();
+
+                if (users.Count < userdatas.Count)
+                {
+                    throw new InvalidOperationException("Could not create user datas due to missing users.");
+                }
+
+                // attach user ids to user datas
+                for (int i = 0; i < userdatas.Count; i++)
+                {
+                    userdatas[i].UserId = users[i].Id;
+                }
+            }
 
             // if there are no categories
             if (!_context.ProductCategories.Any())
