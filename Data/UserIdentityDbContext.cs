@@ -8,9 +8,9 @@ using System.Text;
 
 namespace PizzaWebsite.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class UserIdentityDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public UserIdentityDbContext(DbContextOptions<UserIdentityDbContext> options)
             : base(options)
         {
         }
@@ -18,7 +18,7 @@ namespace PizzaWebsite.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema("Identity");
-            builder.Entity<WebsiteUser>(entity =>
+            builder.Entity<IdentityUser>(entity =>
             {
                 entity.ToTable(name: "User");
             });
@@ -46,7 +46,6 @@ namespace PizzaWebsite.Data
             {
                 entity.ToTable("UserTokens");
             });
-
         }
     }
 }

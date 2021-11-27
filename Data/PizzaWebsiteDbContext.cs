@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace PizzaWebsite.Data
 {
-    public class PizzaWebsiteContext : DbContext
+    public class PizzaWebsiteDbContext : DbContext
     {
-        public PizzaWebsiteContext(DbContextOptions<PizzaWebsiteContext> options) : base(options)
+        public PizzaWebsiteDbContext(DbContextOptions<PizzaWebsiteDbContext> options) : base(options)
         {
         }
 
+        public DbSet<UserData> UserDatas { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Contact> Contacts { get; set; }

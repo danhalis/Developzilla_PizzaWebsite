@@ -22,14 +22,14 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<WebsiteUser> _signInManager;
-        private readonly UserManager<WebsiteUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<WebsiteUser> userManager,
-            SignInManager<WebsiteUser> signInManager,
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -90,15 +90,14 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
             {
                 MailAddress address = new MailAddress(Input.Email);
                 string userName = address.User;
-                var user = new WebsiteUser
+                var user = new IdentityUser
                 {
                     UserName = userName,
                     Email = Input.Email,
-                    FirstName = Input.FirstName,
-                    LastName = Input.LastName,
+                    //FirstName = Input.FirstName,
+                    //LastName = Input.LastName,
                     PhoneNumber = Input.PhoneNumber,
-                    DeliveryAddress = Input.DeliveryAddress,
-
+                    //DeliveryAddress = Input.DeliveryAddress
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

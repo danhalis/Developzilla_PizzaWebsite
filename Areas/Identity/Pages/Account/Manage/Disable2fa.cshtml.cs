@@ -13,11 +13,11 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 {
     public class Disable2faModel : PageModel
     {
-        private readonly UserManager<WebsiteUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<Disable2faModel> _logger;
 
         public Disable2faModel(
-            UserManager<WebsiteUser> userManager,
+            UserManager<IdentityUser> userManager,
             ILogger<Disable2faModel> logger)
         {
             _userManager = userManager;
