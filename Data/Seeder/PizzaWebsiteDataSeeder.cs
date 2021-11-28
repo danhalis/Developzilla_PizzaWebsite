@@ -58,7 +58,7 @@ namespace PizzaWebsite.Models.Seeder
                     };
 
                     // Add all Portions + Prices
-                    for (int portionPriceIterator = 0; portionPriceIterator < deserializedProduct.Prices.Count; portionPriceIterator++)
+                    for (int portionPriceIterator = 0; portionPriceIterator < deserializedProduct.Portions.Count; portionPriceIterator++)
                     {
                         // Get or create a new Portion, depending on if it exists or not
                         Portion portion = portions.Where(p => p.Label.ToUpper() == deserializedProduct.Portions[portionPriceIterator].ToUpper()).FirstOrDefault();
@@ -82,8 +82,6 @@ namespace PizzaWebsite.Models.Seeder
                         };
 
                         // Finalize the relationship between the Product and Portion
-                        //portion.Products.Add(product);
-                        //product.Portions.Add(portion);
                         _context.ProductPortions.Add(productPortion);
                     }
 

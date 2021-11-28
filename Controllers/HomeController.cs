@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data;
 using PizzaWebsite.Data.Entities;
+using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Models;
 using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
@@ -19,12 +20,14 @@ namespace PizzaWebsite.Controllers
         private readonly IReCaptchaVerifier _reCaptchaVerifier;
         private readonly IGeocoder _geocoder;
         private readonly IEmailSender _emailSender;
+        private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
 
 
-        public HomeController(ILogger<HomeController> logger, PizzaWebsiteContext context, IReCaptchaVerifier reCaptchaVerifier, IGeocoder geocoder, IEmailSender emailSender)
+        public HomeController(ILogger<HomeController> logger, PizzaWebsiteContext context, IPizzaWebsiteRepository pizzaWebsiteRepository, IReCaptchaVerifier reCaptchaVerifier, IGeocoder geocoder, IEmailSender emailSender)
         {
             _logger = logger;
             _context = context;
+            _pizzaWebsiteRepository = pizzaWebsiteRepository;
             _reCaptchaVerifier = reCaptchaVerifier;
             _geocoder = geocoder;
             _emailSender = emailSender;
@@ -130,6 +133,8 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Pizza Menu";
 
+            var pizzas = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Pizza);
+
             return View();
         }
 
@@ -137,6 +142,8 @@ namespace PizzaWebsite.Controllers
         public IActionResult Drinks()
         {
             ViewBag.Title = "Drink Menu";
+
+            var drinks = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Drink);
 
             return View();
         }
@@ -146,6 +153,8 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Burger Menu";
 
+            var burgers = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Burger);
+
             return View();
         }
 
@@ -153,6 +162,8 @@ namespace PizzaWebsite.Controllers
         public IActionResult Sides()
         {
             ViewBag.Title = "Side Menu";
+
+            var sides = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Side);
 
             return View();
         }

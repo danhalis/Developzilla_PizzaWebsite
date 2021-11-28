@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PizzaWebsite.Data.Entities
 {
@@ -20,6 +21,9 @@ namespace PizzaWebsite.Data.Entities
         public string ImageName { get; set; }
 
         public List<Portion> Portions { get; set; } = new List<Portion>();
+
+        [NotMapped]
+        public List<decimal> Prices { get; set; } = new List<decimal>();
     }
 
     public class DeserializedProduct
