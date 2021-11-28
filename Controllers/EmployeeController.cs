@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PizzaWebsite.Controllers
 {
@@ -12,7 +8,34 @@ namespace PizzaWebsite.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            IActionResult result;
+
+            if (User.IsInRole("Owner"))
+            {
+                result = RedirectToAction("Owner", "Employee");
+            }
+            else if (User.IsInRole("Manager"))
+            {
+                result = RedirectToAction("Manager", "Employee");
+            }
+            else if (User.IsInRole("Front"))
+            {
+                result = RedirectToAction("Front", "Employee");
+            }
+            else if (User.IsInRole("Deliverer"))
+            {
+                result = RedirectToAction("Deliverer", "Employee");
+            }
+            else if (User.IsInRole("Cook"))
+            {
+                result = RedirectToAction("Cook", "Employee");
+            }
+            else
+            {
+                result = View();
+            }
+
+            return result;
         }
 
         [Authorize(Roles = "Owner")]
