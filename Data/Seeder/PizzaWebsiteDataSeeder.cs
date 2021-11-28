@@ -36,6 +36,8 @@ namespace PizzaWebsite.Models.Seeder
                 // deserialize json file into a list of deserializedProducts
                 var deserializedProducts = JsonSerializer.Deserialize<IEnumerable<DeserializedProduct>>(json);
 
+                List<Portion> portions = new List<Portion>();
+
                 foreach (DeserializedProduct deserializedProduct in deserializedProducts)
                 {
                     Product product = new Product()
@@ -55,25 +57,48 @@ namespace PizzaWebsite.Models.Seeder
                         _ => ProductCategory.Side,
                     };
 
-                    // Add all Sizes + Prices
-                    for (int sizePriceIterator = 0; sizePriceIterator < deserializedProduct.Prices.Count; sizePriceIterator++)
+                    // Add all Portions + Prices
+                    for (int portionPriceIterator = 0; portionPriceIterator < deserializedProduct.Prices.Count; portionPriceIterator++)
                     {
-                        ProductSizePrice productSizePrice = new ProductSizePrice()
+                        // Get or create a new Portion, depending on if it exists or not
+                        Portion portion = portions.Where(p => p.Label.ToUpper() == deserializedProduct.Portions[portionPriceIterator].ToUpper()).FirstOrDefault();
+                        if (portion == null)
                         {
-                            Size = deserializedProduct.Sizes[sizePriceIterator],
-                            Price = deserializedProduct.Prices[sizePriceIterator],
-                            Product = product
+                            portion = new Portion()
+                            {
+                                Id = 0,
+                                Label = deserializedProduct.Portions[portionPriceIterator]
+                            };
+                            portions.Add(portion);
+                        }
+
+                        // Set up the ProductPortion that connects the Product and Portion
+                        ProductPortion productPortion = new ProductPortion()
+                        {
+                            Id = 0,
+                            Product = product,
+                            Portion = portion,
+                            UnitPrice = deserializedProduct.Prices[portionPriceIterator]
                         };
-                        _context.SizePrices.Add(productSizePrice);
-                        product.SizePrices.Add(productSizePrice);
+
+                        // Finalize the relationship between the Product and Portion
+                        //portion.Products.Add(product);
+                        //product.Portions.Add(portion);
+                        _context.ProductPortions.Add(productPortion);
                     }
 
+                    // Add the product now that it is complete
                     _context.Products.Add(product);
                 }
+
+                // Add the portions now that they are complete
+                _context.Portions.AddRange(portions);
             }
 
             // Commit changes to the database
             _context.SaveChanges();
         }
+
+
     }
 }

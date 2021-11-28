@@ -4,12 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace PizzaWebsite.Data.Entities
 {
     public class Product
-    {
-        public Product()
-        {
-            SizePrices = new List<ProductSizePrice>();
-        }
-        
+    {        
         public int Id { get; set; }
 
         [Required]
@@ -24,17 +19,11 @@ namespace PizzaWebsite.Data.Entities
         [Required]
         public string ImageName { get; set; }
 
-        public List<ProductSizePrice> SizePrices { get; set; }
+        public List<Portion> Portions { get; set; } = new List<Portion>();
     }
 
     public class DeserializedProduct
     {
-        public DeserializedProduct()
-        {
-            Sizes = new List<string>();
-            Prices = new List<decimal>();
-        }
-
         public int Id { get; set; }
 
         [Required]
@@ -49,8 +38,8 @@ namespace PizzaWebsite.Data.Entities
         [Required]
         public string ImageName { get; set; }
 
-        public List<string> Sizes { get; set; }
+        public List<string> Portions { get; set; } = new List<string>();
 
-        public List<decimal> Prices { get; set; }
+        public List<decimal> Prices { get; set; } = new List<decimal>();
     }
 }

@@ -5,7 +5,7 @@
     "Description": "Pizza with pepperoni",
     "Category": "Pizza",
     "ImageName": "pepperoni-pizza",
-    "Sizes": [
+    "Portions": [
       "Small",
       "Medium",
       "Large"
@@ -22,7 +22,7 @@
     "Description": "Pizza with cheese",
     "Category": "Pizza",
     "ImageName": "cheese-pizza",
-    "Sizes": [
+    "Portions": [
       "Small",
       "Medium",
       "Large"
