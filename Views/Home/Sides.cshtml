@@ -18,16 +18,13 @@
             <img src="~/images/menu/side-menu/@(product.ImageName).jpg" alt="@product.Name" />
             <h4 class="product-description">@product.Description</h4>
             <div class="product-details">
-                <div class="product-portion">
-                    <label class="control-label product-portion-label"></label>
-                    <select autocomplete="off" class="form-control product-portion-select" product-id="@product.Id">
-                        <option value="@product.Portions[0].Label" portion-index="0" selected>@product.Portions[0].Label</option>
-                        @for (int portionIterator = 1; portionIterator < product.Portions.Count; portionIterator++)
-                        {
-                            <option value="@product.Portions[portionIterator].Label" portion-index="@portionIterator">@product.Portions[portionIterator].Label</option>
-                        }
-                    </select>
-                </div>
+                <select autocomplete="off" class="form-control product-portion" product-id="@product.Id">
+                    <option value="@product.Portions[0].Label" portion-index="0" selected>@product.Portions[0].Label</option>
+                    @for (int portionIterator = 1; portionIterator < product.Portions.Count; portionIterator++)
+                    {
+                        <option value="@product.Portions[portionIterator].Label" portion-index="@portionIterator">@product.Portions[portionIterator].Label</option>
+                    }
+                </select>
                 <h3 class="product-price" product-id="@product.Id" portion-index="0" style="display: block">@product.Prices[0].ToString("c")</h3>
                 @for (int priceIterator = 1; priceIterator < product.Prices.Count; priceIterator++)
                 {
