@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<PizzaWebsite.Data.Entities.Product>
+
+@{
     ViewData["Title"] = "Drink Menu";
 }
 
@@ -9,80 +11,34 @@
 <!-- Assisted by: https://www.w3schools.com/css/tryit.asp?filename=trycss_grid_layout_named -->
 <!-- Image Sources: https://www.snapdeal.com/product/aquafina-packaged-drinking-water-1/686224394571, https://www.londondrugs.com/coke---1l/L0082412.html, https://www.londondrugs.com/pepsi---soft-drink---591-ml/L6801856.html, https://www.walmart.com/ip/Diet-Coke-Soda-20-Fl-Oz/10535201, https://www.ldproducts.com/media/catalog/product/cache/3/image/9df78eab33525d08d6e5fb8d27136e95/3/0/3000_1029764012.jpg, https://www.homeshop.ph/7up-regular-soda-500ml, https://lemoulindeprovence.com/products/schweppes-ginger-ale-591ml, https://homedelivery.sayori.ch/shop/getraenke/softdrinks/fanta-orange-0-5l/ -->
 <div class="grid-container">
-    <div class="product-display">
-        <h1 class="product-name">Water</h1>
-        <!-- Source: https://www.snapdeal.com/product/aquafina-packaged-drinking-water-1/686224394571 -->
-        <img src="~/images/menu/drink-menu/water.jpg" alt="Water" />
-        <div class="product-details">
-            <h3 class="product-price">$2.00-$2.50-$3.00</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
+    @foreach (var product in Model)
+    {
+        <div class="product-display" product-id="@product.Id">
+            <h1 class="product-name">@product.Name</h1>
+            <img src="~/images/menu/drink-menu/@(product.ImageName).jpg" alt="@product.Name Bottle" />
+            <h4 class="product-description">@product.Description</h4>
+            <div class="product-details">
+                <div class="product-portion">
+                    <label class="control-label product-portion-label"></label>
+                    <select autocomplete="off" class="form-control product-portion-select" product-id="@product.Id">
+                        <option value="@product.Portions[0].Label" portion-index="0" selected>@product.Portions[0].Label</option>
+                        @for (int portionIterator = 1; portionIterator < product.Portions.Count; portionIterator++)
+                        {
+                            <option value="@product.Portions[portionIterator].Label" portion-index="@portionIterator">@product.Portions[portionIterator].Label</option>
+                        }
+                    </select>
+                </div>
+                <h3 class="product-price" product-id="@product.Id" portion-index="0" style="display: block">@product.Prices[0].ToString("c")</h3>
+                @for (int priceIterator = 1; priceIterator < product.Prices.Count; priceIterator++)
+                {
+                    <h3 class="product-price" product-id="@product.Id" portion-index="@priceIterator" style="display: none">@product.Prices[priceIterator].ToString("c")</h3>
+                }
+            </div>
+            <button class="product-add-to-cart btn btn-success" product-id="@product.Id">Add To Cart</button>
         </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">Coca-Cola</h1>
-        <!-- Source: https://www.londondrugs.com/coke---1l/L0082412.html -->
-        <img src="~/images/menu/drink-menu/coke.jpg" alt="Coke" />
-        <div class="product-details">
-            <h3 class="product-price">$3.50-$4.00-$4.50</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">Pepsi</h1>
-        <!-- Source: https://www.londondrugs.com/pepsi---soft-drink---591-ml/L6801856.html -->
-        <img src="~/images/menu/drink-menu/pepsi.jpg" alt="Pepsi" />
-        <div class="product-details">
-            <h3 class="product-price">$3.50-$4.00-$4.50</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">Diet Coke</h1>
-        <!-- Source: https://www.walmart.com/ip/Diet-Coke-Soda-20-Fl-Oz/10535201 -->
-        <img src="~/images/menu/drink-menu/diet-coke.jpg" alt="Diet Coke" />
-        <div class="product-details">
-            <h3 class="product-price">$4.00-$4.50-$5.00</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">Diet Pepsi</h1>
-        <!-- Source: https://www.ldproducts.com/media/catalog/product/cache/3/image/9df78eab33525d08d6e5fb8d27136e95/3/0/3000_1029764012.jpg -->
-        <img src="~/images/menu/drink-menu/diet-pepsi.jpg" alt="Diet Pepsi" />
-        <div class="product-details">
-            <h3 class="product-price">$4.00-$4.50-$5.00</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">7UP</h1>
-        <!-- Source: https://www.homeshop.ph/7up-regular-soda-500ml -->
-        <img src="~/images/menu/drink-menu/7up.jpg" alt="7UP" />
-        <div class="product-details">
-            <h3 class="product-price">$3.50-$4.00-$4.50</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">Ginger Ale</h1>
-        <!-- Source: https://lemoulindeprovence.com/products/schweppes-ginger-ale-591ml -->
-        <img src="~/images/menu/drink-menu/ginger-ale.png" alt="Ginger Ale" />
-        <div class="product-details">
-            <h3 class="product-price">$4.00-$4.50-$5.00</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">Fanta</h1>
-        <!-- Source: https://homedelivery.sayori.ch/shop/getraenke/softdrinks/fanta-orange-0-5l/ -->
-        <img src="~/images/menu/drink-menu/fanta.png" alt="Fanta" />
-        <div class="product-details">
-            <h3 class="product-price">$4.00-$4.50-$5.00</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
+    }
 </div>
 
 <link rel="stylesheet" href="~/css/product-menu.css" />
-
+<script src="~/js/productMenu.js"></script>
 

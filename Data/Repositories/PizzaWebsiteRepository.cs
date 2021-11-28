@@ -63,6 +63,11 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
 
+        public bool SaveAll()
+        {
+            return _context.SaveChanges() > 0;
+        }
+
         private void FillProductListFields(List<Product> products)
         {
             foreach (Product product in products)
@@ -81,12 +86,34 @@ namespace PizzaWebsite.Data.Repositories
                     product.Portions.Add(portion);
                     product.Prices.Add(productPortion.UnitPrice);
                 }
+                SortPortionsAndPrices(product);
             }
         }
 
-        public bool SaveAll()
+        private void SortPortionsAndPrices(Product product)
         {
-            return _context.SaveChanges() > 0;
+            // Bubble sort assisted by http://anh.cs.luc.edu/170/notes/CSharpHtml/sorting.html
+            int i;
+            for (int j = product.Prices.Count - 1; j > 0; j--)
+            {
+                for (i = 0; i < j; i++)
+                {
+                    if (product.Prices[i] > product.Prices[i + 1])
+                        SwapPortionAndPriceOfProduct(product, i, i + 1);
+                }
+            }
+        }
+
+        private void SwapPortionAndPriceOfProduct(Product product, int firstIndex, int secondIndex)
+        {
+            decimal swappedPrice = product.Prices[firstIndex];
+            Portion swappedPortion = product.Portions[firstIndex];
+
+            product.Prices[firstIndex] = product.Prices[secondIndex];
+            product.Portions[firstIndex] = product.Portions[secondIndex];
+
+            product.Prices[secondIndex] = swappedPrice;
+            product.Portions[secondIndex] = swappedPortion;
         }
     }
 }

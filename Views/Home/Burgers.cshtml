@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<PizzaWebsite.Data.Entities.Product>
+
+@{
     ViewData["Title"] = "Burger Menu";
 }
 
@@ -9,43 +11,34 @@
 <!-- Assisted by: https://www.w3schools.com/css/tryit.asp?filename=trycss_grid_layout_named -->
 <!-- Image Sources: https://discover.hubpages.com/food/Why-you-should-order-your-fast-food-burgers-plain, https://www.reddit.com/r/food/comments/am97gy/homemade_plain_burger/, https://www.reddit.com/r/food/comments/cku9sn/homemade_plain_double_hamburger/, https://www.youtube.com/watch?v=-f3xtWvOopg -->
 <div class="grid-container">
-    <div class="product-display">
-        <h1 class="product-name">Burger</h1>
-        <img src="~/images/menu/burger-menu/burger.jpg" alt="Burger" />
-        <div class="product-details">
-            <h3 class="product-price">$5.00-$6.00-$6.50</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
+    @foreach (var product in Model)
+    {
+        <div class="product-display" product-id="@product.Id">
+            <h1 class="product-name">@product.Name</h1>
+            <img src="~/images/menu/burger-menu/@(product.ImageName).jpg" alt="@product.Name" />
+            <h4 class="product-description">@product.Description</h4>
+            <div class="product-details">
+                <div class="product-portion">
+                    <label class="control-label product-portion-label"></label>
+                    <select autocomplete="off" class="form-control product-portion-select" product-id="@product.Id">
+                        <option value="@product.Portions[0].Label" portion-index="0" selected>@product.Portions[0].Label</option>
+                        @for (int portionIterator = 1; portionIterator < product.Portions.Count; portionIterator++)
+                        {
+                            <option value="@product.Portions[portionIterator].Label" portion-index="@portionIterator">@product.Portions[portionIterator].Label</option>
+                        }
+                    </select>
+                </div>
+                <h3 class="product-price" product-id="@product.Id" portion-index="0" style="display: block">@product.Prices[0].ToString("c")</h3>
+                @for (int priceIterator = 1; priceIterator < product.Prices.Count; priceIterator++)
+                {
+                    <h3 class="product-price" product-id="@product.Id" portion-index="@priceIterator" style="display: none">@product.Prices[priceIterator].ToString("c")</h3>
+                }
+            </div>
+            <button class="product-add-to-cart btn btn-success" product-id="@product.Id">Add To Cart</button>
         </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">Cheese Burger</h1>
-        <!-- Source: https://www.reddit.com/r/food/comments/am97gy/homemade_plain_burger/ -->
-        <img src="~/images/menu/burger-menu/cheese-burger.jpg" alt="Cheese Burger" />
-        <div class="product-details">
-            <h3 class="product-price">$6.00-$6.50-$7.00</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">Double Burger</h1>
-        <!-- Source: https://www.reddit.com/r/food/comments/cku9sn/homemade_plain_double_hamburger/ -->
-        <img src="~/images/menu/burger-menu/double-burger.png" alt="Double Burger" />
-        <div class="product-details">
-            <h3 class="product-price">$7.00-$7.50-$8.00</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
-    <div class="product-display">
-        <h1 class="product-name">Double Cheese Burger</h1>
-        <!-- Source: https://www.youtube.com/watch?v=-f3xtWvOopg -->
-        <img src="~/images/menu/burger-menu/double-cheese-burger.jpg" alt="Double Cheese Burger" />
-        <div class="product-details">
-            <h3 class="product-price">$8.00-$8.50-$9.00</h3>
-            <h3 class="product-sizes">Small-Medium-Large</h3>
-        </div>
-    </div>
+    }
 </div>
 
 <link rel="stylesheet" href="~/css/product-menu.css" />
-
+<script src="~/js/productMenu.js"></script>
 
