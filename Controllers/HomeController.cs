@@ -135,7 +135,7 @@ namespace PizzaWebsite.Controllers
 
             var pizzas = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Pizza);
 
-            return View();
+            return View(pizzas);
         }
 
         [HttpGet("Drinks")]
@@ -145,7 +145,7 @@ namespace PizzaWebsite.Controllers
 
             var drinks = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Drink);
 
-            return View();
+            return View(drinks);
         }
 
         [HttpGet("Burgers")]
@@ -155,7 +155,7 @@ namespace PizzaWebsite.Controllers
 
             var burgers = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Burger);
 
-            return View();
+            return View(burgers);
         }
 
         [HttpGet("Sides")]
@@ -165,7 +165,7 @@ namespace PizzaWebsite.Controllers
 
             var sides = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Side);
 
-            return View();
+            return View(sides);
         }
 
         [HttpGet("Privacy")]

@@ -104,7 +104,7 @@
   {
     "Id": 0,
     "Name": "Vegan",
-    "Description": "Pizza with absolutely no animal products.",
+    "Description": "Pizza with no animal products.",
     "Category": "Pizza",
     "ImageName": "vegan-pizza",
     "Portions": [
