@@ -15,12 +15,7 @@ namespace PizzaWebsite.Data.Entities
     
         public Product Product { get; set; }
         public int Quantity { get; set; }
-        public decimal Price 
-        { 
-            get 
-            { 
-                return Product.Price * Quantity; 
-            } 
-        }
+
+        public decimal UnitPrice { get; set; }
     }
 }
