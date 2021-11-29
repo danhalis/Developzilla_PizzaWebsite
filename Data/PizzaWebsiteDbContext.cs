@@ -3,12 +3,13 @@ using PizzaWebsite.Data.Entities;
 
 namespace PizzaWebsite.Data
 {
-    public class PizzaWebsiteContext : DbContext
+    public class PizzaWebsiteDbContext : DbContext
     {
-        public PizzaWebsiteContext(DbContextOptions<PizzaWebsiteContext> options) : base(options)
+        public PizzaWebsiteDbContext(DbContextOptions<PizzaWebsiteDbContext> options) : base(options)
         {
         }
 
+        public DbSet<UserData> UserDatas { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductPortion> ProductPortions { get; set; }
         public DbSet<Portion> Portions { get; set; }

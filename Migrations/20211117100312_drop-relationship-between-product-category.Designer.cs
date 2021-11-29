@@ -10,7 +10,7 @@ using PizzaWebsite.Models;
 
 namespace PizzaWebsite.Migrations
 {
-    [DbContext(typeof(PizzaWebsiteContext))]
+    [DbContext(typeof(PizzaWebsiteDbContext))]
     [Migration("20211117100312_drop-relationship-between-product-category")]
     partial class droprelationshipbetweenproductcategory
     {
