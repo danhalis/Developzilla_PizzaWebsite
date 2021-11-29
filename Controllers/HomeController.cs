@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data;
 using PizzaWebsite.Data.Entities;
+using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Models;
 using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
@@ -15,16 +16,18 @@ namespace PizzaWebsite.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly PizzaWebsiteDbContext _context;
+        private readonly PizzaWebsiteContext _context;
         private readonly IReCaptchaVerifier _reCaptchaVerifier;
         private readonly IGeocoder _geocoder;
         private readonly IEmailSender _emailSender;
+        private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
 
 
-        public HomeController(ILogger<HomeController> logger, PizzaWebsiteDbContext context, IReCaptchaVerifier reCaptchaVerifier, IGeocoder geocoder, IEmailSender emailSender)
+        public HomeController(ILogger<HomeController> logger, PizzaWebsiteContext context, IPizzaWebsiteRepository pizzaWebsiteRepository, IReCaptchaVerifier reCaptchaVerifier, IGeocoder geocoder, IEmailSender emailSender)
         {
             _logger = logger;
             _context = context;
+            _pizzaWebsiteRepository = pizzaWebsiteRepository;
             _reCaptchaVerifier = reCaptchaVerifier;
             _geocoder = geocoder;
             _emailSender = emailSender;
@@ -130,7 +133,9 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Pizza Menu";
 
-            return View();
+            var pizzas = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Pizza);
+
+            return View(pizzas);
         }
 
         [HttpGet("Drinks")]
@@ -138,7 +143,9 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Drink Menu";
 
-            return View();
+            var drinks = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Drink);
+
+            return View(drinks);
         }
 
         [HttpGet("Burgers")]
@@ -146,7 +153,9 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Burger Menu";
 
-            return View();
+            var burgers = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Burger);
+
+            return View(burgers);
         }
 
         [HttpGet("Sides")]
@@ -154,7 +163,9 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Side Menu";
 
-            return View();
+            var sides = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Side);
+
+            return View(sides);
         }
 
         [HttpGet("Privacy")]
