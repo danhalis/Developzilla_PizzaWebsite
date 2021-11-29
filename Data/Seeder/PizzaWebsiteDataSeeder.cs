@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json;
 using PizzaWebsite.Data;
 using PizzaWebsite.Data.Entities;
 using System.Collections.Generic;
@@ -96,7 +97,5 @@ namespace PizzaWebsite.Models.Seeder
             // Commit changes to the database
             _context.SaveChanges();
         }
-
-
     }
 }

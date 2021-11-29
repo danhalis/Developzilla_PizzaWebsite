@@ -1,0 +1,25 @@
+﻿
+<div class="container" style=" display: flex; align-items: center; justify-content: space-around; padding-top:.5rem; padding-bottom: .5rem">
+
+    @if (User.IsInRole("Owner"))
+    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Owner">Owning</a>}
+
+    <!--Manager Tab-->
+    @if (User.IsInRole("Manager") || User.IsInRole("Owner"))
+    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Manager">Managing</a>}
+
+    <!--Front End Tab-->
+    @if (User.IsInRole("Front") || User.IsInRole("Manager") || User.IsInRole("Owner"))
+    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Front">Front</a>}
+
+    <!--Cook Tab-->
+    @if (User.IsInRole("Cook") || User.IsInRole("Manager") || User.IsInRole("Owner"))
+    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Cook">Cooking</a>}
+
+    <!--Delivery Tab-->
+    @if (User.IsInRole("Deliverer") || User.IsInRole("Manager") || User.IsInRole("Owner"))
+    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Deliverer">Delivery</a>}
+
+    <!--Social Media Icons-->
+    <partial name="Footer/_SocialMediaPartial" />
+</div>
