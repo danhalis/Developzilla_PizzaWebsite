@@ -35,10 +35,7 @@
                     @Html.DisplayFor(modelItem => item.Quantity)
                 </td>
                 <td class="text-right">
-                    @item.Product.Price.ToString("c2")
-                </td>
-                <td class="text-right">
-                    @item.Price.ToString("c2")
+                    @item.UnitPrice.ToString("c2")
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
