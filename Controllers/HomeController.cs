@@ -169,6 +169,12 @@ namespace PizzaWebsite.Controllers
             return View();
         }
 
+        [HttpGet("Covid")]
+        public IActionResult Covid()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
