@@ -16,14 +16,19 @@ namespace PizzaWebsite.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly PizzaWebsiteContext _context;
+        private readonly PizzaWebsiteDbContext _context;
+        private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
         private readonly IReCaptchaVerifier _reCaptchaVerifier;
         private readonly IGeocoder _geocoder;
         private readonly IEmailSender _emailSender;
-        private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
 
 
-        public HomeController(ILogger<HomeController> logger, PizzaWebsiteContext context, IPizzaWebsiteRepository pizzaWebsiteRepository, IReCaptchaVerifier reCaptchaVerifier, IGeocoder geocoder, IEmailSender emailSender)
+        public HomeController(ILogger<HomeController> logger, 
+                            PizzaWebsiteDbContext context, 
+                            IPizzaWebsiteRepository pizzaWebsiteRepository, 
+                            IReCaptchaVerifier reCaptchaVerifier, 
+                            IGeocoder geocoder, 
+                            IEmailSender emailSender)
         {
             _logger = logger;
             _context = context;
@@ -173,6 +178,19 @@ namespace PizzaWebsite.Controllers
         {
             return View();
         }
+
+        [HttpGet("Job")]
+        public IActionResult Job()
+        {
+            return View();
+        }
+
+        [HttpGet("Covid")]
+        public IActionResult Covid()
+        {
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

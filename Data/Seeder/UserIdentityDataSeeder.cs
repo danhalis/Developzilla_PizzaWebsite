@@ -14,7 +14,12 @@ namespace PizzaWebsite.Data.Seeder
     {
         public enum Roles
         {
-            Customer
+            Customer,
+            Owner,
+            Manager,
+            Cook,
+            Deliverer,
+            Front
         }
 
         private readonly IWebHostEnvironment _host;
@@ -76,24 +81,48 @@ namespace PizzaWebsite.Data.Seeder
                 case Roles.Customer:
                     await _userManager.AddToRoleAsync(user, Roles.Customer.ToString());
                     break;
+                case Roles.Owner:
+                    await _userManager.AddToRoleAsync(user, Roles.Owner.ToString());
+                    break;
+                case Roles.Manager:
+                    await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
+                    break;
+                case Roles.Cook:
+                    await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
+                    break;
+                case Roles.Deliverer:
+                    await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
+                    break;
+                case Roles.Front:
+                    await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
+                    break;
             }
         }
 
         private async Task SeedUsersAsync()
         {
             var usersFile = Path.Combine(_host.ContentRootPath, "Data/SampleData/users.json");
-            
             var json = File.ReadAllText(usersFile);
-
             var users = JsonConvert.DeserializeObject<IEnumerable<IdentityUser>>(json);
-            
+
+            var userRoleFile = Path.Combine(_host.ContentRootPath, "Data/SampleData/user-roles.json");
+            json = File.ReadAllText(userRoleFile);
+
+
+            Int32[] userRoles = JsonConvert.DeserializeObject<Int32[]>(json);
+
+            int roleIndex = 0;
+
             foreach (IdentityUser user in users)
             {
                 if (_context.Users.Any(u => u.Email == user.Email))
                     continue;
 
-                await SeedUserAsync(Roles.Customer, user);
+                //await SeedUserAsync(Roles.Customer, user);
+                await SeedUserAsync((Roles)userRoles[roleIndex], user);
+                roleIndex++;
             }
+
         }
 
         public async Task SeedAsync()

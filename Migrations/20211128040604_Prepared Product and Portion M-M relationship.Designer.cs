@@ -9,7 +9,7 @@ using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Migrations
 {
-    [DbContext(typeof(PizzaWebsiteContext))]
+    [DbContext(typeof(PizzaWebsiteDbContext))]
     [Migration("20211128040604_Prepared Product and Portion M-M relationship")]
     partial class PreparedProductandPortionMMrelationship
     {

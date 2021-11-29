@@ -8,7 +8,7 @@ using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Migrations
 {
-    [DbContext(typeof(PizzaWebsiteContext))]
+    [DbContext(typeof(PizzaWebsiteDbContext))]
     partial class PizzaWebsiteContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
