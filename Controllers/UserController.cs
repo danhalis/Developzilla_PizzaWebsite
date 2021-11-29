@@ -39,13 +39,11 @@ namespace PizzaWebsite.Controllers
 
             List<CartItem> cartItems = new List<CartItem>();
 
-            int id = 0;
             decimal total = 0;
             foreach (var product in products)
             {
                 CartItem cartItem = new CartItem()
                 {
-                    Id = ++id,
                     UserId = 0,
                     ProductId = product.Id,
                     Product = product,
