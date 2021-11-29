@@ -17,10 +17,10 @@ namespace PizzaWebsite.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly PizzaWebsiteDbContext _context;
+        private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
         private readonly IReCaptchaVerifier _reCaptchaVerifier;
         private readonly IGeocoder _geocoder;
         private readonly IEmailSender _emailSender;
-        private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
 
 
         public HomeController(ILogger<HomeController> logger, 

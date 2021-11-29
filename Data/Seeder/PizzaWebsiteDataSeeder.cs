@@ -5,16 +5,15 @@ using PizzaWebsite.Data.Entities;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 
-namespace PizzaWebsite.Models.Seeder
+namespace PizzaWebsite.Data.Seeder
 {
     public class PizzaWebsiteDataSeeder
     {
         private readonly IWebHostEnvironment _host;
-        private readonly PizzaWebsiteContext _context;
+        private readonly PizzaWebsiteDbContext _context;
 
-        public PizzaWebsiteDataSeeder(IWebHostEnvironment host, PizzaWebsiteContext context)
+        public PizzaWebsiteDataSeeder(IWebHostEnvironment host, PizzaWebsiteDbContext context)
         {
             _host = host;
             _context = context;
@@ -35,7 +34,7 @@ namespace PizzaWebsite.Models.Seeder
                 var json = File.ReadAllText(productsFile);
 
                 // deserialize json file into a list of deserializedProducts
-                var deserializedProducts = JsonSerializer.Deserialize<IEnumerable<DeserializedProduct>>(json);
+                var deserializedProducts = JsonConvert.DeserializeObject<IEnumerable<DeserializedProduct>>(json);
 
                 List<Portion> portions = new List<Portion>();
 
