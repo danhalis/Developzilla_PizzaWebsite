@@ -1,0 +1,59 @@
+﻿@model PizzaWebsite.Models.CartViewModel
+
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<h1>Cart</h1>
+
+<p>
+    <a asp-controller="Home" asp-action="Pizzas">Add more</a>
+</p>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th></th>
+            <th class="text-sm-center">
+                Quantity
+            </th>
+            <th class="text-right">
+                Price
+            </th>
+            <th class="text-right">
+                Sub-total
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.CartItems) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Name)
+                </td>
+                <td class="text-sm-center">
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td class="text-right">
+                    @item.Product.Price.ToString("c2")
+                </td>
+                <td class="text-right">
+                    @item.Price.ToString("c2")
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="5"></td>
+        </tr>
+        <tr class="table-primary" style="font-weight: bold;">
+            <td colspan="3">Total Price:</td>
+            <td class="text-right">@Model.Total.ToString("c2")</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>

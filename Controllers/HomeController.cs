@@ -15,13 +15,13 @@ namespace PizzaWebsite.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly PizzaWebsiteContext _context;
+        private readonly PizzaWebsiteDbContext _context;
         private readonly IReCaptchaVerifier _reCaptchaVerifier;
         private readonly IGeocoder _geocoder;
         private readonly IEmailSender _emailSender;
 
 
-        public HomeController(ILogger<HomeController> logger, PizzaWebsiteContext context, IReCaptchaVerifier reCaptchaVerifier, IGeocoder geocoder, IEmailSender emailSender)
+        public HomeController(ILogger<HomeController> logger, PizzaWebsiteDbContext context, IReCaptchaVerifier reCaptchaVerifier, IGeocoder geocoder, IEmailSender emailSender)
         {
             _logger = logger;
             _context = context;
@@ -115,6 +115,46 @@ namespace PizzaWebsite.Controllers
                 Message = contactViewModel.Message,
                 CreatedAt = DateTime.Now
             };
+        }
+
+        [HttpGet("About")]
+        public IActionResult About()
+        {
+            ViewBag.Title = "About Us";
+            
+            return View();
+        }
+
+        [HttpGet("Pizzas")]
+        public IActionResult Pizzas()
+        {
+            ViewBag.Title = "Pizza Menu";
+
+            return View();
+        }
+
+        [HttpGet("Drinks")]
+        public IActionResult Drinks()
+        {
+            ViewBag.Title = "Drink Menu";
+
+            return View();
+        }
+
+        [HttpGet("Burgers")]
+        public IActionResult Burgers()
+        {
+            ViewBag.Title = "Burger Menu";
+
+            return View();
+        }
+
+        [HttpGet("Sides")]
+        public IActionResult Sides()
+        {
+            ViewBag.Title = "Side Menu";
+
+            return View();
         }
 
         [HttpGet("Privacy")]

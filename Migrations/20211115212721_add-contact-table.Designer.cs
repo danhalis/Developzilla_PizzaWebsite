@@ -6,10 +6,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzaWebsite.Data;
+using PizzaWebsite.Models;
 
 namespace PizzaWebsite.Migrations
 {
-    [DbContext(typeof(PizzaWebsiteContext))]
+    [DbContext(typeof(PizzaWebsiteDbContext))]
     [Migration("20211115212721_add-contact-table")]
     partial class addcontacttable
     {
