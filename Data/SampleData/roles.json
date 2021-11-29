@@ -1,5 +1,21 @@
 [
-    {
-        "Name": "Customer"
-    }
+  {
+    "Name": "Customer"
+  },
+  {
+    "Name": "Owner"
+  },
+  {
+    "Name": "Manager"
+  },
+  {
+    "Name": "Cook"
+  },
+  {
+    "Name": "Deliverer"
+  },
+  {
+    "Name": "Front"
+  }
+
 ]

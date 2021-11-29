@@ -7,9 +7,12 @@
 
 .product-display {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.product-name {
+.product-name, .product-description {
     text-align: center;
 }
 
@@ -17,4 +20,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.product-portion {
+    max-width: 12em;
+}
+
+.product-add-to-cart {
+    max-width: 8em;
+    margin: 0 auto;
 }

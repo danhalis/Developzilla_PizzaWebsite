@@ -52,7 +52,7 @@ namespace PizzaWebsite.Controllers
                     Quantity = 3
                 };
 
-                total += cartItem.Price;
+                total += cartItem.UnitPrice * cartItem.Quantity;
 
                 cartItems.Add(cartItem);
             }
