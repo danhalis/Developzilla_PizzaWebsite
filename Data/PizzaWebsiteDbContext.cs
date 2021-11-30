@@ -21,12 +21,18 @@ namespace PizzaWebsite.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // set up M-M relationship between Product and Portion
             modelBuilder.Entity<Product>()
                 .HasMany(p => p.Portions)
                 .WithMany(p => p.Products)
                 .UsingEntity<ProductPortion>
                 (pp => pp.HasOne<Portion>().WithMany(),
                  pp => pp.HasOne<Product>().WithMany());
+
+            // make portion label unique
+            modelBuilder.Entity<Portion>()
+                .HasIndex(p => p.Label)
+                .IsUnique();
 
             modelBuilder.Entity<ProductPortion>()
                 .Property(pp => pp.UnitPrice)

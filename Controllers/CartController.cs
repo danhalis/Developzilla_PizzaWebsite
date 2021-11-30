@@ -60,7 +60,7 @@ namespace PizzaWebsite.Controllers
         [HttpPost()]
         public IActionResult Add(MenuItemViewModel menuItemViewModel)
         {
-            int portionId = _pizzaRepository.GetPortionIdByName(menuItemViewModel.ChosenProductPortion);
+            int portionId = _pizzaRepository.GetPortionIdByLabel(menuItemViewModel.ChosenProductPortion);
 
             CartItem cartItem = _pizzaRepository.GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(
                 _userManager.GetUserId(User),
