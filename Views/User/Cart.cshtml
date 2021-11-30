@@ -17,7 +17,7 @@
                 Quantity
             </th>
             <th class="text-right">
-                Price
+                Unit Price
             </th>
             <th class="text-right">
                 Sub-total
@@ -29,13 +29,18 @@
         @foreach (var item in Model.CartItems) {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Product.Name)
+                    @(string.Format("{0} ({1})", 
+                    item.ProductPortion.Product.Name, 
+                    item.ProductPortion.Portion.Label))
                 </td>
                 <td class="text-sm-center">
                     @Html.DisplayFor(modelItem => item.Quantity)
                 </td>
                 <td class="text-right">
-                    @item.UnitPrice.ToString("c2")
+                    @item.ProductPortion.UnitPrice.ToString("c2")
+                </td>
+                <td class="text-right">
+                    @((item.ProductPortion.UnitPrice * item.Quantity).ToString("c2"))
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

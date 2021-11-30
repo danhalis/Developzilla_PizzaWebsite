@@ -58,12 +58,12 @@ namespace PizzaWebsite.Data.Seeder
 
         private async Task SeedUserAsync(Roles role,
                                         IdentityUser user)
-        {         
+        {
             try
             {
                 // create the new user with password
                 IdentityResult result = await _userManager.CreateAsync(user, role + "@123");
-                
+
                 if (!result.Succeeded)
                 {
                     var exceptionText = result.Errors.Aggregate("Could not create user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
