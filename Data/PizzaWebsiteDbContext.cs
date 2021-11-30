@@ -26,6 +26,10 @@ namespace PizzaWebsite.Data
                 .UsingEntity<ProductPortion>
                 (pp => pp.HasOne<Portion>().WithMany(),
                  pp => pp.HasOne<Product>().WithMany());
+
+            modelBuilder.Entity<ProductPortion>()
+                .Property(pp => pp.UnitPrice)
+                .HasColumnType("money");
         }
     }
 }

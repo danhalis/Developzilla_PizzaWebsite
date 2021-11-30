@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Data;
-using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
 using PizzaWebsite.Services.SendGrid;
@@ -32,15 +31,14 @@ namespace PizzaWebsite
         {
             services.AddDbContext<UserIdentityDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("PizzaWebsiteConnection")));
+                    Configuration.GetConnectionString("UserIdentityConnection")));
 
             // add database context
             services.AddDbContext<PizzaWebsiteDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("PizzaWebsiteConnection"))
                         .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
-                        .EnableSensitiveDataLogging() // Logging is built into ASP.NET Core
-                        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // no entity tracking to improve performance
+                        .EnableSensitiveDataLogging(); // Logging is built into ASP.NET Core
             });
 
             // add repository
