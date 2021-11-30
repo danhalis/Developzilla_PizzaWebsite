@@ -27,6 +27,9 @@ namespace PizzaWebsite.Migrations
                 nullable: false,
                 defaultValue: "");
 
+            migrationBuilder.DropTable(
+             name: "CartItem");
+
             migrationBuilder.CreateTable(
                 name: "CartItem",
                 columns: table => new

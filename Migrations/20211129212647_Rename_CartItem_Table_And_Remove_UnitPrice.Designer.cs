@@ -10,8 +10,8 @@ using PizzaWebsite.Data;
 namespace PizzaWebsite.Migrations
 {
     [DbContext(typeof(PizzaWebsiteDbContext))]
-    [Migration("20211128040604_Prepared Product and Portion M-M relationship")]
-    partial class PreparedProductandPortionMMrelationship
+    [Migration("20211129212647_Rename_CartItem_Table_And_Remove_UnitPrice")]
+    partial class Rename_CartItem_Table_And_Remove_UnitPrice
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,17 +34,14 @@ namespace PizzaWebsite.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItem");
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.Contact", b =>
@@ -157,6 +154,35 @@ namespace PizzaWebsite.Migrations
                     b.HasIndex("ProductsId");
 
                     b.ToTable("ProductPortions");
+                });
+
+            modelBuilder.Entity("PizzaWebsite.Data.Entities.UserData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("DeliveryAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("ProfilePicture")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserDatas");
                 });
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.CartItem", b =>

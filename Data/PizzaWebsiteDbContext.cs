@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PizzaWebsite.Data.Entities;
+using System;
 
 namespace PizzaWebsite.Data
 {
@@ -14,18 +15,28 @@ namespace PizzaWebsite.Data
         public DbSet<ProductPortion> ProductPortions { get; set; }
         public DbSet<Portion> Portions { get; set; }
         public DbSet<Contact> Contacts { get; set; }
-        public DbSet<CartItem> CartItem { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            // set up M-M relationship between Product and Portion
             modelBuilder.Entity<Product>()
                 .HasMany(p => p.Portions)
                 .WithMany(p => p.Products)
                 .UsingEntity<ProductPortion>
                 (pp => pp.HasOne<Portion>().WithMany(),
                  pp => pp.HasOne<Product>().WithMany());
+
+            // make portion label unique
+            modelBuilder.Entity<Portion>()
+                .HasIndex(p => p.Label)
+                .IsUnique();
+
+            modelBuilder.Entity<ProductPortion>()
+                .Property(pp => pp.UnitPrice)
+                .HasColumnType("money");
         }
     }
 }

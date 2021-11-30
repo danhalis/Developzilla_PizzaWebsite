@@ -58,7 +58,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             public byte[] ProfilePicture { get; set; }
 
             //test
-            public List<Product> Orders { get; set; }
+            public IEnumerable<Product> Orders { get; set; }
         }
         private async Task LoadAsync(IdentityUser user)
         {
