@@ -151,9 +151,12 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Drink Menu";
 
-            var drinks = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Drink);
+            MenuItemViewModel menuItemViewModel = new MenuItemViewModel
+            {
+                Products = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Drink)
+            };
 
-            return View(drinks);
+            return View(menuItemViewModel);
         }
 
         [HttpGet("Burgers")]
@@ -161,9 +164,12 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Burger Menu";
 
-            var burgers = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Burger);
+            MenuItemViewModel menuItemViewModel = new MenuItemViewModel
+            {
+                Products = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Burger)
+            };
 
-            return View(burgers);
+            return View(menuItemViewModel);
         }
 
         [HttpGet("Sides")]
@@ -171,9 +177,12 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Side Menu";
 
-            var sides = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Side);
+            MenuItemViewModel menuItemViewModel = new MenuItemViewModel
+            {
+                Products = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Side)
+            };
 
-            return View(sides);
+            return View(menuItemViewModel);
         }
 
         [HttpGet("Privacy")]

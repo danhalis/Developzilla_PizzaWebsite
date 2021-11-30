@@ -60,16 +60,21 @@ namespace PizzaWebsite.Controllers
         [HttpPost()]
         public IActionResult AddToCart(MenuItemViewModel menuItemViewModel)
         {
-            CartItem cartItem = _pizzaRepository.GetCartItemByProductId(menuItemViewModel.ChosenProductId);
+            int portionId = _pizzaRepository.GetPortionIdByName(menuItemViewModel.ChosenProductPortion);
 
-            // if the selected product was not added yet to the cart
+            CartItem cartItem = _pizzaRepository.GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(
+                _userManager.GetUserId(User),
+                menuItemViewModel.ChosenProductId,
+                portionId);
+
+            // if the selected product of the selected portion was not added yet to the cart
             if (cartItem == null)
             {
                 cartItem = new CartItem
                 {
                     UserId = _userManager.GetUserId(User),
                     ProductId = menuItemViewModel.ChosenProductId,
-                    PortionId = _pizzaRepository.GetPortionIdByName(menuItemViewModel.ChosenProductPortion),
+                    PortionId = portionId,
                     Quantity = 1
                 };
 
@@ -85,7 +90,7 @@ namespace PizzaWebsite.Controllers
                     });
                 }
             }
-            // if the selected product was already added to the cart
+            // if the selected product of the selected portion was already added to the cart
             else
             {
 

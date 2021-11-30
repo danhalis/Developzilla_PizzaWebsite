@@ -16,10 +16,13 @@ namespace PizzaWebsite.Data.Repositories
         Product GetProductById(int id);
         List<Product> GetProductsByCategory(ProductCategory productCategory);
 
+        Portion GetPortionById(int id);
         int GetPortionIdByName(string portionName);
 
+        ProductPortion GetProductAndPortionById(int productId, int portionId);
+
         List<CartItem> GetCartItemsByUserId(string userId);
-        CartItem GetCartItemByProductId(int productId);
+        CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId);
         void Add(CartItem cartItem);
 
         bool SaveAll();
@@ -119,26 +122,6 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
 
-        public decimal GetProductUnitPriceByPortion(int productId, string portion)
-        {
-            _logger.LogInformation($"Getting unit price of product id {productId} of portion {portion} ...");
-            try
-            {
-                var productAndPortion = _context.ProductPortions.FirstOrDefault(pp => pp.ProductId == productId && pp.Portion.ToString() == portion);
-
-                if (productAndPortion == null)
-                    return -1;
-
-                return productAndPortion.UnitPrice;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Failed to get unit price of product id {productId} of portion {portion}: {e}");
-
-                return -1;
-            }
-        }
-
         public List<Product> GetProductsByCategory(ProductCategory productCategory)
         {
             _logger.LogInformation("GetProductsByCategory was called...");
@@ -232,6 +215,7 @@ namespace PizzaWebsite.Data.Repositories
 
         public int GetPortionIdByName(string portionName)
         {
+            // TODO: Make portion label unique in the database
             try
             {
                 _logger.LogInformation($"Getting portion id by name {portionName} ...");
@@ -251,7 +235,7 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
 
-        public ProductPortion GetProductWithPortionById(int productId, int portionId)
+        public ProductPortion GetProductAndPortionById(int productId, int portionId)
         {
             try
             {
@@ -285,7 +269,7 @@ namespace PizzaWebsite.Data.Repositories
                 // attach product obj on each corresponding cart item
                 foreach (var cartItem in cartItems)
                 {
-                    ProductPortion productPortion = GetProductWithPortionById(cartItem.ProductId, cartItem.PortionId);
+                    ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
 
                     cartItem.ProductPortion = productPortion;
                 }
@@ -300,19 +284,28 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
 
-        public CartItem GetCartItemByProductId(int productId)
+        public CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId)
         {
             try
             {
-                _logger.LogInformation($"Getting cart item by product id {productId} ...");
+                _logger.LogInformation($"Getting cart items by user id {userId} ...");
 
-                var cartItem = _context.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
+                var cartItem = _context.CartItems.FirstOrDefault(ci => 
+                    ci.UserId == userId && ci.ProductId == productId && ci.PortionId == portionId
+                );
+
+                if (cartItem == null) return null;
+
+                // attach product obj on each corresponding cart item
+                ProductPortion productPortion = GetProductAndPortionById(productId, portionId);
+
+                cartItem.ProductPortion = productPortion;
 
                 return cartItem;
             }
             catch (Exception e)
             {
-                _logger.LogError($"Failed to get cart item by product id {productId}: {e}");
+                _logger.LogError($"Failed to get cart items by user id {userId}: {e}");
 
                 return null;
             }
