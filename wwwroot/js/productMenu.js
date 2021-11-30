@@ -4,13 +4,29 @@
     [...document.querySelectorAll(".product-portion")].forEach(portionSelect => {
         portionSelect.addEventListener("change", (event) => {
             let productId = event.srcElement.getAttribute("product-id");
-            let portionIndex = event.srcElement.options[event.srcElement.selectedIndex].getAttribute("portion-index");
+            let selectedPortionOption = event.srcElement.options[event.srcElement.selectedIndex];
+            let portionIndex = selectedPortionOption.getAttribute("portion-index");
 
             // Hide the outdatedPriceElement, and show the newPriceElement
             let outdatedPriceElement = document.querySelector(`.product-price[product-id='${productId}'][style*='display: block']`);
             let newPriceElement = document.querySelector(`.product-price[product-id='${productId}'][portion-index='${portionIndex}']`);
+
             outdatedPriceElement.style.display = 'none';
             newPriceElement.style.display = 'block';
+        });
+    });
+
+    // Add an item to the cart when an "Add to Cart" button is clicked
+    [...document.querySelectorAll(".product-add-to-cart")].forEach(addToCartBtn => {
+        addToCartBtn.addEventListener("click", (event) => {
+            let productId = event.srcElement.getAttribute("product-id");
+
+            // get the selected portion
+            let portionName = document.querySelector(`.select-product-portion[product-id='${productId}']`).value;
+
+            // update "Add to cart" form
+            let chosenProductPortion = document.querySelector(`.chosen-portion[product-id='${productId}']`);
+            chosenProductPortion.value = portionName;
         });
     });
 });

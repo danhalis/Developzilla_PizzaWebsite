@@ -14,7 +14,7 @@ namespace PizzaWebsite.Data
         public DbSet<ProductPortion> ProductPortions { get; set; }
         public DbSet<Portion> Portions { get; set; }
         public DbSet<Contact> Contacts { get; set; }
-        public DbSet<CartItem> CartItem { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

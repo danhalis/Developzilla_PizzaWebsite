@@ -138,9 +138,12 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "Pizza Menu";
 
-            var pizzas = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Pizza);
+            MenuItemViewModel menuItemViewModel = new MenuItemViewModel
+            {
+                Products = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Pizza)
+            };
 
-            return View(pizzas);
+            return View(menuItemViewModel);
         }
 
         [HttpGet("Drinks")]

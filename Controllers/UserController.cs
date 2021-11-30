@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
@@ -16,11 +17,15 @@ namespace PizzaWebsite.Controllers
     public class UserController : Controller
     {
         private readonly ILogger<UserController> _logger;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IPizzaWebsiteRepository _pizzaRepository;
 
-        public UserController(ILogger<UserController> logger, IPizzaWebsiteRepository pizzaRepository)
+        public UserController(ILogger<UserController> logger,
+            UserManager<IdentityUser> userManager,
+            IPizzaWebsiteRepository pizzaRepository)
         {
             _logger = logger;
+            _userManager = userManager;
             _pizzaRepository = pizzaRepository;
         }
 
@@ -32,27 +37,15 @@ namespace PizzaWebsite.Controllers
         [HttpGet("Cart")]
         public IActionResult Cart()
         {
-            // TODO: add IdentityRepository to get user id
+            var userId = _userManager.GetUserId(User);
 
-            // Below code is for testing
-            var products = _pizzaRepository.GetAllProducts();
-
-            List<CartItem> cartItems = new List<CartItem>();
+            var cartItems = _pizzaRepository.GetCartItemsByUserId(userId);
 
             decimal total = 0;
-            foreach (var product in products)
+
+            foreach (var cartItem in cartItems)
             {
-                CartItem cartItem = new CartItem()
-                {
-                    UserId = 0,
-                    ProductId = product.Id,
-                    Product = product,
-                    Quantity = 3
-                };
-
-                total += cartItem.UnitPrice * cartItem.Quantity;
-
-                cartItems.Add(cartItem);
+                total += cartItem.ProductPortion.UnitPrice * cartItem.Quantity;
             }
 
             CartViewModel cartViewModel = new CartViewModel()
@@ -62,6 +55,43 @@ namespace PizzaWebsite.Controllers
             };
 
             return View("Cart", cartViewModel);
+        }
+
+        [HttpPost()]
+        public IActionResult AddToCart(MenuItemViewModel menuItemViewModel)
+        {
+            CartItem cartItem = _pizzaRepository.GetCartItemByProductId(menuItemViewModel.ChosenProductId);
+
+            // if the selected product was not added yet to the cart
+            if (cartItem == null)
+            {
+                cartItem = new CartItem
+                {
+                    UserId = _userManager.GetUserId(User),
+                    ProductId = menuItemViewModel.ChosenProductId,
+                    PortionId = _pizzaRepository.GetPortionIdByName(menuItemViewModel.ChosenProductPortion),
+                    Quantity = 1
+                };
+
+                _pizzaRepository.Add(cartItem);
+
+                // save changes
+                if (!_pizzaRepository.SaveAll())
+                {
+                    // redirect to an error page
+                    return RedirectToAction("Error", "Home", new ErrorViewModel
+                    {
+                        Message = "Failed to add item to the cart."
+                    });
+                }
+            }
+            // if the selected product was already added to the cart
+            else
+            {
+
+            }
+
+            return RedirectToAction("Menu", "Home");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Migrations
 {
     [DbContext(typeof(PizzaWebsiteDbContext))]
-    partial class PizzaWebsiteContextModelSnapshot : ModelSnapshot
+    [Migration("20211129212647_Rename_CartItem_Table_And_Remove_UnitPrice")]
+    partial class Rename_CartItem_Table_And_Remove_UnitPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,13 +28,7 @@ namespace PizzaWebsite.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("PortionId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProductPortionId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -43,7 +39,7 @@ namespace PizzaWebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductPortionId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("CartItems");
                 });
@@ -191,11 +187,13 @@ namespace PizzaWebsite.Migrations
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.CartItem", b =>
                 {
-                    b.HasOne("PizzaWebsite.Data.Entities.ProductPortion", "ProductPortion")
+                    b.HasOne("PizzaWebsite.Data.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductPortionId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("ProductPortion");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.ProductPortion", b =>
