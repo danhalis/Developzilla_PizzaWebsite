@@ -31,10 +31,12 @@ namespace PizzaWebsite.Data.Repositories
         #endregion
 
         #region Cart Item
-        List<CartItem> GetCartItemsByUserId(string userId);
-        CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId);
+        CartItem GetCartItemById(int id, bool attachReferences = true);
+        List<CartItem> GetCartItemsByUserId(string userId, bool attachReferences = true);
+        CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId, bool attachReferences = true);
         void Add(CartItem cartItem);
         void Update(CartItem cartItem);
+        void Remove(CartItem cartItem);
         #endregion
 
         bool SaveAll();
@@ -279,7 +281,38 @@ namespace PizzaWebsite.Data.Repositories
         #endregion
 
         #region Cart Item
-        public List<CartItem> GetCartItemsByUserId(string userId)
+        public CartItem GetCartItemById(int id, bool attachReferences = true)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting cart item by id {id} ...");
+
+                var cartItem = _context.CartItems.FirstOrDefault(ci => ci.Id == id);
+
+                if (cartItem == null) return null;
+
+                ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+
+                if (attachReferences)
+                {
+                    // attach product obj on each corresponding cart item
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                }
+
+                cartItem.UnitPrice = productPortion.UnitPrice;
+
+                return cartItem;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get cart item by id {id}: {e}");
+
+                return null;
+            }
+        }
+
+        public List<CartItem> GetCartItemsByUserId(string userId, bool attachReferences = true)
         {
             try
             {
@@ -292,8 +325,13 @@ namespace PizzaWebsite.Data.Repositories
                 {
                     ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
 
-                    cartItem.Product = productPortion.Product;
-                    cartItem.Portion = productPortion.Portion;
+                    if (attachReferences)
+                    {
+                        // attach product obj on each corresponding cart item
+                        cartItem.Product = productPortion.Product;
+                        cartItem.Portion = productPortion.Portion;
+                    }
+
                     cartItem.UnitPrice = productPortion.UnitPrice;
                 }
 
@@ -307,7 +345,7 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
 
-        public CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId)
+        public CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId, bool attachReferences = true)
         {
             try
             {
@@ -319,11 +357,15 @@ namespace PizzaWebsite.Data.Repositories
 
                 if (cartItem == null) return null;
 
-                // attach product obj on each corresponding cart item
-                ProductPortion productPortion = GetProductAndPortionById(productId, portionId);
+                ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
 
-                cartItem.Product = productPortion.Product;
-                cartItem.Portion = productPortion.Portion;
+                if (attachReferences)
+                {
+                    // attach product obj on each corresponding cart item
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                }
+
                 cartItem.UnitPrice = productPortion.UnitPrice;
 
                 return cartItem;
@@ -356,16 +398,25 @@ namespace PizzaWebsite.Data.Repositories
             {
                 _logger.LogInformation("Updating cart item ...");
 
-                // untrack the attached product obj
-                cartItem.Product = null;
-                // untrack the attached portion obj
-                cartItem.Portion = null;
-
                 _context.CartItems.Update(cartItem);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Failed to update cart item: {e}");
+            }
+        }
+
+        public void Remove(CartItem cartItem)
+        {
+            try
+            {
+                _logger.LogInformation("Deleting cart item ...");
+
+                _context.CartItems.Remove(cartItem);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to delete cart item: {e}");
             }
         }
         #endregion

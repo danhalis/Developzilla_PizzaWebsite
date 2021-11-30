@@ -45,8 +45,6 @@ namespace PizzaWebsite.Controllers
 
             foreach (var cartItem in cartItems)
             {
-                //total += cartItem.ProductPortion.UnitPrice * cartItem.Quantity;
-
                 total += cartItem.UnitPrice * cartItem.Quantity;
             }
 
@@ -67,7 +65,8 @@ namespace PizzaWebsite.Controllers
             CartItem cartItem = _pizzaRepository.GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(
                 _userManager.GetUserId(User),
                 menuItemViewModel.ChosenProductId,
-                portionId);
+                portionId,
+                false);
 
             // if the selected product of the selected portion was not added yet to the cart
             if (cartItem == null)
@@ -111,6 +110,34 @@ namespace PizzaWebsite.Controllers
             }
 
             return RedirectToAction("Menu", "Home");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            CartItem cartItem = _pizzaRepository.GetCartItemById(id, false);
+
+            if (cartItem == null)
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "There is no such item in the cart to remove."
+                });
+            }
+
+            _pizzaRepository.Remove(cartItem);
+
+            // save changes
+            if (!_pizzaRepository.SaveAll())
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to remove item in the cart."
+                });
+            }
+
+            return RedirectToAction("Items");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -43,7 +43,7 @@
                     @((item.UnitPrice * item.Quantity).ToString("c2"))
                 </td>
                 <td>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-controller="Cart" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
         }
