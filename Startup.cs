@@ -38,7 +38,9 @@ namespace PizzaWebsite
             {
                 options.UseSqlServer(Configuration.GetConnectionString("PizzaWebsiteConnection"))
                         .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
-                        .EnableSensitiveDataLogging(); // Logging is built into ASP.NET Core
+                        .EnableSensitiveDataLogging()
+                        // No tracking on entries to avoid recursive inserting child properties of the model
+                        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
 
             // add repository

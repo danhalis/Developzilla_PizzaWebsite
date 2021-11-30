@@ -45,7 +45,9 @@ namespace PizzaWebsite.Controllers
 
             foreach (var cartItem in cartItems)
             {
-                total += cartItem.ProductPortion.UnitPrice * cartItem.Quantity;
+                //total += cartItem.ProductPortion.UnitPrice * cartItem.Quantity;
+
+                total += cartItem.UnitPrice * cartItem.Quantity;
             }
 
             CartViewModel cartViewModel = new CartViewModel()
@@ -93,7 +95,19 @@ namespace PizzaWebsite.Controllers
             // if the selected product of the selected portion was already added to the cart
             else
             {
+                cartItem.Quantity++;
 
+                _pizzaRepository.Update(cartItem);
+
+                // save changes
+                if (!_pizzaRepository.SaveAll())
+                {
+                    // redirect to an error page
+                    return RedirectToAction("Error", "Home", new ErrorViewModel
+                    {
+                        Message = "Failed to update item in the cart."
+                    });
+                }
             }
 
             return RedirectToAction("Menu", "Home");

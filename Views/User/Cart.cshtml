@@ -7,7 +7,7 @@
 <h1>Cart</h1>
 
 <p>
-    <a asp-controller="Home" asp-action="Pizzas">Add more</a>
+    <a asp-controller="Home" asp-action="Menu">Add more</a>
 </p>
 <table class="table table-hover">
     <thead>
@@ -29,22 +29,25 @@
         @foreach (var item in Model.CartItems) {
             <tr>
                 <td>
-                    @(string.Format("{0} ({1})", 
-                    item.ProductPortion.Product.Name, 
-                    item.ProductPortion.Portion.Label))
+                    @(string.Format("{0} ({1})",
+                    item.Product.Name,
+                    item.Portion.Label))
+                    @*@(string.Format("{0} ({1})",
+                    item.ProductPortion.Product.Name,
+                    item.ProductPortion.Portion.Label))*@
                 </td>
                 <td class="text-sm-center">
                     @Html.DisplayFor(modelItem => item.Quantity)
                 </td>
                 <td class="text-right">
-                    @item.ProductPortion.UnitPrice.ToString("c2")
+                    @item.UnitPrice.ToString("c2")
                 </td>
                 <td class="text-right">
-                    @((item.ProductPortion.UnitPrice * item.Quantity).ToString("c2"))
+                    @((item.UnitPrice * item.Quantity).ToString("c2"))
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |*@
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>

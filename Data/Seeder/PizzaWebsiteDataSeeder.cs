@@ -70,7 +70,6 @@ namespace PizzaWebsite.Data.Seeder
                 {
                     Product product = new Product()
                     {
-                        Id = deserializedProduct.Id,
                         Name = deserializedProduct.Name,
                         Description = deserializedProduct.Description,
                         ImageName = deserializedProduct.ImageName
@@ -94,7 +93,6 @@ namespace PizzaWebsite.Data.Seeder
                         {
                             portion = new Portion()
                             {
-                                Id = 0,
                                 Label = deserializedProduct.Portions[portionPriceIterator]
                             };
                             portions.Add(portion);
@@ -103,7 +101,6 @@ namespace PizzaWebsite.Data.Seeder
                         // Set up the ProductPortion that connects the Product and Portion
                         ProductPortion productPortion = new ProductPortion()
                         {
-                            Id = 0,
                             Product = product,
                             Portion = portion,
                             UnitPrice = deserializedProduct.Prices[portionPriceIterator]
