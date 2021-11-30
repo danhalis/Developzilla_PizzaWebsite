@@ -32,9 +32,6 @@
                     @(string.Format("{0} ({1})",
                     item.Product.Name,
                     item.Portion.Label))
-                    @*@(string.Format("{0} ({1})",
-                    item.ProductPortion.Product.Name,
-                    item.ProductPortion.Portion.Label))*@
                 </td>
                 <td class="text-sm-center">
                     @Html.DisplayFor(modelItem => item.Quantity)
@@ -46,8 +43,6 @@
                     @((item.UnitPrice * item.Quantity).ToString("c2"))
                 </td>
                 <td>
-                    @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |*@
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>

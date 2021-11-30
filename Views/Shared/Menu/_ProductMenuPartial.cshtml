@@ -27,7 +27,7 @@
                     <h3 class="product-price" product-id="@product.Id" portion-index="@priceIterator" style="display: none">@product.Prices[priceIterator].ToString("c")</h3>
                 }
             </div>
-            <form asp-controller="User" asp-action="AddToCart">
+            <form asp-controller="Cart" asp-action="Add">
                 <input hidden asp-for="ChosenProductId" value="@product.Id" />
                 <input class="chosen-portion" product-id="@product.Id" hidden asp-for="ChosenProductPortion" />
                 <button class="product-add-to-cart btn btn-success" product-id="@product.Id">Add To Cart</button>

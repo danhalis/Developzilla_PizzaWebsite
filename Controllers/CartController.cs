@@ -14,13 +14,13 @@ namespace PizzaWebsite.Controllers
     /// Controller that blocks unauthorized website users and forces them to login.
     /// </summary>
     [Authorize]
-    public class UserController : Controller
+    public class CartController : Controller
     {
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger<CartController> _logger;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IPizzaWebsiteRepository _pizzaRepository;
 
-        public UserController(ILogger<UserController> logger,
+        public CartController(ILogger<CartController> logger,
             UserManager<IdentityUser> userManager,
             IPizzaWebsiteRepository pizzaRepository)
         {
@@ -34,8 +34,8 @@ namespace PizzaWebsite.Controllers
             return View();
         }
 
-        [HttpGet("Cart")]
-        public IActionResult Cart()
+        [HttpGet("Items")]
+        public IActionResult Items()
         {
             var userId = _userManager.GetUserId(User);
 
@@ -56,11 +56,11 @@ namespace PizzaWebsite.Controllers
                 Total = total
             };
 
-            return View("Cart", cartViewModel);
+            return View("Items", cartViewModel);
         }
 
         [HttpPost()]
-        public IActionResult AddToCart(MenuItemViewModel menuItemViewModel)
+        public IActionResult Add(MenuItemViewModel menuItemViewModel)
         {
             int portionId = _pizzaRepository.GetPortionIdByName(menuItemViewModel.ChosenProductPortion);
 
