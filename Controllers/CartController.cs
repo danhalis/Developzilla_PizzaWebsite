@@ -14,13 +14,13 @@ namespace PizzaWebsite.Controllers
     /// Controller that blocks unauthorized website users and forces them to login.
     /// </summary>
     [Authorize]
-    public class UserController : Controller
+    public class CartController : Controller
     {
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger<CartController> _logger;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IPizzaWebsiteRepository _pizzaRepository;
 
-        public UserController(ILogger<UserController> logger,
+        public CartController(ILogger<CartController> logger,
             UserManager<IdentityUser> userManager,
             IPizzaWebsiteRepository pizzaRepository)
         {
@@ -34,8 +34,8 @@ namespace PizzaWebsite.Controllers
             return View();
         }
 
-        [HttpGet("Cart")]
-        public IActionResult Cart()
+        [HttpGet("Items")]
+        public IActionResult Items()
         {
             var userId = _userManager.GetUserId(User);
 
@@ -45,7 +45,7 @@ namespace PizzaWebsite.Controllers
 
             foreach (var cartItem in cartItems)
             {
-                total += cartItem.ProductPortion.UnitPrice * cartItem.Quantity;
+                total += cartItem.UnitPrice * cartItem.Quantity;
             }
 
             CartViewModel cartViewModel = new CartViewModel()
@@ -54,18 +54,19 @@ namespace PizzaWebsite.Controllers
                 Total = total
             };
 
-            return View("Cart", cartViewModel);
+            return View("Items", cartViewModel);
         }
 
         [HttpPost()]
-        public IActionResult AddToCart(MenuItemViewModel menuItemViewModel)
+        public IActionResult Add(MenuItemViewModel menuItemViewModel)
         {
             int portionId = _pizzaRepository.GetPortionIdByName(menuItemViewModel.ChosenProductPortion);
 
             CartItem cartItem = _pizzaRepository.GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(
                 _userManager.GetUserId(User),
                 menuItemViewModel.ChosenProductId,
-                portionId);
+                portionId,
+                false);
 
             // if the selected product of the selected portion was not added yet to the cart
             if (cartItem == null)
@@ -93,10 +94,50 @@ namespace PizzaWebsite.Controllers
             // if the selected product of the selected portion was already added to the cart
             else
             {
+                cartItem.Quantity++;
 
+                _pizzaRepository.Update(cartItem);
+
+                // save changes
+                if (!_pizzaRepository.SaveAll())
+                {
+                    // redirect to an error page
+                    return RedirectToAction("Error", "Home", new ErrorViewModel
+                    {
+                        Message = "Failed to update item in the cart."
+                    });
+                }
             }
 
             return RedirectToAction("Menu", "Home");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            CartItem cartItem = _pizzaRepository.GetCartItemById(id, false);
+
+            if (cartItem == null)
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "There is no such item in the cart to remove."
+                });
+            }
+
+            _pizzaRepository.Remove(cartItem);
+
+            // save changes
+            if (!_pizzaRepository.SaveAll())
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to remove item in the cart."
+                });
+            }
+
+            return RedirectToAction("Items");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

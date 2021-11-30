@@ -1,6 +1,5 @@
 [
   {
-    "Id": 0,
     "Name": "Pepperoni",
     "Description": "Pizza with pepperoni.",
     "Category": "Pizza",
@@ -17,7 +16,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Cheese",
     "Description": "Pizza with cheese.",
     "Category": "Pizza",
@@ -34,7 +32,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "All-Dressed",
     "Description": "Pizza with all standard ingredients.",
     "Category": "Pizza",
@@ -51,7 +48,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Vegetarian",
     "Description": "Pizza with a bunch of vegetable ingredients.",
     "Category": "Pizza",
@@ -68,7 +64,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Poutine",
     "Description": "Pizza and poutine as one recipe.",
     "Category": "Pizza",
@@ -85,7 +80,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Meat-Lovers",
     "Description": "Pizza with a ton of meat toppings.",
     "Category": "Pizza",
@@ -102,7 +96,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Vegan",
     "Description": "Pizza with no animal products.",
     "Category": "Pizza",
@@ -119,7 +112,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Water",
     "Description": "Bottled water.",
     "Category": "Drink",
@@ -136,7 +128,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Coca-Cola",
     "Description": "Bottled Coca-Cola.",
     "Category": "Drink",
@@ -153,7 +144,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Pepsi",
     "Description": "Bottled Pepsi.",
     "Category": "Drink",
@@ -170,7 +160,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Diet Coke",
     "Description": "Bottled Diet Coke.",
     "Category": "Drink",
@@ -187,7 +176,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Diet Pepsi",
     "Description": "Bottled Diet Pepsi.",
     "Category": "Drink",
@@ -204,7 +192,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "7 Up",
     "Description": "Bottled 7 Up.",
     "Category": "Drink",
@@ -221,7 +208,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Schweppes Ginger Ale",
     "Description": "Bottled Schweppes ginger ale.",
     "Category": "Drink",
@@ -238,7 +224,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Fanta",
     "Description": "Bottled Fanta.",
     "Category": "Drink",
@@ -255,7 +240,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Burger",
     "Description": "A burger.",
     "Category": "Burger",
@@ -272,7 +256,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Cheese Burger",
     "Description": "A burger with cheese.",
     "Category": "Burger",
@@ -289,7 +272,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Double Burger",
     "Description": "A burger with two patties.",
     "Category": "Burger",
@@ -306,7 +288,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "Double Cheese Burger",
     "Description": "A burger with two patties and cheese.",
     "Category": "Burger",
@@ -323,7 +304,6 @@
     ]
   },
   {
-    "Id": 0,
     "Name": "French Fries",
     "Description": "French fries to complement any main course.",
     "Category": "Side",

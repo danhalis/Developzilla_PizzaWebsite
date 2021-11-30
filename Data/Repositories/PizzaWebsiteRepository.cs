@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,22 +9,35 @@ namespace PizzaWebsite.Data.Repositories
 {
     public interface IPizzaWebsiteRepository
     {
+        #region User Data
         List<UserData> GetAllUserDatas();
         UserData GetUserDataByUserId(string userId);
         void Update(UserData userData);
+        #endregion
 
+        #region Product
         List<Product> GetAllProducts();
         Product GetProductById(int id);
         List<Product> GetProductsByCategory(ProductCategory productCategory);
+        #endregion
 
+        #region Portion
         Portion GetPortionById(int id);
         int GetPortionIdByName(string portionName);
+        #endregion
 
+        #region Product & Portion
         ProductPortion GetProductAndPortionById(int productId, int portionId);
+        #endregion
 
-        List<CartItem> GetCartItemsByUserId(string userId);
-        CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId);
+        #region Cart Item
+        CartItem GetCartItemById(int id, bool attachReferences = true);
+        List<CartItem> GetCartItemsByUserId(string userId, bool attachReferences = true);
+        CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId, bool attachReferences = true);
         void Add(CartItem cartItem);
+        void Update(CartItem cartItem);
+        void Remove(CartItem cartItem);
+        #endregion
 
         bool SaveAll();
     }
@@ -39,6 +53,7 @@ namespace PizzaWebsite.Data.Repositories
             _context = context;
         }
 
+        #region User Data
         public List<UserData> GetAllUserDatas()
         {
             try
@@ -75,7 +90,7 @@ namespace PizzaWebsite.Data.Repositories
         {
             try
             {
-                _logger.LogInformation("Getting user data by user id ...");
+                _logger.LogInformation("Updating user data ...");
 
                 _context.Update(userData);
             }
@@ -84,7 +99,9 @@ namespace PizzaWebsite.Data.Repositories
                 _logger.LogError($"Failed to update user data: {e}");
             }
         }
+        #endregion
 
+        #region Product
         public List<Product> GetAllProducts()
         {
             _logger.LogInformation("GetAllProducts was called...");
@@ -194,7 +211,9 @@ namespace PizzaWebsite.Data.Repositories
             product.Prices[secondIndex] = swappedPrice;
             product.Portions[secondIndex] = swappedPortion;
         }
+        #endregion
 
+        #region Portion
         public Portion GetPortionById(int id)
         {
             try
@@ -234,7 +253,9 @@ namespace PizzaWebsite.Data.Repositories
                 return -1;
             }
         }
+        #endregion
 
+        #region Product & Portion
         public ProductPortion GetProductAndPortionById(int productId, int portionId)
         {
             try
@@ -257,8 +278,41 @@ namespace PizzaWebsite.Data.Repositories
                 return null;
             }
         }
+        #endregion
 
-        public List<CartItem> GetCartItemsByUserId(string userId)
+        #region Cart Item
+        public CartItem GetCartItemById(int id, bool attachReferences = true)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting cart item by id {id} ...");
+
+                var cartItem = _context.CartItems.FirstOrDefault(ci => ci.Id == id);
+
+                if (cartItem == null) return null;
+
+                ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+
+                if (attachReferences)
+                {
+                    // attach product obj on each corresponding cart item
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                }
+
+                cartItem.UnitPrice = productPortion.UnitPrice;
+
+                return cartItem;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get cart item by id {id}: {e}");
+
+                return null;
+            }
+        }
+
+        public List<CartItem> GetCartItemsByUserId(string userId, bool attachReferences = true)
         {
             try
             {
@@ -271,7 +325,14 @@ namespace PizzaWebsite.Data.Repositories
                 {
                     ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
 
-                    cartItem.ProductPortion = productPortion;
+                    if (attachReferences)
+                    {
+                        // attach product obj on each corresponding cart item
+                        cartItem.Product = productPortion.Product;
+                        cartItem.Portion = productPortion.Portion;
+                    }
+
+                    cartItem.UnitPrice = productPortion.UnitPrice;
                 }
 
                 return cartItems;
@@ -284,22 +345,28 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
 
-        public CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId)
+        public CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId, bool attachReferences = true)
         {
             try
             {
                 _logger.LogInformation($"Getting cart items by user id {userId} ...");
 
-                var cartItem = _context.CartItems.FirstOrDefault(ci => 
+                var cartItem = _context.CartItems.AsNoTracking().FirstOrDefault(ci => 
                     ci.UserId == userId && ci.ProductId == productId && ci.PortionId == portionId
                 );
 
                 if (cartItem == null) return null;
 
-                // attach product obj on each corresponding cart item
-                ProductPortion productPortion = GetProductAndPortionById(productId, portionId);
+                ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
 
-                cartItem.ProductPortion = productPortion;
+                if (attachReferences)
+                {
+                    // attach product obj on each corresponding cart item
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                }
+
+                cartItem.UnitPrice = productPortion.UnitPrice;
 
                 return cartItem;
             }
@@ -324,6 +391,35 @@ namespace PizzaWebsite.Data.Repositories
                 _logger.LogError($"Failed to add cart item: {e}");
             }
         }
+
+        public void Update(CartItem cartItem)
+        {
+            try
+            {
+                _logger.LogInformation("Updating cart item ...");
+
+                _context.CartItems.Update(cartItem);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to update cart item: {e}");
+            }
+        }
+
+        public void Remove(CartItem cartItem)
+        {
+            try
+            {
+                _logger.LogInformation("Deleting cart item ...");
+
+                _context.CartItems.Remove(cartItem);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to delete cart item: {e}");
+            }
+        }
+        #endregion
 
         public bool SaveAll()
         {
