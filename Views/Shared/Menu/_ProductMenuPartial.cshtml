@@ -11,7 +11,7 @@
     {
         <div class="product-display" product-id="@product.Id">
             <h1 class="product-name">@product.Name</h1>
-            <img src="@ViewData["ImageSource"]/@(product.ImageName).jpg" alt="@product.Name Pizza" />
+            <img src="@ViewData["ImageSource"]/@(product.ImageName).jpg" alt="@product.Name" />
             <h4 class="product-description">@product.Description</h4>
             <div class="product-details">
                 <select autocomplete="off" class="form-control select-product-portion" product-id="@product.Id">

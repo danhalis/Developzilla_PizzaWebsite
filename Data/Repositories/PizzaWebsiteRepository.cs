@@ -39,6 +39,10 @@ namespace PizzaWebsite.Data.Repositories
         void Remove(CartItem cartItem);
         #endregion
 
+        #region Order
+
+        #endregion
+
         bool SaveAll();
     }
 

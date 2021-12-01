@@ -16,10 +16,16 @@ namespace PizzaWebsite.Data
         public DbSet<Portion> Portions { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        //public DbSet<PickupOrder> PickupOrders { get; set; }
+        //public DbSet<DeliveryOrder> DeliveryOrders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ProductPortion>()
+                .Property(pp => pp.UnitPrice)
+                .HasColumnType("money");
 
             modelBuilder.Entity<Product>()
                 .HasMany(p => p.Portions)
@@ -28,9 +34,9 @@ namespace PizzaWebsite.Data
                 (pp => pp.HasOne<Portion>().WithMany(),
                  pp => pp.HasOne<Product>().WithMany());
 
-            modelBuilder.Entity<ProductPortion>()
-                .Property(pp => pp.UnitPrice)
-                .HasColumnType("money");
+            /*modelBuilder.Entity<Order>()
+                .HasOne(o => o.User)
+                .WithMany(u => u.Orders);*/
         }
     }
 }

@@ -34,6 +34,20 @@ namespace PizzaWebsite.Controllers
             return View();
         }
 
+        [HttpGet("Checkout")]
+        public IActionResult Checkout()
+        {
+            // Checkout can only be accessed if the user has items in their cart.
+            var cartItems = _pizzaRepository.GetCartItemsByUserId(_userManager.GetUserId(User));
+            if (cartItems.Count <= 0)
+            {
+                // Assisted by https://stackoverflow.com/questions/10785245/redirect-to-action-in-another-controller
+                return RedirectToAction("Menu", "Home", new { area = "" });
+            }
+
+            return View();
+        }
+
         [HttpGet("Items")]
         public IActionResult Items()
         {
