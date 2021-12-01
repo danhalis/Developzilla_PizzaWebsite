@@ -27,12 +27,19 @@ namespace PizzaWebsite.Data
                 .Property(pp => pp.UnitPrice)
                 .HasColumnType("money");
 
+            // set up M-M relationship between Product and Portion
             modelBuilder.Entity<Product>()
                 .HasMany(p => p.Portions)
                 .WithMany(p => p.Products)
                 .UsingEntity<ProductPortion>
                 (pp => pp.HasOne<Portion>().WithMany(),
                  pp => pp.HasOne<Product>().WithMany());
+
+
+            // make Portion label unique
+            modelBuilder.Entity<Portion>()
+                .HasIndex(p => p.Label)
+                .IsUnique();
 
             /*modelBuilder.Entity<Order>()
                 .HasOne(o => o.User)

@@ -4,45 +4,135 @@ using PizzaWebsite.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 
 namespace PizzaWebsite.Data.Repositories
 {
     public interface IPizzaWebsiteRepository
     {
         #region User Data
+        /// <summary>
+        /// Retrieves a <see cref="List{T}"/> of all <see cref="UserData"/> from the database.
+        /// </summary>
+        /// <returns>The <see cref="List{T}"/> of all <see cref="UserData"/> from the database.</returns>
         List<UserData> GetAllUserDatas();
+
+        /// <summary>
+        /// Retrieves a <see cref="UserData"/> with the given user id from the database.
+        /// </summary>
+        /// <param name="userId">Id of the <see cref="IdentityUser"/>.</param>
+        /// <returns>The <see cref="UserData"/> with the given user id from the database if it exists, null otherwise.</returns>
         UserData GetUserDataByUserId(string userId);
+
+        /// <summary>
+        /// Updates the given <see cref="UserData"/> in the database.
+        /// </summary>
+        /// <param name="userData">The <see cref="UserData"/> to update.</param>
         void Update(UserData userData);
         #endregion
 
         #region Product
+        /// <summary>
+        /// Retrieves a <see cref="List{T}"/> of all <see cref="Product"/> from the database.
+        /// </summary>
+        /// <returns>The <see cref="List{T}"/> of all <see cref="Product"/> from the database.</returns>
         List<Product> GetAllProducts();
+
+        /// <summary>
+        /// Retieves a <see cref="Product"/> with the given id from the database.
+        /// </summary>
+        /// <param name="id">Id of the <see cref="Product"/>.</param>
+        /// <returns>The <see cref="Product"/> with the given id from the database if it exists, null otherwise.</returns>
         Product GetProductById(int id);
+
+        /// <summary>
+        /// Retrieves a <see cref="List{T}"/> of <see cref="Product"/> with the given <see cref="ProductCategory"/> from the database.
+        /// </summary>
+        /// <param name="productCategory">The category of the <see cref="Product"/>.</param>
+        /// <returns>The <see cref="List{T}"/> of <see cref="Product"/> with the given <see cref="ProductCategory"/> from the database.</returns>
         List<Product> GetProductsByCategory(ProductCategory productCategory);
         #endregion
 
         #region Portion
+        /// <summary>
+        /// Retrieves a <see cref="Portion"/> with the given id from the database.
+        /// </summary>
+        /// <param name="id">Id of the <see cref="Portion"/>.</param>
+        /// <returns>The <see cref="Portion"/> with the given id from the database if it exists, null otherwise.</returns>
         Portion GetPortionById(int id);
-        int GetPortionIdByName(string portionName);
+
+        /// <summary>
+        /// Retrieves a <see cref="Portion"/> with the given label from the database.
+        /// </summary>
+        /// <param name="portionLabel">The label of the <see cref="Portion"/>.</param>
+        /// <returns>The <see cref="Portion"/> with the given label from the database if it exists, null otherwise.</returns>
+        int GetPortionIdByLabel(string portionLabel);
         #endregion
 
         #region Product & Portion
+        /// <summary>
+        /// Retrieves a <see cref="ProductPortion"/> with the given product id and portion id from the database.
+        /// </summary>
+        /// <param name="productId">Id of the <see cref="Product"/>.</param>
+        /// <param name="portionId">Id of the <see cref="Portion"/>.</param>
+        /// <returns>The <see cref="ProductPortion"/> with the given product id and portion id from the database if it exists, null otherwise.</returns>
         ProductPortion GetProductAndPortionById(int productId, int portionId);
         #endregion
 
         #region Cart Item
-        CartItem GetCartItemById(int id, bool attachReferences = true);
-        List<CartItem> GetCartItemsByUserId(string userId, bool attachReferences = true);
-        CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId, bool attachReferences = true);
+        /// <summary>
+        /// Retrieves a <see cref="CartItem"/> with the given id from the database.
+        /// </summary>
+        /// <param name="id">Id of the <see cref="CartItem"/>.</param>
+        /// <param name="attachNavigation">Whether to attach <see href="https://docs.microsoft.com/en-us/ef/ef6/fundamentals/relationships">navigation properties</see> to the <see cref="CartItem"/>.</param>
+        /// <returns>The <see cref="CartItem"/> with the given id from the database if it exists, null otherwise.</returns>
+        CartItem GetCartItemById(int id, bool attachNavigation = true);
+
+        /// <summary>
+        /// Retrieves a <see cref="List{T}"/> of <see cref="CartItem"/> with the given user id from the database.
+        /// </summary>
+        /// <param name="userId">Id of the <see cref="IdentityUser"/>.</param>
+        /// <param name="attachNavigation">Whether to attach <see href="https://docs.microsoft.com/en-us/ef/ef6/fundamentals/relationships">navigation properties</see> to the <see cref="CartItem"/>.</param>
+        /// <returns>The <see cref="List{T}"/> of <see cref="CartItem"/> with the given user id from the database.</returns>
+        List<CartItem> GetCartItemsByUserId(string userId, bool attachNavigation = true);
+
+        /// <summary>
+        /// Retrieves a <see cref="CartItem"/> with the given user id, product id and portion id from the database.
+        /// </summary>
+        /// <param name="userId">Id of the <see cref="IdentityUser"/>.</param>
+        /// /// <param name="productId">Id of the <see cref="Product"/>.</param>
+        /// /// <param name="portionId">Id of the <see cref="Portion"/>.</param>
+        /// <param name="attachNavigation">Whether to attach <see href="https://docs.microsoft.com/en-us/ef/ef6/fundamentals/relationships">navigation properties</see> to the <see cref="CartItem"/>.</param>
+        /// <returns>The <see cref="List{T}"/> of <see cref="CartItem"/> with the given user id from the database if it exists, null otherwise.</returns>
+        CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId, bool attachNavigation = true);
+
+        /// <summary>
+        /// Adds the given <see cref="CartItem"/> to the database.<br/>
+        /// However, no changes will be made until <see cref="IPizzaWebsiteRepository.SaveAll()"/> is called.
+        /// </summary>
+        /// <param name="cartItem">The <see cref="CartItem"/> to add.</param>
         void Add(CartItem cartItem);
+
+        /// <summary>
+        /// Updates the given <see cref="CartItem"/> in the database.<br/>
+        /// However, no changes will be made until <see cref="IPizzaWebsiteRepository.SaveAll()"/> is called.
+        /// </summary>
+        /// <param name="cartItem">The <see cref="CartItem"/> to update.</param>
         void Update(CartItem cartItem);
+
+        /// <summary>
+        /// Removes the given <see cref="CartItem"/> from the database.<br/>
+        /// However, no changes will be made until <see cref="IPizzaWebsiteRepository.SaveAll()"/> is called.
+        /// </summary>
+        /// <param name="cartItem">The <see cref="CartItem"/> to remove.</param>
         void Remove(CartItem cartItem);
         #endregion
 
-        #region Order
 
-        #endregion
-
+        /// <summary>
+        /// Saves all changes made by the previous CRUD operations before the call of this method.
+        /// </summary>
+        /// <returns>True if the saving succeeds, false otherwise.</returns>
         bool SaveAll();
     }
 
@@ -62,13 +152,13 @@ namespace PizzaWebsite.Data.Repositories
         {
             try
             {
-                _logger.LogInformation("Getting all user data ...");
+                _logger.LogInformation("Getting all user datas ...");
 
                 return _context.UserDatas.ToList();
             }
             catch (Exception e)
             {
-                _logger.LogError($"Failed to get all user data: {e}");
+                _logger.LogError($"Failed to get all user datas: {e}");
 
                 return null;
             }
@@ -78,7 +168,7 @@ namespace PizzaWebsite.Data.Repositories
         {
             try
             {
-                _logger.LogInformation("Getting user data by user id ...");
+                _logger.LogInformation($"Getting user data by user id {userId} ...");
 
                 return _context.UserDatas.FirstOrDefault(ud => ud.UserId == userId);
             }
@@ -94,13 +184,13 @@ namespace PizzaWebsite.Data.Repositories
         {
             try
             {
-                _logger.LogInformation("Updating user data ...");
+                _logger.LogInformation($"Updating user data with id {userData.Id} ...");
 
                 _context.Update(userData);
             }
             catch (Exception e)
             {
-                _logger.LogError($"Failed to update user data: {e}");
+                _logger.LogError($"Failed to update user data with id {userData.Id}: {e}");
             }
         }
         #endregion
@@ -108,9 +198,10 @@ namespace PizzaWebsite.Data.Repositories
         #region Product
         public List<Product> GetAllProducts()
         {
-            _logger.LogInformation("GetAllProducts was called...");
             try
             {
+                _logger.LogInformation("Getting all products ...");
+
                 List<Product> products = _context.Products
                     .OrderBy(p => p.Id)
                     .ToList();
@@ -118,18 +209,19 @@ namespace PizzaWebsite.Data.Repositories
                 FillProductListFields(products);
                 return products;
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                _logger.LogError($"Failed to get all products: {exception}");
+                _logger.LogError($"Failed to get all products: {e}");
                 return null;
             }
         }
 
         public Product GetProductById(int id)
         {
-            _logger.LogInformation($"Getting product by id {id} ...");
             try
             {
+                _logger.LogInformation($"Getting product by id {id} ...");
+
                 var product = _context.Products.FirstOrDefault(p => p.Id == id);
 
                 FillProductListFields(product);
@@ -145,9 +237,10 @@ namespace PizzaWebsite.Data.Repositories
 
         public List<Product> GetProductsByCategory(ProductCategory productCategory)
         {
-            _logger.LogInformation("GetProductsByCategory was called...");
             try
             {
+                _logger.LogInformation($"Getting products by category {productCategory} ...");
+
                 List<Product> products = _context.Products
                     .Where(p => p.Category == productCategory)
                     .OrderBy(p => p.Id)
@@ -156,9 +249,9 @@ namespace PizzaWebsite.Data.Repositories
                 FillProductListFields(products);
                 return products;
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                _logger.LogError($"Failed to get products by category: {exception}");
+                _logger.LogError($"Failed to get products by category {productCategory}: {e}");
                 return null;
             }
         }
@@ -236,14 +329,14 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
 
-        public int GetPortionIdByName(string portionName)
+        public int GetPortionIdByLabel(string portionLabel)
         {
             // TODO: Make portion label unique in the database
             try
             {
-                _logger.LogInformation($"Getting portion id by name {portionName} ...");
+                _logger.LogInformation($"Getting portion id by name {portionLabel} ...");
 
-                var portion = _context.Portions.FirstOrDefault(p => p.Label == portionName);
+                var portion = _context.Portions.FirstOrDefault(p => p.Label == portionLabel);
 
                 if (portion == null)
                     return -1;
@@ -252,7 +345,7 @@ namespace PizzaWebsite.Data.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Failed to get portion id by name {portionName}: {e}");
+                _logger.LogError($"Failed to get portion id by name {portionLabel}: {e}");
 
                 return -1;
             }
@@ -264,7 +357,7 @@ namespace PizzaWebsite.Data.Repositories
         {
             try
             {
-                _logger.LogInformation($"Getting product by id {productId} with portion id {portionId} ...");
+                _logger.LogInformation($"Getting product by id {productId} and portion id {portionId} ...");
 
                 var productPortion = _context.ProductPortions.FirstOrDefault(pp => pp.ProductId == productId && pp.PortionId == portionId);
 
@@ -277,7 +370,7 @@ namespace PizzaWebsite.Data.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Failed to get product by id {productId} with portion id {portionId}: {e}");
+                _logger.LogError($"Failed to get product by id {productId} and portion id {portionId}: {e}");
 
                 return null;
             }
