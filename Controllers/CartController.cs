@@ -109,7 +109,7 @@ namespace PizzaWebsite.Controllers
             // if the selected product of the selected portion was already added to the cart
             else
             {
-                cartItem.Quantity++;
+                cartItem.Quantity += menuItemViewModel.ChosenProductQuantity;
 
                 _pizzaRepository.Update(cartItem);
 
