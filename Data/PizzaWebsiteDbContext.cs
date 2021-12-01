@@ -16,10 +16,16 @@ namespace PizzaWebsite.Data
         public DbSet<Portion> Portions { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        //public DbSet<PickupOrder> PickupOrders { get; set; }
+        //public DbSet<DeliveryOrder> DeliveryOrders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ProductPortion>()
+                .Property(pp => pp.UnitPrice)
+                .HasColumnType("money");
 
             // set up M-M relationship between Product and Portion
             modelBuilder.Entity<Product>()
@@ -29,14 +35,15 @@ namespace PizzaWebsite.Data
                 (pp => pp.HasOne<Portion>().WithMany(),
                  pp => pp.HasOne<Product>().WithMany());
 
-            // make portion label unique
+
+            // make Portion label unique
             modelBuilder.Entity<Portion>()
                 .HasIndex(p => p.Label)
                 .IsUnique();
 
-            modelBuilder.Entity<ProductPortion>()
-                .Property(pp => pp.UnitPrice)
-                .HasColumnType("money");
+            /*modelBuilder.Entity<Order>()
+                .HasOne(o => o.User)
+                .WithMany(u => u.Orders);*/
         }
     }
 }

@@ -1,3 +1,8 @@
+@using Microsoft.AspNetCore.Identity
+
+@inject PizzaWebsite.Data.Repositories.IPizzaWebsiteRepository PizzaWebsiteRepository
+@inject UserManager<IdentityUser> UserManager
+
 @if (User.Identity.IsAuthenticated)
 {
     <ul class="navbar-nav">
@@ -8,6 +13,14 @@
 
         </li>
 
+        @if (PizzaWebsiteRepository.GetCartItemsByUserId(UserManager.GetUserId(User)).Count > 0)
+        {
+            <li class="nav-item">
+
+                <a class="nav-link" asp-area="" asp-controller="Cart" asp-action="Checkout">Checkout</a>
+
+            </li>     
+        }
     </ul>
 }
 
