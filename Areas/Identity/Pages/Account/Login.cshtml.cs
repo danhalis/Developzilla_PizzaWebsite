@@ -13,19 +13,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Models;
 using System.Net.Mail;
+using PizzaWebsite.Data.Entities;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly UserManager<UserViewModel> _userManager;
-        private readonly SignInManager<UserViewModel> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<UserViewModel> signInManager, 
+        public LoginModel(SignInManager<IdentityUser> signInManager, 
             ILogger<LoginModel> logger,
-            UserManager<UserViewModel> userManager)
+            UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -54,6 +55,10 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
 
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
+
+            [Display(Name = "Employee?")]
+            public bool IsEmployee { get; set; }
+
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -93,8 +98,52 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                
                 if (result.Succeeded)
                 {
+
+                    if (Input.IsEmployee)
+                    {
+                        var user = await _userManager.FindByEmailAsync(Input.Email);
+                        var roles = await _userManager.GetRolesAsync(user);
+
+
+                        if (roles.Contains("Owner"))
+                        {
+                            // Redirect to the homepage of the Admin Controller
+                            return RedirectToAction("Owner", "Employee");
+                        }
+                        else if (roles.Contains("Manager"))
+                        {
+                            // Redirect to the homepage of the Manager Controller
+                            return RedirectToAction("Manager", "Employee");
+                        }
+                        else if (roles.Contains("Cook"))
+                        {
+                            // Redirect to the homepage of the Cook Controller
+                            return RedirectToAction("Cook", "Employee");
+                        }
+                        else if (roles.Contains("Deliverer"))
+                        {
+                            // Redirect to the homepage of the Deliverer Controller
+                            return RedirectToAction("Deliverer", "Employee");
+                        }
+                        else if (roles.Contains("Front"))
+                        {
+                            // Redirect to the homepage of the Front Controller
+                            return RedirectToAction("Front", "Employee");
+                        }
+                        else
+                        {
+                            await _signInManager.SignOutAsync();
+                            ModelState.AddModelError(string.Empty, "The user is not an employee please uncheck the employee box to sign into the customer login.");
+                        }
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }

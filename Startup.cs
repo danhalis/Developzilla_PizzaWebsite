@@ -7,14 +7,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PizzaWebsite.Data;
 using PizzaWebsite.Data.Repositories;
-using PizzaWebsite.Data.Seeder;
-using PizzaWebsite.Models;
+using PizzaWebsite.Data;
 using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
 using PizzaWebsite.Services.SendGrid;
 using System;
+using PizzaWebsite.Data.Seeder;
 
 namespace PizzaWebsite
 {
@@ -30,31 +29,38 @@ namespace PizzaWebsite
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<UserIdentityDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("PizzaWebsiteConnection")));
+                    Configuration.GetConnectionString("UserIdentityConnection")));
 
             // add database context
-            services.AddDbContext<PizzaWebsiteContext>(options =>
+            services.AddDbContext<PizzaWebsiteDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("PizzaWebsiteConnection"))
                         .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
-                        .EnableSensitiveDataLogging() // Logging is built into ASP.NET Core
-                        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // no entity tracking to improve performance
+                        .EnableSensitiveDataLogging()
+                        // No tracking on entries to avoid recursive inserting child properties of the model
+                        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
 
             // add repository
+            services.AddScoped<IUserIdentityRepository, UserIdentityRepository>();
             services.AddScoped<IPizzaWebsiteRepository, PizzaWebsiteRepository>();
 
             // add data seeder
+            services.AddTransient<UserIdentityDataSeeder>();
             services.AddTransient<PizzaWebsiteDataSeeder>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddIdentity<UserViewModel, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultUI()
-            .AddDefaultTokenProviders();
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<UserIdentityDbContext>();
+
+            //services.AddIdentity<IdentityUser, IdentityRole>()
+            //.AddEntityFrameworkStores<ApplicationDbContext>()
+            //.AddDefaultUI()
+            //.AddDefaultTokenProviders();
 
             // add reCAPTCHA verfier to controller
             services.AddTransient<IReCaptchaVerifier, ReCaptchaVerifier>();

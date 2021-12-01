@@ -3,17 +3,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using PizzaWebsite.Models;
+using PizzaWebsite.Data.Entities;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 {
     public class PersonalDataModel : PageModel
     {
-        private readonly UserManager<UserViewModel> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<PersonalDataModel> _logger;
 
         public PersonalDataModel(
-            UserManager<UserViewModel> userManager,
+            UserManager<IdentityUser> userManager,
             ILogger<PersonalDataModel> logger)
         {
             _userManager = userManager;

@@ -1,13 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PizzaWebsite.Data.Entities
 {
     public class Product
+    {        
+        public int Id { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        [Required]
+        public ProductCategory Category { get; set; }
+
+        [Required]
+        public string ImageName { get; set; }
+
+        public List<Portion> Portions { get; set; } = new List<Portion>();
+
+        [NotMapped]
+        public List<decimal> Prices { get; set; } = new List<decimal>();
+    }
+
+    public class DeserializedProduct
     {
         public int Id { get; set; }
 
@@ -17,14 +36,14 @@ namespace PizzaWebsite.Data.Entities
         [Required]
         public string Description { get; set; }
 
-        // TODO: Set up M-1 relationship with ProductCategory
-        //[Required]
-        //[ForeignKey("CategoryId")]
-        //public int CategoryId { get; set; }
-
-        //public ProductCategory Category { get; set; }
+        [Required]
+        public string Category { get; set; }
 
         [Required]
-        public decimal Price { get; set; }
+        public string ImageName { get; set; }
+
+        public List<string> Portions { get; set; } = new List<string>();
+
+        public List<decimal> Prices { get; set; } = new List<decimal>();
     }
 }

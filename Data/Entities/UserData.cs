@@ -1,22 +1,28 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PizzaWebsite.Models
+namespace PizzaWebsite.Data.Entities
 {
-    public class UserViewModel : IdentityUser
+    public class UserData
     {
+        [Key]
+        public int Id { get; set; }
+
+        public string UserId { get; set; }
+
+        [Required]
         public string FirstName { get; set; }
+        [Required]
         public string LastName { get; set; }
-       
+
         public byte[] ProfilePicture { get; set; }
 
         public string DeliveryAddress { get; set; }
 
-   //  TODO  
-   //   public List<OrderViewModel> Orders { get; set; } 
-
+        //public List<Order> Orders { get; set; } = new List<Order>();
     }
 }

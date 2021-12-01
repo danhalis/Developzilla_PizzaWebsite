@@ -8,26 +8,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PizzaWebsite.Data;
+using PizzaWebsite.Models;
 using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Data.Repositories;
-using PizzaWebsite.Models;
+using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
-        private readonly UserManager<UserViewModel> _userManager;
-        private readonly SignInManager<UserViewModel> _signInManager;
-        private readonly PizzaWebsiteContext _pizzaWebsiteContext;
-        public IndexModel(
-            UserManager<UserViewModel> userManager,
-            SignInManager<UserViewModel> signInManager,
-           PizzaWebsiteContext pizzaWebsiteContext)
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
+
+        public IndexModel(UserManager<IdentityUser> userManager,
+                          SignInManager<IdentityUser> signInManager,
+                          IPizzaWebsiteRepository pizzaWebsiteRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _pizzaWebsiteContext = pizzaWebsiteContext;
+            _pizzaWebsiteRepository = pizzaWebsiteRepository;
         }
 
         public string Username { get; set; }
@@ -56,36 +56,35 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
+
             //test
-            public List<Product> Orders
-              {
-                   get; set;
-              }
+            public IEnumerable<Product> Orders { get; set; }
         }
-        private async Task LoadAsync(UserViewModel user)
+        private async Task LoadAsync(IdentityUser user)
         {
-            var firstName = user.FirstName;
-            var lastName = user.LastName;
-            var profilePicture = user.ProfilePicture;
-            var deliveryAddress = user.DeliveryAddress;
             var email = await _userManager.GetEmailAsync(user);
             var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            //  var orders = _ApplicationDbContext.Orders.Where(O => O.UserId == user.Id).ToList();
-            var orders = _pizzaWebsiteContext.Products.ToList();//test
             Username = userName;
+
+            // get user data
+            var userData = _pizzaWebsiteRepository.GetUserDataByUserId(user.Id);
+
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+
+            // for testing
+            var orders = _pizzaWebsiteRepository.GetAllProducts(); 
 
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
                 Username = userName,
-                FirstName = firstName,
-                LastName = lastName,
+                FirstName = userData.FirstName,
+                LastName = userData.LastName,
                 Email = email,
-                ProfilePicture = profilePicture,
-                DeliveryAddress = deliveryAddress,
-              Orders = orders
-        };
+                ProfilePicture = userData.ProfilePicture,
+                DeliveryAddress = userData.DeliveryAddress,
+                Orders = orders
+            };
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -103,25 +102,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            var firstName = user.FirstName;
-            var lastName = user.LastName;
-            var deliveryAddress = user.DeliveryAddress;
 
-            if (Input.FirstName != firstName)
-            {
-                user.FirstName = Input.FirstName;
-                await _userManager.UpdateAsync(user);
-            }
-            if (Input.LastName != lastName)
-            {
-                user.LastName = Input.LastName;
-                await _userManager.UpdateAsync(user);
-            }
-            if (Input.DeliveryAddress != deliveryAddress)
-            {
-                user.DeliveryAddress = Input.DeliveryAddress;
-                await _userManager.UpdateAsync(user);
-            }
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -132,6 +113,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+
             var email = await _userManager.GetEmailAsync(user);
             if (Input.Email != email)
             {
@@ -142,6 +124,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
@@ -152,16 +135,49 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+
+            var userData = _pizzaWebsiteRepository.GetUserDataByUserId(user.Id);
+            bool modified = false;
+            if (Input.FirstName != userData.FirstName)
+            {
+                userData.FirstName = Input.FirstName;
+                modified = true;
+            }
+            if (Input.LastName != userData.LastName)
+            {
+                userData.LastName = Input.LastName;
+                modified = true;
+            }
+            if (Input.DeliveryAddress != userData.DeliveryAddress)
+            {
+                userData.DeliveryAddress = Input.DeliveryAddress;
+                modified = true;
+            }
             if (Request.Form.Files.Count > 0)
             {
                 IFormFile file = Request.Form.Files.FirstOrDefault();
                 using (var dataStream = new MemoryStream())
                 {
                     await file.CopyToAsync(dataStream);
-                    user.ProfilePicture = dataStream.ToArray();
+                    userData.ProfilePicture = dataStream.ToArray();
+                    modified = true;
                 }
-                await _userManager.UpdateAsync(user);
             }
+
+            // if the user data was modified
+            if (modified)
+            {
+                // update the user data
+                _pizzaWebsiteRepository.Update(userData);
+
+                // save changes
+                if (!_pizzaWebsiteRepository.SaveAll())
+                {
+                    StatusMessage = "Unexpected error when trying to update your profile.";
+                    return RedirectToPage();
+                }
+            }
+
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
