@@ -1,25 +1,45 @@
 ﻿
-<div class="container" style=" display: flex; align-items: center; justify-content: space-around; padding-top:.5rem; padding-bottom: .5rem">
+<ul class="nav navbar-nav navbar-collapse collapse" style="display: flex; justify-content: space-around; flex-direction: row " ; justify-content: space-around; padding-left: 1rem; padding-right: 1rem; padding-top: 1rem; padding-bottom: 1rem;">
 
+    <!--Owner Tab-->
     @if (User.IsInRole("Owner"))
-    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Owner">Owning</a>}
+    {
+        <li>
+            <a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Owner">Owning</a>
+        </li>
+    }
 
     <!--Manager Tab-->
     @if (User.IsInRole("Manager") || User.IsInRole("Owner"))
-    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Manager">Managing</a>}
-
+    {
+        <li>
+            <a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Manager">Managing</a>
+        </li>
+    }
     <!--Front End Tab-->
     @if (User.IsInRole("Front") || User.IsInRole("Manager") || User.IsInRole("Owner"))
-    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Front">Front</a>}
+    {
+        <li>
+            <a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Front">Front</a>
+        </li>
+    }
 
     <!--Cook Tab-->
     @if (User.IsInRole("Cook") || User.IsInRole("Manager") || User.IsInRole("Owner"))
-    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Cook">Cooking</a>}
+    {
+        <li>
+            <a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Cook">Cooking</a>
+        </li>
+    }
 
     <!--Delivery Tab-->
     @if (User.IsInRole("Deliverer") || User.IsInRole("Manager") || User.IsInRole("Owner"))
-    {<a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Deliverer">Delivery</a>}
+    {
+        <li>
+            <a class="nav-item nav-link" asp-area="" asp-controller="Employee" asp-action="Deliverer">Delivery</a>
+        </li>
+    }
 
     <!--Social Media Icons-->
     <partial name="Footer/_SocialMediaPartial" />
-</div>
+</ul>
