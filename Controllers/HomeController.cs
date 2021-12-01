@@ -185,12 +185,6 @@ namespace PizzaWebsite.Controllers
             return View(menuItemViewModel);
         }
 
-        [HttpGet("Privacy")]
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [HttpGet("Job")]
         public IActionResult Job()
         {
