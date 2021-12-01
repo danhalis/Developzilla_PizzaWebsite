@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -42,7 +43,7 @@ namespace PizzaWebsite.Controllers
             if (cartItems.Count <= 0)
             {
                 // Assisted by https://stackoverflow.com/questions/10785245/redirect-to-action-in-another-controller
-                return RedirectToAction("Menu", "Home", new { area = "" });
+                return RedirectToAction("Index", "Menu", new { area = "" });
             }
 
             return View();
@@ -90,7 +91,7 @@ namespace PizzaWebsite.Controllers
                     UserId = _userManager.GetUserId(User),
                     ProductId = menuItemViewModel.ChosenProductId,
                     PortionId = portionId,
-                    Quantity = 1
+                    Quantity = menuItemViewModel.ChosenProductQuantity
                 };
 
                 _pizzaRepository.Add(cartItem);
@@ -123,7 +124,19 @@ namespace PizzaWebsite.Controllers
                 }
             }
 
-            return RedirectToAction("Menu", "Home");
+            switch (_pizzaRepository.GetProductById(cartItem.ProductId).Category)
+            {
+                case ProductCategory.Pizza:
+                    return RedirectToAction("Pizzas", "Menu", new { area = "" });
+                case ProductCategory.Burger:
+                    return RedirectToAction("Burgers", "Menu", new { area = "" });
+                case ProductCategory.Drink:
+                    return RedirectToAction("Drinks", "Menu", new { area = "" });
+                case ProductCategory.Side:
+                    return RedirectToAction("Sides", "Menu", new { area = "" });
+                default:
+                    return RedirectToAction("Index", "Menu", new { area = "" });
+            }
         }
 
         public IActionResult Delete(int id)
