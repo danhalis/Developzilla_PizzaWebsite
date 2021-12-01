@@ -22,5 +22,7 @@ namespace PizzaWebsite.Data.Entities
         public byte[] ProfilePicture { get; set; }
 
         public string DeliveryAddress { get; set; }
+
+        //public List<Order> Orders { get; set; } = new List<Order>();
     }
 }

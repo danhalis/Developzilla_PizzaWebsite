@@ -128,10 +128,11 @@ namespace PizzaWebsite.Data.Repositories
         void Remove(CartItem cartItem);
         #endregion
 
+
         /// <summary>
         /// Saves all changes made by the previous CRUD operations before the call of this method.
         /// </summary>
-        /// <returns>true if the saving suceeds, false otherwise.</returns>
+        /// <returns>True if the saving succeeds, false otherwise.</returns>
         bool SaveAll();
     }
 
