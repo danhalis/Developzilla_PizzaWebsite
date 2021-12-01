@@ -13,23 +13,37 @@ namespace PizzaWebsite
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
 
-            RunSeeding(host);
+            await RunSeeding(host);
 
             host.Run();
         }
 
-        private static void RunSeeding(IHost host)
+        private static async Task RunSeeding(IHost host)
         {
             var scopeFactory = host.Services.GetService<IServiceScopeFactory>();
 
             using var scope = scopeFactory.CreateScope();
 
-            var seeder = scope.ServiceProvider.GetService<PizzaWebsiteDataSeeder>();
-            seeder.Seed();
+            var services = scope.ServiceProvider;
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+
+            try
+            {
+                var userIdentityDataSeeder = services.GetService<UserIdentityDataSeeder>();
+                await userIdentityDataSeeder.SeedAsync();
+
+                var pizzaWebsiteDataSeeder = services.GetService<PizzaWebsiteDataSeeder>();
+                pizzaWebsiteDataSeeder.Seed();
+            }
+            catch (Exception e)
+            {
+                var logger = loggerFactory.CreateLogger<Program>();
+                logger.LogError(e, "An error occurred seeding the database.");
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

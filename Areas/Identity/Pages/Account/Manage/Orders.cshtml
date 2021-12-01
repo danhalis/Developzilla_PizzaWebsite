@@ -1,0 +1,33 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Order History";
+    ViewData["ActivePage"] = ManageNavPages.Orders;
+}
+
+<h4>@ViewData["Title"]</h4>
+
+<div class="row">
+    <div class="col-md-6">
+        @foreach (var item in Model.Input.Orders)
+        {
+        <div class="col-md-3">
+            <div class="border bd-light rounded p-1">
+
+
+                <ul>
+                    <li>OrderDate: @item.Id</li>
+                    <li>OrderNumber: @item.Name</li>
+                    <!--<li>Status: item.Price</li> This is now CartItem.UnitPrice-->
+                </ul>
+
+            </div>
+
+        </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
