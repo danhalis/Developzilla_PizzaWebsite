@@ -6,8 +6,8 @@ for details on configuring this project to bundle and minify static web assets. 
 ----------------*/
 
 :root {
-    --highlight-primary: #FF6B6B;
-    --highlight-secondary: #4ECDC4;
+    --highlight-primary: #D63F44;
+    --highlight-secondary: #FF6B6B;
     --light-color: #FFFFFF;
     --neutral-color: #917C78;
     --heavy-color: #292F36;
@@ -20,17 +20,60 @@ html {
     font-size: 16px;
 }
 
+btn, button {
+    background: var(--highlight-secondary);
+}
+
 body {
     /* Margin bottom by footer height */
-    margin-bottom: 60px;
-    padding-top: 125px;
+    margin-bottom: 0px ;
+    padding-top: 154px;
     background-color: var(--light-color);
     color: var(--heavy-color);
     font-size: 24px;
 }
 
+a:hover {
+    color: var(--highlight-secondary) !important;
+}
+
+
+/* Changes to other peoples' styling */
+.carousel-control-next:hover, .carousel-control-prev:hover {
+    background-color: rgba(0,0,0,0.3) !important;
+}
+
+.text-danger:hover {
+    color: var(--highlight-secondary) !important;
+}
+
+.btn-primary {
+    background: var(--highlight-primary) !important;
+    border-color: var(--highlight-secondary) !important;
+}
+
+#btn-reset-form {
+    border-color: var(--highlight-secondary) !important;
+    color: var(--highlight-secondary) !important;
+
+}
+
+    #btn-reset-form:hover {
+        background: var(--highlight-secondary) !important;
+        color: var(--light-color) !important;
+    }
+
+.btn-primary:hover {
+    background: var(--highlight-secondary) !important;
+    border-color: var(--highlight-secondary) !important;
+}
+
+.display-4 {
+    margin-bottom: 4rem;
+}
+
 a {
-    color: var(--highlight-secondary);
+    color: var(--heavy-color);
 }
 
 .btn-primary {
