@@ -14,7 +14,6 @@ namespace PizzaWebsite.Controllers
     /// <summary>
     /// Controller that blocks unauthorized website users and forces them to login.
     /// </summary>
-    [Authorize]
     public class CartController : Controller
     {
         private readonly ILogger<CartController> _logger;
@@ -95,7 +94,7 @@ namespace PizzaWebsite.Controllers
                 cartItem.Quantity += menuItemViewModel.ChosenProductQuantity;
             }
 
-            switch (_pizzaRepository.GetProductById(cartItem.ProductId).Category)
+            switch (cartItem.Product.Category)
             {
                 case ProductCategory.Pizza:
                     return RedirectToAction("Pizzas", "Menu", new { area = "" });
