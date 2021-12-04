@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PizzaWebsite.Data.Entities
 {
-    /*
     public enum PaymentType
     {
         Cash,
@@ -13,10 +13,9 @@ namespace PizzaWebsite.Data.Entities
     {
         public int Id { get; set; }
 
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
-        [ForeignKey("UserId")]
-        public UserData User { get; set; }
+        public List<CartItem> CartItems { get; set; } = new List<CartItem>();
 
         public PaymentType PaymentType { get; set; }
     }
@@ -29,5 +28,5 @@ namespace PizzaWebsite.Data.Entities
     public class PickupOrder : Order
     {
 
-    }*/
+    }
 }

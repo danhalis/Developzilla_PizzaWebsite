@@ -13,7 +13,7 @@
 
         </li>
 
-        @if (PizzaWebsiteRepository.GetCartItemsByUserId(UserManager.GetUserId(User)).Count > 0)
+        @if (PizzaWebsiteRepository.GetCurrentOrderCartItems().Count > 0)
         {
             <li class="nav-item">
 
