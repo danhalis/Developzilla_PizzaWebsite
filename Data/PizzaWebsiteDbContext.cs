@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PizzaWebsite.Data.Entities;
-using System;
 
 namespace PizzaWebsite.Data
 {
@@ -16,8 +15,7 @@ namespace PizzaWebsite.Data
         public DbSet<Portion> Portions { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
-        //public DbSet<PickupOrder> PickupOrders { get; set; }
-        //public DbSet<DeliveryOrder> DeliveryOrders { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,15 +33,16 @@ namespace PizzaWebsite.Data
                 (pp => pp.HasOne<Portion>().WithMany(),
                  pp => pp.HasOne<Product>().WithMany());
 
+            // set up 1-m relationship between CartItem and Order
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Order)
+                .WithMany(o => o.CartItems);
+
 
             // make Portion label unique
             modelBuilder.Entity<Portion>()
                 .HasIndex(p => p.Label)
                 .IsUnique();
-
-            /*modelBuilder.Entity<Order>()
-                .HasOne(o => o.User)
-                .WithMany(u => u.Orders);*/
         }
     }
 }
