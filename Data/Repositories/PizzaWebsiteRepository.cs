@@ -28,8 +28,9 @@ namespace PizzaWebsite.Data.Repositories
         /// <summary>
         /// Adds a new <see cref="CartItem"/> to the database as one of the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
         /// </summary>
-        /// <param name="productId">The <see cref="Product.Id"/> of the new <see cref="CartItem"/>'s <see cref="CartItem.Product"/>.</param>
-        /// <param name="portionId">The <see cref="Portion.Id"/> of the new <see cref="CartItem"/>'s <see cref="CartItem.Portion"/>.</param>
+        /// <param name="productPortion">
+        /// Holds the <see cref="Product.Id"/> and <see cref="Portion.Id"/> of the new <see cref="CartItem"/>'s <see cref="CartItem.Product"/> and <see cref="CartItem.Portion"/>, respectively.
+        /// </param>
         /// <param name="quantity">The new <see cref="CartItem"/>'s <see cref="CartItem.Quantity"/>.</param>
         public void AddCurrentCartItemToDatabase(ProductPortion productPortion, int quantity);
 
