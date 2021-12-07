@@ -195,7 +195,7 @@ namespace PizzaWebsite.Data.Repositories
                     // If a signed in user is trying to access a guest's cart
                     if (currentCart.UserId == null && currentUserId != null)
                     {
-                        // They likely just signed in after filling their cart, so hand it to them
+                        // The user likely just signed in after filling their cart, so hand it to them
                         currentCart.UserId = currentUserId;
                     }
                     // If any other outcome occurred
