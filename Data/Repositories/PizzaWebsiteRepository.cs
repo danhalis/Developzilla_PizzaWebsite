@@ -172,21 +172,19 @@ namespace PizzaWebsite.Data.Repositories
         #region Cart
         public Cart GetCurrentCart()
         {
-            // Get the signed in user's id (or null if a guest called this method)
+            // Get the user's id (null if a guest called this method)
             string currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             Cart currentCart = null;
 
-            // If no cart id is remembered
-            if (_httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID) == null)
+            // If the user is signed in
+            if (currentUserId != null)
             {
-                // Get an applicable cart for the user, if they are signed in
-                if (currentUserId != null)
-                {
-                    currentCart = GetCartInUseByUserId(currentUserId);
-                }
+                // Get their account's current cart, if it exists
+                currentCart = GetCartInUseByUserId(currentUserId);
             }
-            // If a cart id is remembered
-            else
+
+            // If the user still lacks a cart and a cart id is remembered
+            if (currentCart == null && _httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID) != null)
             {
                 // Get the cart with the matching Id
                 Int32 cartId = (Int32)_httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID);
@@ -199,6 +197,7 @@ namespace PizzaWebsite.Data.Repositories
                     if (currentCart.UserId == null && currentUserId != null)
                     {
                         // The user likely just signed in after filling their cart, so hand it to them
+                        // If this system is exploited to steal a guest's cart, the hacker should only have access to someone's glorified shopping list
                         currentCart.UserId = currentUserId;
                     }
                     // If any other outcome occurred
