@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace PizzaWebsite.Data.Repositories
 {
@@ -150,6 +151,9 @@ namespace PizzaWebsite.Data.Repositories
 
     public class PizzaWebsiteRepository : IPizzaWebsiteRepository
     {
+        public const string SESSION_KEY_CART_ID = "_CartId";
+
+        private IHttpContextAccessor _httpContextAccessor;
         private readonly PizzaWebsiteDbContext _context;
         private readonly ILogger<PizzaWebsiteRepository> _logger;
         private static Order _currentOrder;
@@ -159,15 +163,21 @@ namespace PizzaWebsite.Data.Repositories
             _currentOrder = new Order();
         }
 
-        public PizzaWebsiteRepository(ILogger<PizzaWebsiteRepository> logger, PizzaWebsiteDbContext context)
+        public PizzaWebsiteRepository(ILogger<PizzaWebsiteRepository> logger, PizzaWebsiteDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #region Order
         public Order GetCurrentOrder()
         {
+            if (_httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID) == null)
+            {
+                _httpContextAccessor.HttpContext.Session.SetInt32(SESSION_KEY_CART_ID, 69);
+            }
+            Int32 id = (int)_httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID);
             return _currentOrder;
         }
         

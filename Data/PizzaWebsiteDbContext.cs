@@ -33,7 +33,7 @@ namespace PizzaWebsite.Data
                 (pp => pp.HasOne<Portion>().WithMany(),
                  pp => pp.HasOne<Product>().WithMany());
 
-            // set up 1-m relationship between CartItem and Order
+            // set up 1-M relationship between CartItem and Order
             modelBuilder.Entity<CartItem>()
                 .HasOne(ci => ci.Order)
                 .WithMany(o => o.CartItems);
