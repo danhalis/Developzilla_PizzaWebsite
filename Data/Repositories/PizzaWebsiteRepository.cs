@@ -14,9 +14,9 @@ namespace PizzaWebsite.Data.Repositories
     {
         #region Cart
         /// <summary>
-        /// Gets the current <see cref="Cart"/>, which is determined by the user's session.
+        /// Gets the current <see cref="Cart"/>, which is determined by the user's session and account.
         /// </summary>
-        /// <returns>The current <see cref="Cart"/>, which is determined by the user's session.</returns>
+        /// <returns>The current <see cref="Cart"/>, which is determined by the user's session and account.</returns>
         Cart GetCurrentCart();
 
         /// <summary>
@@ -28,18 +28,21 @@ namespace PizzaWebsite.Data.Repositories
         /// <summary>
         /// Ensures that the sent <see cref="CartItem"/> has its <see cref="CartItem.Product"/>, <see cref="CartItem.Portion"/> 
         /// and <see cref="CartItem.UnitPrice"/> properly set using its <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/>, 
-        /// then adds it to the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
+        /// then adds it to the database as one of the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
         /// </summary>
-        /// <param name="cartItem">The <see cref="CartItem"/> to be added to the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.</param>
+        /// <param name="cartItem">The <see cref="CartItem"/> to be added to the database as one of the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.</param>
         public void AddCurrentCartItem(CartItem cartItem);
 
         /// <summary>
         /// Gets the <see cref="CartItem"/> with a corresponding <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/>
-        /// if it exists, or <see cref="null"/> otherwise.
+        /// in the user's current <see cref="Cart"/> if it exists, or <see cref="null"/> otherwise.
         /// </summary>
         /// <param name="productId">Id of the <see cref="Product"/>.</param>
         /// <param name="portionId">Id of the <see cref="Portion"/>.</param>
-        /// <returns>The <see cref="CartItem"/> with a corresponding <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/> if it exists, or <see cref="null"/> otherwise.</returns>
+        /// <returns>
+        /// The <see cref="CartItem"/> with a corresponding <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/> 
+        /// in the user's current <see cref="Cart"/> if it exists, or <see cref="null"/> otherwise.
+        /// </returns>
         public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId);
         #endregion
 
@@ -261,8 +264,9 @@ namespace PizzaWebsite.Data.Repositories
             cartItem.UnitPrice = productPortion.UnitPrice;
             cartItem.Cart = GetCurrentCart();
 
-            _context.CartItems.Add(cartItem);
-            _context.SaveChanges();
+            // TODO: Fix Cart database operations... especially this one!
+            //_context.CartItems.Add(cartItem);
+            //_context.SaveChanges();
         }
 
         public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId)
