@@ -199,6 +199,10 @@ namespace PizzaWebsite.Data.Repositories
                         // The user likely just signed in after filling their cart, so hand it to them
                         // If this system is exploited to steal a guest's cart, the hacker should only have access to someone's glorified shopping list
                         currentCart.UserId = currentUserId;
+                        _context.Carts.Update(currentCart);
+
+                        // Save any changes made to the database
+                        _context.SaveChanges();
                     }
                     // If any other outcome occurred
                     else
@@ -253,6 +257,8 @@ namespace PizzaWebsite.Data.Repositories
 
             // Add the cart to the database
             _context.Carts.Add(newCurrentCart);
+
+            // Save any changes made to the database
             _context.SaveChanges();
 
             return newCurrentCart;
