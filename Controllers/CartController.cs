@@ -72,14 +72,14 @@ namespace PizzaWebsite.Controllers
         public IActionResult Add(MenuItemViewModel menuItemViewModel)
         {
             int portionId = _pizzaRepository.GetPortionIdByLabel(menuItemViewModel.ChosenProductPortion);
-
+            ProductPortion productPortion = _pizzaRepository.GetProductAndPortionById(menuItemViewModel.ChosenProductId, portionId);
             CartItem cartItem = _pizzaRepository.GetCurrentCartItemByPortionIdAndProductId(menuItemViewModel.ChosenProductId, portionId);
 
             // If the selected product of the selected portion was not added yet to the cart
             if (cartItem == null)
             {
                 // Add a new CartItem to the current Order
-                _pizzaRepository.AddCurrentCartItemToDatabase(menuItemViewModel.ChosenProductId, portionId, menuItemViewModel.ChosenProductQuantity);
+                _pizzaRepository.AddCurrentCartItemToDatabase(productPortion, menuItemViewModel.ChosenProductQuantity);
             }
             // If the selected product of the selected portion was already added to the cart, then increase its quantity accordingly
             else
@@ -87,7 +87,8 @@ namespace PizzaWebsite.Controllers
                 cartItem.Quantity += menuItemViewModel.ChosenProductQuantity;
             }
 
-            switch (cartItem.Product.Category)
+
+            switch (productPortion.Product.Category)
             {
                 case ProductCategory.Pizza:
                     return RedirectToAction("Pizzas", "Menu", new { area = "" });

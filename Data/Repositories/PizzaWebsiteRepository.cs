@@ -31,7 +31,7 @@ namespace PizzaWebsite.Data.Repositories
         /// <param name="productId">The <see cref="Product.Id"/> of the new <see cref="CartItem"/>'s <see cref="CartItem.Product"/>.</param>
         /// <param name="portionId">The <see cref="Portion.Id"/> of the new <see cref="CartItem"/>'s <see cref="CartItem.Portion"/>.</param>
         /// <param name="quantity">The new <see cref="CartItem"/>'s <see cref="CartItem.Quantity"/>.</param>
-        public void AddCurrentCartItemToDatabase(int productId, int portionId, int quantity);
+        public void AddCurrentCartItemToDatabase(ProductPortion productPortion, int quantity);
 
         /// <summary>
         /// Gets the <see cref="CartItem"/> with a corresponding <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/>
@@ -263,15 +263,14 @@ namespace PizzaWebsite.Data.Repositories
             return GetCurrentCart().CartItems;
         }
 
-        public void AddCurrentCartItemToDatabase(int productId, int portionId, int quantity)
+        public void AddCurrentCartItemToDatabase(ProductPortion productPortion, int quantity)
         {
-            ProductPortion productPortion = GetProductAndPortionById(productId, portionId);
             CartItem currentCartItem = new CartItem
             {
-                ProductId = productId,
-                PortionId = portionId,
+                ProductId = productPortion.ProductId,
+                PortionId = productPortion.PortionId,
                 Quantity = quantity,
-                Cart = GetCurrentCart()
+                CartId = GetCurrentCart().Id
             };
 
             // TODO: Fix Cart database operations... especially this one!
