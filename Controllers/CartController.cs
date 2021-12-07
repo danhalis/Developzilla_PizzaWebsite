@@ -85,6 +85,17 @@ namespace PizzaWebsite.Controllers
             else
             {
                 cartItem.Quantity += menuItemViewModel.ChosenProductQuantity;
+                _pizzaRepository.Update(cartItem);
+
+                // save changes
+                if (!_pizzaRepository.SaveAll())
+                {
+                    // redirect to an error page
+                    return RedirectToAction("Error", "Home", new ErrorViewModel
+                    {
+                        Message = "Failed to update item in the cart."
+                    });
+                }
             }
 
 
@@ -116,7 +127,17 @@ namespace PizzaWebsite.Controllers
                 });
             }
 
-            _pizzaRepository.GetCurrentCartItems().Remove(cartItem);
+            _pizzaRepository.Remove(cartItem);
+
+            // save changes
+            if (!_pizzaRepository.SaveAll())
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to remove item in the cart."
+                });
+            }
 
             return RedirectToAction("Items");
         }

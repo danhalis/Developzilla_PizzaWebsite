@@ -273,7 +273,6 @@ namespace PizzaWebsite.Data.Repositories
                 CartId = GetCurrentCart().Id
             };
 
-            // TODO: Fix Cart database operations... especially this one!
             _context.CartItems.Add(currentCartItem);
             _context.SaveChanges();
         }
@@ -568,6 +567,11 @@ namespace PizzaWebsite.Data.Repositories
             {
                 _logger.LogInformation("Updating cart item ...");
 
+                // Set all related objects to null to avoid EF jank
+                cartItem.Cart = null;
+                cartItem.Portion = null;
+                cartItem.Product = null;
+
                 _context.CartItems.Update(cartItem);
             }
             catch (Exception e)
@@ -581,6 +585,11 @@ namespace PizzaWebsite.Data.Repositories
             try
             {
                 _logger.LogInformation("Deleting cart item ...");
+
+                // Set all related objects to null to avoid EF jank
+                cartItem.Cart = null;
+                cartItem.Portion = null;
+                cartItem.Product = null;
 
                 _context.CartItems.Remove(cartItem);
             }
