@@ -26,12 +26,12 @@ namespace PizzaWebsite.Data.Repositories
         public List<CartItem> GetCurrentCartItems();
 
         /// <summary>
-        /// Ensures that the sent <see cref="CartItem"/> has its <see cref="CartItem.Product"/>, <see cref="CartItem.Portion"/> 
-        /// and <see cref="CartItem.UnitPrice"/> properly set using its <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/>, 
-        /// then adds it to the database as one of the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
+        /// Adds a new <see cref="CartItem"/> to the database as one of the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
         /// </summary>
-        /// <param name="cartItem">The <see cref="CartItem"/> to be added to the database as one of the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.</param>
-        public void AddCurrentCartItem(CartItem cartItem);
+        /// <param name="productId">The <see cref="Product.Id"/> of the new <see cref="CartItem"/>'s <see cref="CartItem.Product"/>.</param>
+        /// <param name="portionId">The <see cref="Portion.Id"/> of the new <see cref="CartItem"/>'s <see cref="CartItem.Portion"/>.</param>
+        /// <param name="quantity">The new <see cref="CartItem"/>'s <see cref="CartItem.Quantity"/>.</param>
+        public void AddCurrentCartItemToDatabase(int productId, int portionId, int quantity);
 
         /// <summary>
         /// Gets the <see cref="CartItem"/> with a corresponding <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/>
@@ -217,6 +217,14 @@ namespace PizzaWebsite.Data.Repositories
 
             // Get the Cart's CartItems
             currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
+            foreach (CartItem cartItem in currentCart.CartItems)
+            {
+                ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+                cartItem.Product = productPortion.Product;
+                cartItem.Portion = productPortion.Portion;
+                cartItem.UnitPrice = productPortion.UnitPrice;
+                cartItem.Cart = currentCart;
+            }
 
             // Save the Cart's Id in the session
             _httpContextAccessor.HttpContext.Session.SetInt32(SESSION_KEY_CART_ID, currentCart.Id);
@@ -255,17 +263,20 @@ namespace PizzaWebsite.Data.Repositories
             return GetCurrentCart().CartItems;
         }
 
-        public void AddCurrentCartItem(CartItem cartItem)
+        public void AddCurrentCartItemToDatabase(int productId, int portionId, int quantity)
         {
-            ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
-            cartItem.Product = productPortion.Product;
-            cartItem.Portion = productPortion.Portion;
-            cartItem.UnitPrice = productPortion.UnitPrice;
-            cartItem.Cart = GetCurrentCart();
+            ProductPortion productPortion = GetProductAndPortionById(productId, portionId);
+            CartItem currentCartItem = new CartItem
+            {
+                ProductId = productId,
+                PortionId = portionId,
+                Quantity = quantity,
+                Cart = GetCurrentCart()
+            };
 
             // TODO: Fix Cart database operations... especially this one!
-            //_context.CartItems.Add(cartItem);
-            //_context.SaveChanges();
+            _context.CartItems.Add(currentCartItem);
+            _context.SaveChanges();
         }
 
         public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId)

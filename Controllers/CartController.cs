@@ -78,15 +78,8 @@ namespace PizzaWebsite.Controllers
             // If the selected product of the selected portion was not added yet to the cart
             if (cartItem == null)
             {
-                cartItem = new CartItem
-                {
-                    ProductId = menuItemViewModel.ChosenProductId,
-                    PortionId = portionId,
-                    Quantity = menuItemViewModel.ChosenProductQuantity
-                };
-
-                // Add the CartItem to the current Order
-                _pizzaRepository.AddCurrentCartItem(cartItem);
+                // Add a new CartItem to the current Order
+                _pizzaRepository.AddCurrentCartItemToDatabase(menuItemViewModel.ChosenProductId, portionId, menuItemViewModel.ChosenProductQuantity);
             }
             // If the selected product of the selected portion was already added to the cart, then increase its quantity accordingly
             else
