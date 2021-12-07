@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace PizzaWebsite.Data.Repositories
 {
@@ -156,12 +158,6 @@ namespace PizzaWebsite.Data.Repositories
         private IHttpContextAccessor _httpContextAccessor;
         private readonly PizzaWebsiteDbContext _context;
         private readonly ILogger<PizzaWebsiteRepository> _logger;
-        private static Cart _currentOrder;
-
-        static PizzaWebsiteRepository()
-        {
-            _currentOrder = new Cart();
-        }
 
         public PizzaWebsiteRepository(ILogger<PizzaWebsiteRepository> logger, PizzaWebsiteDbContext context, IHttpContextAccessor httpContextAccessor)
         {
@@ -173,12 +169,83 @@ namespace PizzaWebsite.Data.Repositories
         #region Cart
         public Cart GetCurrentCart()
         {
+            // Get the signed in user's id (or null if a guest called this method)
+            string currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Cart currentCart = null;
+
+            // If no cart id is remembered
             if (_httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID) == null)
             {
-                _httpContextAccessor.HttpContext.Session.SetInt32(SESSION_KEY_CART_ID, 69);
+                // Get an applicable cart for the user, if they are signed in
+                if (currentUserId != null)
+                {
+                    currentCart = GetCartInUseByUserId(currentUserId);
+                }
             }
-            Int32 id = (int)_httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID);
-            return _currentOrder;
+            // If a cart id is remembered
+            else
+            {
+                // Get the cart with the matching Id
+                Int32 cartId = (Int32)_httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID);
+                currentCart = GetCartInUseById(cartId);
+
+                // If the cart's userId does not match the User's own Id (and an actual cart was claimed)
+                if (currentCart != null && currentCart.UserId != currentUserId)
+                {
+                    // If a signed in user is trying to access a guest's cart
+                    if (currentCart.UserId == null && currentUserId != null)
+                    {
+                        // They likely just signed in after filling their cart, so hand it to them
+                        currentCart.UserId = currentUserId;
+                    }
+                    // If any other outcome occurred
+                    else
+                    {
+                        // Then it was an invalid match, so revoke the currentCart
+                        currentCart = null;
+                    }
+                }
+            }
+
+            // If the user still has no cart, then make a new one
+            if (currentCart == null)
+            {
+                currentCart = AddNewCartToDatabase(currentUserId);
+            }
+
+            // Get the Cart's CartItems
+            currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
+
+            // Save the Cart's Id in the session
+            _httpContextAccessor.HttpContext.Session.SetInt32(SESSION_KEY_CART_ID, currentCart.Id);
+
+            return currentCart;
+        }
+
+        private Cart GetCartInUseByUserId(string userId)
+        {
+            return _context.Carts.FirstOrDefault(c => c.UserId == userId && !c.CheckedOut);
+        }
+
+        private Cart GetCartInUseById(int cartId)
+        {
+            return _context.Carts.FirstOrDefault(c => c.Id == cartId && !c.CheckedOut);
+        }
+
+        private Cart AddNewCartToDatabase(string currentUserId)
+        {
+            // Create a new Cart
+            Cart newCurrentCart = new Cart()
+            {
+                CheckedOut = false,
+                UserId = currentUserId
+            };
+
+            // Add the cart to the database
+            _context.Carts.Add(newCurrentCart);
+            _context.SaveChanges();
+
+            return newCurrentCart;
         }
         
         public List<CartItem> GetCurrentCartItems()
@@ -192,8 +259,10 @@ namespace PizzaWebsite.Data.Repositories
             cartItem.Product = productPortion.Product;
             cartItem.Portion = productPortion.Portion;
             cartItem.UnitPrice = productPortion.UnitPrice;
+            cartItem.Cart = GetCurrentCart();
 
-            GetCurrentCartItems().Add(cartItem);
+            _context.CartItems.Add(cartItem);
+            _context.SaveChanges();
         }
 
         public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId)
