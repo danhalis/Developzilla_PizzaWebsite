@@ -38,7 +38,7 @@ namespace PizzaWebsite.Controllers
         public IActionResult Checkout()
         {
             // Checkout can only be accessed if the user has items in their cart.
-            if (_pizzaRepository.GetCurrentOrderCartItems().Count <= 0)
+            if (_pizzaRepository.GetCurrentCartItems().Count <= 0)
             {
                 // Assisted by https://stackoverflow.com/questions/10785245/redirect-to-action-in-another-controller
                 return RedirectToAction("Index", "Menu", new { area = "" });
@@ -50,7 +50,7 @@ namespace PizzaWebsite.Controllers
         [HttpGet("Items")]
         public IActionResult Items()
         {
-            var cartItems = _pizzaRepository.GetCurrentOrderCartItems();
+            var cartItems = _pizzaRepository.GetCurrentCartItems();
 
             decimal total = 0;
 
@@ -73,7 +73,7 @@ namespace PizzaWebsite.Controllers
         {
             int portionId = _pizzaRepository.GetPortionIdByLabel(menuItemViewModel.ChosenProductPortion);
 
-            CartItem cartItem = _pizzaRepository.GetCartItemInCurrentOrderByPortionIdAndProductId(menuItemViewModel.ChosenProductId, portionId);
+            CartItem cartItem = _pizzaRepository.GetCurrentCartItemByPortionIdAndProductId(menuItemViewModel.ChosenProductId, portionId);
 
             // If the selected product of the selected portion was not added yet to the cart
             if (cartItem == null)
@@ -86,7 +86,7 @@ namespace PizzaWebsite.Controllers
                 };
 
                 // Add the CartItem to the current Order
-                _pizzaRepository.AddCurrentOrderCartItem(cartItem);
+                _pizzaRepository.AddCurrentCartItem(cartItem);
             }
             // If the selected product of the selected portion was already added to the cart, then increase its quantity accordingly
             else
@@ -111,7 +111,7 @@ namespace PizzaWebsite.Controllers
 
         public IActionResult Delete(int productId, int portionId)
         {
-            CartItem cartItem = _pizzaRepository.GetCartItemInCurrentOrderByPortionIdAndProductId(productId, portionId);
+            CartItem cartItem = _pizzaRepository.GetCurrentCartItemByPortionIdAndProductId(productId, portionId);
 
             if (cartItem == null)
             {
@@ -122,7 +122,7 @@ namespace PizzaWebsite.Controllers
                 });
             }
 
-            _pizzaRepository.GetCurrentOrderCartItems().Remove(cartItem);
+            _pizzaRepository.GetCurrentCartItems().Remove(cartItem);
 
             return RedirectToAction("Items");
         }

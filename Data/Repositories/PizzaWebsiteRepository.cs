@@ -10,26 +10,26 @@ namespace PizzaWebsite.Data.Repositories
 {
     public interface IPizzaWebsiteRepository
     {
-        #region Order
+        #region Cart
         /// <summary>
-        /// Gets the current <see cref="Order"/> of this <see cref="PizzaWebsiteRepository"/>.
+        /// Gets the current <see cref="Cart"/>, which is determined by the user's session.
         /// </summary>
-        /// <returns>The current <see cref="Order"/> of this <see cref="PizzaWebsiteRepository"/>.</returns>
-        Order GetCurrentOrder();
+        /// <returns>The current <see cref="Cart"/>, which is determined by the user's session.</returns>
+        Cart GetCurrentCart();
 
         /// <summary>
-        /// Gets the <see cref="List{CartItem}"/> stored in the current <see cref="Order"/> object's <see cref="Order.CartItems"/>.
+        /// Gets the <see cref="List{CartItem}"/> stored in the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
         /// </summary>
-        /// <returns>The <see cref="List{CartItem}"/> stored in the current <see cref="Order"/>'s <see cref="Order.CartItems"/>.</returns>
-        public List<CartItem> GetCurrentOrderCartItems();
+        /// <returns>The <see cref="List{CartItem}"/> stored in the current <see cref="Cart"/>'s <see cref="Cart.CartItems"/>.</returns>
+        public List<CartItem> GetCurrentCartItems();
 
         /// <summary>
         /// Ensures that the sent <see cref="CartItem"/> has its <see cref="CartItem.Product"/>, <see cref="CartItem.Portion"/> 
         /// and <see cref="CartItem.UnitPrice"/> properly set using its <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/>, 
-        /// then adds it to the current <see cref="Order"/> object's <see cref="Order.CartItems"/>.
+        /// then adds it to the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
         /// </summary>
-        /// <param name="cartItem">The <see cref="CartItem"/> to be added to the current <see cref="Order"/> object's <see cref="Order.CartItems"/>.</param>
-        public void AddCurrentOrderCartItem(CartItem cartItem);
+        /// <param name="cartItem">The <see cref="CartItem"/> to be added to the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.</param>
+        public void AddCurrentCartItem(CartItem cartItem);
 
         /// <summary>
         /// Gets the <see cref="CartItem"/> with a corresponding <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/>
@@ -38,7 +38,7 @@ namespace PizzaWebsite.Data.Repositories
         /// <param name="productId">Id of the <see cref="Product"/>.</param>
         /// <param name="portionId">Id of the <see cref="Portion"/>.</param>
         /// <returns>The <see cref="CartItem"/> with a corresponding <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/> if it exists, or <see cref="null"/> otherwise.</returns>
-        public CartItem GetCartItemInCurrentOrderByPortionIdAndProductId(int productId, int portionId);
+        public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId);
         #endregion
 
         #region User Data
@@ -156,11 +156,11 @@ namespace PizzaWebsite.Data.Repositories
         private IHttpContextAccessor _httpContextAccessor;
         private readonly PizzaWebsiteDbContext _context;
         private readonly ILogger<PizzaWebsiteRepository> _logger;
-        private static Order _currentOrder;
+        private static Cart _currentOrder;
 
         static PizzaWebsiteRepository()
         {
-            _currentOrder = new Order();
+            _currentOrder = new Cart();
         }
 
         public PizzaWebsiteRepository(ILogger<PizzaWebsiteRepository> logger, PizzaWebsiteDbContext context, IHttpContextAccessor httpContextAccessor)
@@ -170,8 +170,8 @@ namespace PizzaWebsite.Data.Repositories
             _httpContextAccessor = httpContextAccessor;
         }
 
-        #region Order
-        public Order GetCurrentOrder()
+        #region Cart
+        public Cart GetCurrentCart()
         {
             if (_httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID) == null)
             {
@@ -181,26 +181,26 @@ namespace PizzaWebsite.Data.Repositories
             return _currentOrder;
         }
         
-        public List<CartItem> GetCurrentOrderCartItems()
+        public List<CartItem> GetCurrentCartItems()
         {
-            return GetCurrentOrder().CartItems;
+            return GetCurrentCart().CartItems;
         }
 
-        public void AddCurrentOrderCartItem(CartItem cartItem)
+        public void AddCurrentCartItem(CartItem cartItem)
         {
             ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
             cartItem.Product = productPortion.Product;
             cartItem.Portion = productPortion.Portion;
             cartItem.UnitPrice = productPortion.UnitPrice;
 
-            GetCurrentOrderCartItems().Add(cartItem);
+            GetCurrentCartItems().Add(cartItem);
         }
 
-        public CartItem GetCartItemInCurrentOrderByPortionIdAndProductId(int productId, int portionId)
+        public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId)
         {
-            _logger.LogInformation($"Getting cart item in the current order ...");
+            _logger.LogInformation($"Getting cart item in the current cart ...");
 
-            return GetCurrentOrder().CartItems.FirstOrDefault(ci => ci.ProductId == productId && ci.PortionId == portionId);
+            return GetCurrentCart().CartItems.FirstOrDefault(ci => ci.ProductId == productId && ci.PortionId == portionId);
         }
         #endregion
 

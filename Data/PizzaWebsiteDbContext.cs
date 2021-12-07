@@ -15,6 +15,7 @@ namespace PizzaWebsite.Data
         public DbSet<Portion> Portions { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Cart> Carts { get; set; }
         public DbSet<Order> Orders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,11 +34,15 @@ namespace PizzaWebsite.Data
                 (pp => pp.HasOne<Portion>().WithMany(),
                  pp => pp.HasOne<Product>().WithMany());
 
-            // set up 1-M relationship between CartItem and Order
+            // set up 1-M relationship between Cart and CartItem
             modelBuilder.Entity<CartItem>()
-                .HasOne(ci => ci.Order)
-                .WithMany(o => o.CartItems);
+                .HasOne(ci => ci.Cart)
+                .WithMany(c => c.CartItems);
 
+            // set up 1-1 relationship between Cart and Order?
+            // assisted by https://stackoverflow.com/questions/39505932/entity-framework-1-to-1-relationship
+            //modelBuilder.Entity<Order>()
+                //.HasKey(o => o.CartId);
 
             // make Portion label unique
             modelBuilder.Entity<Portion>()

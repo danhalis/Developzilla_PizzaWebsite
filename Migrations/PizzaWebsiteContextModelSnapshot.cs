@@ -19,6 +19,24 @@ namespace PizzaWebsite.Migrations
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("PizzaWebsite.Data.Entities.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("CheckedOut")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Carts");
+                });
+
             modelBuilder.Entity("PizzaWebsite.Data.Entities.CartItem", b =>
                 {
                     b.Property<int>("Id")
@@ -26,7 +44,7 @@ namespace PizzaWebsite.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("OrderId")
+                    b.Property<int>("CartId")
                         .HasColumnType("int");
 
                     b.Property<int>("PortionId")
@@ -40,7 +58,7 @@ namespace PizzaWebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("CartId");
 
                     b.HasIndex("PortionId");
 
@@ -91,7 +109,16 @@ namespace PizzaWebsite.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("OrderEmail")
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomerEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerFirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerLastName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("OrderTime")
@@ -100,10 +127,10 @@ namespace PizzaWebsite.Migrations
                     b.Property<int>("PaymentType")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CartId")
+                        .IsUnique();
 
                     b.ToTable("Orders");
                 });
@@ -220,9 +247,9 @@ namespace PizzaWebsite.Migrations
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.CartItem", b =>
                 {
-                    b.HasOne("PizzaWebsite.Data.Entities.Order", "Order")
+                    b.HasOne("PizzaWebsite.Data.Entities.Cart", "Cart")
                         .WithMany("CartItems")
-                        .HasForeignKey("OrderId")
+                        .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -238,11 +265,20 @@ namespace PizzaWebsite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.Navigation("Cart");
 
                     b.Navigation("Portion");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("PizzaWebsite.Data.Entities.Order", b =>
+                {
+                    b.HasOne("PizzaWebsite.Data.Entities.Cart", null)
+                        .WithOne("Order")
+                        .HasForeignKey("PizzaWebsite.Data.Entities.Order", "CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.ProductPortion", b =>
@@ -272,9 +308,11 @@ namespace PizzaWebsite.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("PizzaWebsite.Data.Entities.Order", b =>
+            modelBuilder.Entity("PizzaWebsite.Data.Entities.Cart", b =>
                 {
                     b.Navigation("CartItems");
+
+                    b.Navigation("Order");
                 });
 #pragma warning restore 612, 618
         }
