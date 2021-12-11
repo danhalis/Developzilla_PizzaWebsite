@@ -1,15 +1,51 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace PizzaWebsite.Data.Repositories
 {
     public interface IPizzaWebsiteRepository
     {
+        #region Cart
+        /// <summary>
+        /// Gets the current <see cref="Cart"/>, which is determined by the user's session and account.
+        /// </summary>
+        /// <returns>The current <see cref="Cart"/>, which is determined by the user's session and account.</returns>
+        Cart GetCurrentCart();
+
+        /// <summary>
+        /// Gets the <see cref="List{CartItem}"/> stored in the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
+        /// </summary>
+        /// <returns>The <see cref="List{CartItem}"/> stored in the current <see cref="Cart"/>'s <see cref="Cart.CartItems"/>.</returns>
+        public List<CartItem> GetCurrentCartItems();
+
+        /// <summary>
+        /// Adds a new <see cref="CartItem"/> to the database as one of the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
+        /// </summary>
+        /// <param name="productPortion">
+        /// Holds the <see cref="Product.Id"/> and <see cref="Portion.Id"/> of the new <see cref="CartItem"/>'s <see cref="CartItem.Product"/> and <see cref="CartItem.Portion"/>, respectively.
+        /// </param>
+        /// <param name="quantity">The new <see cref="CartItem"/>'s <see cref="CartItem.Quantity"/>.</param>
+        public void AddCurrentCartItemToDatabase(ProductPortion productPortion, int quantity);
+
+        /// <summary>
+        /// Gets the <see cref="CartItem"/> with a corresponding <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/>
+        /// in the user's current <see cref="Cart"/> if it exists, or <see cref="null"/> otherwise.
+        /// </summary>
+        /// <param name="productId">Id of the <see cref="Product"/>.</param>
+        /// <param name="portionId">Id of the <see cref="Portion"/>.</param>
+        /// <returns>
+        /// The <see cref="CartItem"/> with a corresponding <see cref="CartItem.ProductId"/> and <see cref="CartItem.PortionId"/> 
+        /// in the user's current <see cref="Cart"/> if it exists, or <see cref="null"/> otherwise.
+        /// </returns>
+        public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId);
+        #endregion
+
         #region User Data
         /// <summary>
         /// Retrieves a <see cref="List{T}"/> of all <see cref="UserData"/> from the database.
@@ -89,24 +125,6 @@ namespace PizzaWebsite.Data.Repositories
         CartItem GetCartItemById(int id, bool attachNavigation = true);
 
         /// <summary>
-        /// Retrieves a <see cref="List{T}"/> of <see cref="CartItem"/> with the given user id from the database.
-        /// </summary>
-        /// <param name="userId">Id of the <see cref="IdentityUser"/>.</param>
-        /// <param name="attachNavigation">Whether to attach <see href="https://docs.microsoft.com/en-us/ef/ef6/fundamentals/relationships">navigation properties</see> to the <see cref="CartItem"/>.</param>
-        /// <returns>The <see cref="List{T}"/> of <see cref="CartItem"/> with the given user id from the database.</returns>
-        List<CartItem> GetCartItemsByUserId(string userId, bool attachNavigation = true);
-
-        /// <summary>
-        /// Retrieves a <see cref="CartItem"/> with the given user id, product id and portion id from the database.
-        /// </summary>
-        /// <param name="userId">Id of the <see cref="IdentityUser"/>.</param>
-        /// /// <param name="productId">Id of the <see cref="Product"/>.</param>
-        /// /// <param name="portionId">Id of the <see cref="Portion"/>.</param>
-        /// <param name="attachNavigation">Whether to attach <see href="https://docs.microsoft.com/en-us/ef/ef6/fundamentals/relationships">navigation properties</see> to the <see cref="CartItem"/>.</param>
-        /// <returns>The <see cref="List{T}"/> of <see cref="CartItem"/> with the given user id from the database if it exists, null otherwise.</returns>
-        CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId, bool attachNavigation = true);
-
-        /// <summary>
         /// Adds the given <see cref="CartItem"/> to the database.<br/>
         /// However, no changes will be made until <see cref="IPizzaWebsiteRepository.SaveAll()"/> is called.
         /// </summary>
@@ -138,14 +156,140 @@ namespace PizzaWebsite.Data.Repositories
 
     public class PizzaWebsiteRepository : IPizzaWebsiteRepository
     {
+        public const string SESSION_KEY_CART_ID = "_CartId";
+
+        private IHttpContextAccessor _httpContextAccessor;
         private readonly PizzaWebsiteDbContext _context;
         private readonly ILogger<PizzaWebsiteRepository> _logger;
 
-        public PizzaWebsiteRepository(ILogger<PizzaWebsiteRepository> logger, PizzaWebsiteDbContext context)
+        public PizzaWebsiteRepository(ILogger<PizzaWebsiteRepository> logger, PizzaWebsiteDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
+
+        #region Cart
+        public Cart GetCurrentCart()
+        {
+            // Get the user's id (null if a guest called this method)
+            string currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Cart currentCart = null;
+
+            // If the user is signed in
+            if (currentUserId != null)
+            {
+                // Get their account's current cart, if it exists
+                currentCart = GetCartInUseByUserId(currentUserId);
+            }
+
+            // If the user still lacks a cart and a cart id is remembered
+            if (currentCart == null && _httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID) != null)
+            {
+                // Get the cart with the matching Id
+                Int32 cartId = (Int32)_httpContextAccessor.HttpContext.Session.GetInt32(SESSION_KEY_CART_ID);
+                currentCart = GetCartInUseById(cartId);
+
+                // If the cart's userId does not match the User's own Id (and an actual cart was claimed)
+                if (currentCart != null && currentCart.UserId != currentUserId)
+                {
+                    // If a signed in user is trying to access a guest's cart
+                    if (currentCart.UserId == null && currentUserId != null)
+                    {
+                        // The user likely just signed in after filling their cart, so hand it to them
+                        // If this system is exploited to steal a guest's cart, the hacker should only have access to someone's glorified shopping list
+                        currentCart.UserId = currentUserId;
+                        _context.Carts.Update(currentCart);
+
+                        // Save any changes made to the database
+                        _context.SaveChanges();
+                    }
+                    // If any other outcome occurred
+                    else
+                    {
+                        // Then it was an invalid match, so revoke the currentCart
+                        currentCart = null;
+                    }
+                }
+            }
+
+            // If the user still has no cart, then make a new one
+            if (currentCart == null)
+            {
+                currentCart = AddNewCartToDatabase(currentUserId);
+            }
+
+            // Get the Cart's CartItems
+            currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
+            foreach (CartItem cartItem in currentCart.CartItems)
+            {
+                ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+                cartItem.Product = productPortion.Product;
+                cartItem.Portion = productPortion.Portion;
+                cartItem.UnitPrice = productPortion.UnitPrice;
+                cartItem.Cart = currentCart;
+            }
+
+            // Save the Cart's Id in the session
+            _httpContextAccessor.HttpContext.Session.SetInt32(SESSION_KEY_CART_ID, currentCart.Id);
+
+            return currentCart;
+        }
+
+        private Cart GetCartInUseByUserId(string userId)
+        {
+            return _context.Carts.FirstOrDefault(c => c.UserId == userId && !c.CheckedOut);
+        }
+
+        private Cart GetCartInUseById(int cartId)
+        {
+            return _context.Carts.FirstOrDefault(c => c.Id == cartId && !c.CheckedOut);
+        }
+
+        private Cart AddNewCartToDatabase(string currentUserId)
+        {
+            // Create a new Cart
+            Cart newCurrentCart = new Cart()
+            {
+                CheckedOut = false,
+                UserId = currentUserId
+            };
+
+            // Add the cart to the database
+            _context.Carts.Add(newCurrentCart);
+
+            // Save any changes made to the database
+            _context.SaveChanges();
+
+            return newCurrentCart;
+        }
+        
+        public List<CartItem> GetCurrentCartItems()
+        {
+            return GetCurrentCart().CartItems;
+        }
+
+        public void AddCurrentCartItemToDatabase(ProductPortion productPortion, int quantity)
+        {
+            CartItem currentCartItem = new CartItem
+            {
+                ProductId = productPortion.ProductId,
+                PortionId = productPortion.PortionId,
+                Quantity = quantity,
+                CartId = GetCurrentCart().Id
+            };
+
+            _context.CartItems.Add(currentCartItem);
+            _context.SaveChanges();
+        }
+
+        public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId)
+        {
+            _logger.LogInformation($"Getting cart item in the current cart ...");
+
+            return GetCurrentCart().CartItems.FirstOrDefault(ci => ci.ProductId == productId && ci.PortionId == portionId);
+        }
+        #endregion
 
         #region User Data
         public List<UserData> GetAllUserDatas()
@@ -409,72 +553,6 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
 
-        public List<CartItem> GetCartItemsByUserId(string userId, bool attachReferences = true)
-        {
-            try
-            {
-                _logger.LogInformation($"Getting cart items by user id {userId} ...");
-
-                var cartItems = _context.CartItems.Where(ci => ci.UserId == userId).ToList();
-
-                // attach product obj on each corresponding cart item
-                foreach (var cartItem in cartItems)
-                {
-                    ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
-
-                    if (attachReferences)
-                    {
-                        // attach product obj on each corresponding cart item
-                        cartItem.Product = productPortion.Product;
-                        cartItem.Portion = productPortion.Portion;
-                    }
-
-                    cartItem.UnitPrice = productPortion.UnitPrice;
-                }
-
-                return cartItems;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Failed to get cart items by user id {userId}: {e}");
-
-                return null;
-            }
-        }
-
-        public CartItem GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(string userId, int productId, int portionId, bool attachReferences = true)
-        {
-            try
-            {
-                _logger.LogInformation($"Getting cart items by user id {userId} ...");
-
-                var cartItem = _context.CartItems.AsNoTracking().FirstOrDefault(ci => 
-                    ci.UserId == userId && ci.ProductId == productId && ci.PortionId == portionId
-                );
-
-                if (cartItem == null) return null;
-
-                ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
-
-                if (attachReferences)
-                {
-                    // attach product obj on each corresponding cart item
-                    cartItem.Product = productPortion.Product;
-                    cartItem.Portion = productPortion.Portion;
-                }
-
-                cartItem.UnitPrice = productPortion.UnitPrice;
-
-                return cartItem;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Failed to get cart items by user id {userId}: {e}");
-
-                return null;
-            }
-        }
-
         public void Add(CartItem cartItem)
         {
             try
@@ -495,6 +573,11 @@ namespace PizzaWebsite.Data.Repositories
             {
                 _logger.LogInformation("Updating cart item ...");
 
+                // Set all related objects to null to avoid EF jank
+                cartItem.Cart = null;
+                cartItem.Portion = null;
+                cartItem.Product = null;
+
                 _context.CartItems.Update(cartItem);
             }
             catch (Exception e)
@@ -508,6 +591,11 @@ namespace PizzaWebsite.Data.Repositories
             try
             {
                 _logger.LogInformation("Deleting cart item ...");
+
+                // Set all related objects to null to avoid EF jank
+                cartItem.Cart = null;
+                cartItem.Portion = null;
+                cartItem.Product = null;
 
                 _context.CartItems.Remove(cartItem);
             }
