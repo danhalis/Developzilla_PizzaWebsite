@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Migrations
 {
     [DbContext(typeof(PizzaWebsiteDbContext))]
-    partial class PizzaWebsiteContextModelSnapshot : ModelSnapshot
+    [Migration("20211130012844_Update_CartItem")]
+    partial class Update_CartItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,6 +34,9 @@ namespace PizzaWebsite.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProductPortionId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -40,9 +45,7 @@ namespace PizzaWebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PortionId");
-
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductPortionId");
 
                     b.ToTable("CartItems");
                 });
@@ -90,13 +93,9 @@ namespace PizzaWebsite.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Label")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Label")
-                        .IsUnique()
-                        .HasFilter("[Label] IS NOT NULL");
 
                     b.ToTable("Portions");
                 });
@@ -148,7 +147,7 @@ namespace PizzaWebsite.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("UnitPrice")
-                        .HasColumnType("money");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -194,21 +193,11 @@ namespace PizzaWebsite.Migrations
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.CartItem", b =>
                 {
-                    b.HasOne("PizzaWebsite.Data.Entities.Portion", "Portion")
+                    b.HasOne("PizzaWebsite.Data.Entities.ProductPortion", "ProductPortion")
                         .WithMany()
-                        .HasForeignKey("PortionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductPortionId");
 
-                    b.HasOne("PizzaWebsite.Data.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Portion");
-
-                    b.Navigation("Product");
+                    b.Navigation("ProductPortion");
                 });
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.ProductPortion", b =>

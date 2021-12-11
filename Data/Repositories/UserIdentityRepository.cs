@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +14,14 @@ namespace PizzaWebsite.Data.Repositories
 
     public class UserIdentityRepository : IUserIdentityRepository
     {
-        
+        private readonly UserIdentityDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+
+        public UserIdentityRepository(UserIdentityDbContext context, 
+                                        UserManager<IdentityUser> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data;
 using PizzaWebsite.Data.Entities;
-using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Models;
 using PizzaWebsite.Services.GoogleMaps;
 using PizzaWebsite.Services.reCAPTCHA_v2;
@@ -17,7 +16,6 @@ namespace PizzaWebsite.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly PizzaWebsiteDbContext _context;
-        private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
         private readonly IReCaptchaVerifier _reCaptchaVerifier;
         private readonly IGeocoder _geocoder;
         private readonly IEmailSender _emailSender;
@@ -25,26 +23,18 @@ namespace PizzaWebsite.Controllers
 
         public HomeController(ILogger<HomeController> logger, 
                             PizzaWebsiteDbContext context, 
-                            IPizzaWebsiteRepository pizzaWebsiteRepository, 
                             IReCaptchaVerifier reCaptchaVerifier, 
                             IGeocoder geocoder, 
                             IEmailSender emailSender)
         {
             _logger = logger;
             _context = context;
-            _pizzaWebsiteRepository = pizzaWebsiteRepository;
             _reCaptchaVerifier = reCaptchaVerifier;
             _geocoder = geocoder;
             _emailSender = emailSender;
         }
 
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        [HttpGet("Menu")]
-        public IActionResult Menu()
         {
             return View();
         }
@@ -130,52 +120,6 @@ namespace PizzaWebsite.Controllers
         {
             ViewBag.Title = "About Us";
             
-            return View();
-        }
-
-        [HttpGet("Pizzas")]
-        public IActionResult Pizzas()
-        {
-            ViewBag.Title = "Pizza Menu";
-
-            var pizzas = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Pizza);
-
-            return View(pizzas);
-        }
-
-        [HttpGet("Drinks")]
-        public IActionResult Drinks()
-        {
-            ViewBag.Title = "Drink Menu";
-
-            var drinks = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Drink);
-
-            return View(drinks);
-        }
-
-        [HttpGet("Burgers")]
-        public IActionResult Burgers()
-        {
-            ViewBag.Title = "Burger Menu";
-
-            var burgers = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Burger);
-
-            return View(burgers);
-        }
-
-        [HttpGet("Sides")]
-        public IActionResult Sides()
-        {
-            ViewBag.Title = "Side Menu";
-
-            var sides = _pizzaWebsiteRepository.GetProductsByCategory(ProductCategory.Side);
-
-            return View(sides);
-        }
-
-        [HttpGet("Privacy")]
-        public IActionResult Privacy()
-        {
             return View();
         }
 

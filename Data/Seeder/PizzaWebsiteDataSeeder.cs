@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using PizzaWebsite.Data;
 using PizzaWebsite.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,11 +12,13 @@ namespace PizzaWebsite.Data.Seeder
     public class PizzaWebsiteDataSeeder
     {
         private readonly IWebHostEnvironment _host;
+        private readonly UserIdentityDbContext _identityContext;
         private readonly PizzaWebsiteDbContext _context;
 
-        public PizzaWebsiteDataSeeder(IWebHostEnvironment host, PizzaWebsiteDbContext context)
+        public PizzaWebsiteDataSeeder(IWebHostEnvironment host, UserIdentityDbContext identityContext, PizzaWebsiteDbContext context)
         {
             _host = host;
+            _identityContext = identityContext;
             _context = context;
         }
 
@@ -23,6 +26,31 @@ namespace PizzaWebsite.Data.Seeder
         {            
             // ensure that the database exists
             _context.Database.EnsureCreated();
+
+            // if there are no user datas
+            if (!_context.UserDatas.Any())
+            {
+                var userdatasFile = Path.Combine(_host.ContentRootPath, "Data/SampleData/userdatas.json");
+
+                var userdatasJson = File.ReadAllText(userdatasFile);
+
+                var userdatas = JsonConvert.DeserializeObject<IEnumerable<UserData>>(userdatasJson).ToList();
+
+                _context.UserDatas.AddRange(userdatas);
+
+                var users = _identityContext.Users.ToList();
+
+                if (users.Count < userdatas.Count)
+                {
+                    throw new InvalidOperationException("Could not create user datas due to missing users.");
+                }
+
+                // attach user ids to user datas
+                for (int i = 0; i < userdatas.Count; i++)
+                {
+                    userdatas[i].UserId = users[i].Id;
+                }
+            }
 
             // if there are no Products
             if (!_context.Products.Any())
@@ -42,7 +70,6 @@ namespace PizzaWebsite.Data.Seeder
                 {
                     Product product = new Product()
                     {
-                        Id = deserializedProduct.Id,
                         Name = deserializedProduct.Name,
                         Description = deserializedProduct.Description,
                         ImageName = deserializedProduct.ImageName
@@ -66,7 +93,6 @@ namespace PizzaWebsite.Data.Seeder
                         {
                             portion = new Portion()
                             {
-                                Id = 0,
                                 Label = deserializedProduct.Portions[portionPriceIterator]
                             };
                             portions.Add(portion);
@@ -75,7 +101,6 @@ namespace PizzaWebsite.Data.Seeder
                         // Set up the ProductPortion that connects the Product and Portion
                         ProductPortion productPortion = new ProductPortion()
                         {
-                            Id = 0,
                             Product = product,
                             Portion = portion,
                             UnitPrice = deserializedProduct.Prices[portionPriceIterator]
