@@ -301,7 +301,28 @@ namespace PizzaWebsite.Data.Repositories
 
         public void AddNewOrder()
         {
+            // Get the user's cart and mark it as checked out
             Cart orderCart = GetCurrentCart();
+            orderCart.CheckedOut = true;
+
+            // Needed to stop EF jank
+            orderCart.CartItems = null;
+
+            // Create a new order with all relevant information
+            Order order = new Order()
+            {
+                CartId = orderCart.Id,
+                Status = Status.Ordered,
+                OrderTime = new DateTime(),
+
+                // To justify not using delivery orders for now
+                ReceptionMethod = ReceptionMethod.Pickup
+            };
+
+            // Add the order to the database and update the cart
+            _context.Carts.Update(orderCart);
+            _context.Orders.Add(order);
+            _context.SaveChanges();
         }
 
         #endregion
