@@ -23,7 +23,11 @@
 }
 
 .select-product-portion {
-    max-width: 12em;
+    max-width: 10em;
+}
+
+.select-product-quantity {
+    max-width: 3em;
 }
 
 .product-add-to-cart {

@@ -24,9 +24,14 @@
             // get the selected portion
             let portionName = document.querySelector(`.select-product-portion[product-id='${productId}']`).value;
 
-            // update "Add to cart" form
+            // get the selected quantity
+            let quantity = document.querySelector(`.select-product-quantity[product-id='${productId}']`).value;
+
+            // update "Add to cart" form with the portion and quantity
             let chosenProductPortion = document.querySelector(`.chosen-portion[product-id='${productId}']`);
+            let chosenProductQuantity = document.querySelector(`.chosen-quantity[product-id='${productId}']`);
             chosenProductPortion.value = portionName;
+            chosenProductQuantity.value = quantity;
         });
     });
 });

@@ -7,7 +7,7 @@
 <h1>Cart</h1>
 
 <p>
-    <a asp-controller="Home" asp-action="Menu">Add more</a>
+    <a asp-controller="Menu" asp-action="Index">Add more items</a>
 </p>
 <table class="table table-hover">
     <thead>
@@ -43,7 +43,7 @@
                     @((item.UnitPrice * item.Quantity).ToString("c2"))
                 </td>
                 <td>
-                    <a asp-controller="Cart" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-controller="Cart" asp-action="Delete" asp-route-productId="@item.ProductId" asp-route-portionId="@item.PortionId">Delete</a>
                 </td>
             </tr>
         }
