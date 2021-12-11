@@ -46,6 +46,12 @@ namespace PizzaWebsite.Data.Repositories
         public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId);
         #endregion
 
+        #region Order
+
+        public void AddNewOrder();
+
+        #endregion
+
         #region User Data
         /// <summary>
         /// Retrieves a <see cref="List{T}"/> of all <see cref="UserData"/> from the database.
@@ -289,6 +295,15 @@ namespace PizzaWebsite.Data.Repositories
 
             return GetCurrentCart().CartItems.FirstOrDefault(ci => ci.ProductId == productId && ci.PortionId == portionId);
         }
+        #endregion
+
+        #region Order
+
+        public void AddNewOrder()
+        {
+            Cart orderCart = GetCurrentCart();
+        }
+
         #endregion
 
         #region User Data
