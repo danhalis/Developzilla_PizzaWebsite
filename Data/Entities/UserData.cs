@@ -26,8 +26,7 @@ namespace PizzaWebsite.Data.Entities
 
         //
 
-
-        public Enum DeliveryArea { get; set; }
+        public string DeliveryArea { get; set; }
 
         [DataType(DataType.PostalCode)]
         public string PostalCode { get; set; }

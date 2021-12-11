@@ -117,8 +117,19 @@ namespace PizzaWebsite.Data.Seeder
                 _context.Portions.AddRange(portions);
             }
 
+            
+            if (!_context.Carts.Any())
+            {
+                SeedCart();
+            }
+
             // Commit changes to the database
             _context.SaveChanges();
+        }
+
+        private void SeedCart()
+        {
+
         }
     }
 }
