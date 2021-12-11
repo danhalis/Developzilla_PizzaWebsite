@@ -21,6 +21,11 @@ namespace PizzaWebsite.Data.Entities
         public string CustomerLastName { get; set; }
 
         public DateTime OrderTime { get; set; }
+
+        [Required]
+        public Status Status { get; set; }
+
+        public ReceptionMethod ReceptionMethod { get; set; }
     }
 
     public enum Status
