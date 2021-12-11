@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace PizzaWebsite.Data.Repositories

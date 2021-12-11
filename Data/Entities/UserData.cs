@@ -20,7 +20,18 @@ namespace PizzaWebsite.Data.Entities
         public string LastName { get; set; }
 
         public byte[] ProfilePicture { get; set; }
-
+        
         public string DeliveryAddress { get; set; }
+
+
+        //
+
+
+        public Enum DeliveryArea { get; set; }
+
+        [DataType(DataType.PostalCode)]
+        public string PostalCode { get; set; }
+
+
     }
 }

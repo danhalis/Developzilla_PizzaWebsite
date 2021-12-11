@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
-using PizzaWebsite.Data;
 using PizzaWebsite.Data.Entities;
 using System;
 using System.Collections.Generic;

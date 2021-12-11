@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace PizzaWebsite.Data.Entities
 {
     public class Order
     {
+        [Key]
         public int Id { get; set; }
 
         public int CartId { get; set; }
@@ -24,18 +23,24 @@ namespace PizzaWebsite.Data.Entities
         public DateTime OrderTime { get; set; }
     }
 
+    public enum Status
+    {
+        Ordered, //When front end or user makes an order.
+        Preparing, //When cook is cooking items in an order.
+        Ready, //When cook is done cooking items and its ready for pickup/delivery
+        Pending, //When either currently delivering or currently waiting for pickup
+        Completed //When order has been delivered or picked up.
+    }
+
     public enum PaymentType
     {
         Cash,
         Credit
     }
 
-    public class DeliveryOrder : Order
+    public enum ReceptionMethod
     {
-        public string DeliveryArea { get; set; }
-
-        public string DeliveryAddress { get; set; }
-
-        public string PostalCode { get; set; }
+        Pickup,
+        Delivery
     }
 }
