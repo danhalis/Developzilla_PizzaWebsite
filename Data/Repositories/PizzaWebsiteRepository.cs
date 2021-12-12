@@ -15,8 +15,9 @@ namespace PizzaWebsite.Data.Repositories
         /// <summary>
         /// Gets the current <see cref="Cart"/>, which is determined by the user's session and account.
         /// </summary>
+        /// <param name="getCartItems">If true, fill the current <see cref="Cart"/> with its items, otherwise leave the list of <see cref="Cart.CartItems"/> as null.</param>
         /// <returns>The current <see cref="Cart"/>, which is determined by the user's session and account.</returns>
-        Cart GetCurrentCart();
+        Cart GetCurrentCart(Boolean getCartItems = true);
 
         /// <summary>
         /// Gets the <see cref="List{CartItem}"/> stored in the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
@@ -44,6 +45,12 @@ namespace PizzaWebsite.Data.Repositories
         /// in the user's current <see cref="Cart"/> if it exists, or <see cref="null"/> otherwise.
         /// </returns>
         public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId);
+        #endregion
+
+        #region Order
+
+        public void AddNewOrder();
+
         #endregion
 
         #region User Data
@@ -170,7 +177,7 @@ namespace PizzaWebsite.Data.Repositories
         }
 
         #region Cart
-        public Cart GetCurrentCart()
+        public Cart GetCurrentCart(Boolean getCartItems = true)
         {
             // Get the user's id (null if a guest called this method)
             string currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -219,15 +226,18 @@ namespace PizzaWebsite.Data.Repositories
                 currentCart = AddNewCartToDatabase(currentUserId);
             }
 
-            // Get the Cart's CartItems
-            currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
-            foreach (CartItem cartItem in currentCart.CartItems)
+            // Get the Cart's CartItems if requested
+            if (getCartItems)
             {
-                ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
-                cartItem.Product = productPortion.Product;
-                cartItem.Portion = productPortion.Portion;
-                cartItem.UnitPrice = productPortion.UnitPrice;
-                cartItem.Cart = currentCart;
+                currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
+                foreach (CartItem cartItem in currentCart.CartItems)
+                {
+                    ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                    cartItem.UnitPrice = productPortion.UnitPrice;
+                    cartItem.Cart = currentCart;
+                }
             }
 
             // Save the Cart's Id in the session
@@ -289,6 +299,35 @@ namespace PizzaWebsite.Data.Repositories
 
             return GetCurrentCart().CartItems.FirstOrDefault(ci => ci.ProductId == productId && ci.PortionId == portionId);
         }
+        #endregion
+
+        #region Order
+
+        public void AddNewOrder()
+        {
+            _logger.LogInformation($"Checking out the user's Cart to make a new Order.");
+
+            // Get the user's cart and mark it as checked out so that it can no longer be accessed
+            Cart orderCart = GetCurrentCart(false);
+            orderCart.CheckedOut = true;
+
+            // Create a new order with all relevant information
+            Order order = new Order()
+            {
+                CartId = orderCart.Id,
+                Status = Status.Ordered,
+                OrderTime = DateTime.Now,
+
+                // To justify not using delivery orders for now
+                ReceptionMethod = ReceptionMethod.Pickup
+            };
+
+            // Add the order to the database and update the cart
+            _context.Carts.Update(orderCart);
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+        }
+
         #endregion
 
         #region User Data
