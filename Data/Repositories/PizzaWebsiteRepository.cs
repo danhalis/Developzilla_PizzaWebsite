@@ -46,6 +46,12 @@ namespace PizzaWebsite.Data.Repositories
         public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId);
         #endregion
 
+        #region Order
+
+        public void AddNewOrder();
+
+        #endregion
+
         #region User Data
         /// <summary>
         /// Retrieves a <see cref="List{T}"/> of all <see cref="UserData"/> from the database.
@@ -289,6 +295,36 @@ namespace PizzaWebsite.Data.Repositories
 
             return GetCurrentCart().CartItems.FirstOrDefault(ci => ci.ProductId == productId && ci.PortionId == portionId);
         }
+        #endregion
+
+        #region Order
+
+        public void AddNewOrder()
+        {
+            // Get the user's cart and mark it as checked out
+            Cart orderCart = GetCurrentCart();
+            orderCart.CheckedOut = true;
+
+            // Needed to stop EF jank
+            orderCart.CartItems = null;
+
+            // Create a new order with all relevant information
+            Order order = new Order()
+            {
+                CartId = orderCart.Id,
+                Status = Status.Ordered,
+                OrderTime = new DateTime(),
+
+                // To justify not using delivery orders for now
+                ReceptionMethod = ReceptionMethod.Pickup
+            };
+
+            // Add the order to the database and update the cart
+            _context.Carts.Update(orderCart);
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+        }
+
         #endregion
 
         #region User Data

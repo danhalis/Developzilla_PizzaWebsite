@@ -12,7 +12,7 @@ using System.Diagnostics;
 namespace PizzaWebsite.Controllers
 {
     /// <summary>
-    /// Controller that blocks unauthorized website users and forces them to login.
+    /// Controller that allows one to manage their cart.
     /// </summary>
     public class CartController : Controller
     {
@@ -69,7 +69,7 @@ namespace PizzaWebsite.Controllers
         }
 
         [HttpPost()]
-        public IActionResult Add(MenuItemViewModel menuItemViewModel)
+        public IActionResult AddCartItem(MenuItemViewModel menuItemViewModel)
         {
             int portionId = _pizzaRepository.GetPortionIdByLabel(menuItemViewModel.ChosenProductPortion);
             ProductPortion productPortion = _pizzaRepository.GetProductAndPortionById(menuItemViewModel.ChosenProductId, portionId);
@@ -140,6 +140,19 @@ namespace PizzaWebsite.Controllers
             }
 
             return RedirectToAction("Items");
+        }
+
+        [HttpPost()]
+        public IActionResult AddOrder(CheckoutViewModel checkoutViewModel)
+        {
+            _pizzaRepository.AddNewOrder();
+            return RedirectToAction("CheckoutSuccess", "Cart", new { area = "" });
+        }
+
+        [HttpGet("CheckoutSuccess")]
+        public IActionResult CheckoutSuccess()
+        {
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
