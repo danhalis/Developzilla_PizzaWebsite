@@ -50,6 +50,9 @@ namespace PizzaWebsite.Data.Repositories
         #region Order
 
         public void AddNewOrder();
+        public void Update(Order order);
+        public List<Order> GetAllOrders();
+        public void Remove(Order order);
 
         #endregion
 
@@ -317,6 +320,7 @@ namespace PizzaWebsite.Data.Repositories
                 CartId = orderCart.Id,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
+                //Cart is not being added properly and is seen as null.
 
                 // To justify not using delivery orders for now
                 ReceptionMethod = ReceptionMethod.Pickup
@@ -328,6 +332,54 @@ namespace PizzaWebsite.Data.Repositories
             _context.SaveChanges();
         }
 
+        public void Update(Order order)
+        {
+            try
+            {
+                _logger.LogInformation("Updating cart item ...");
+
+                // Set all related objects to null to avoid EF jank
+                order.Cart = null;
+
+                _context.Orders.Update(order);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to update order: {e}");
+            }
+        }
+        public void Remove(Order order)
+        {
+            try
+            {
+                _logger.LogInformation("Deleting cart item ...");
+
+                // Set all related objects to null to avoid EF jank
+                order.Cart = null;
+
+                _context.Orders.Remove(order);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to delete cart item: {e}");
+            }
+        }
+
+        public List<Order> GetAllOrders()
+        {
+            try
+            {
+                _logger.LogInformation("Getting all orders...");
+
+                return _context.Orders.ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get all orders: {e}");
+
+                return null;
+            }
+        }
         #endregion
 
         #region User Data
@@ -644,7 +696,6 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
         #endregion
-
         public bool SaveAll()
         {
             return _context.SaveChanges() > 0;

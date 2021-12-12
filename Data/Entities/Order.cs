@@ -26,6 +26,14 @@ namespace PizzaWebsite.Data.Entities
         public Status Status { get; set; }
 
         public ReceptionMethod ReceptionMethod { get; set; }
+
+
+        [DataType(DataType.Date)]
+        public DateTime? TimeAccepted { get; set; }
+
+        [DataType(DataType.Date)]
+
+        public DateTime? TimeCompleted { get; set; }
     }
 
     public enum Status
