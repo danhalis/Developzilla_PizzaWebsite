@@ -12,8 +12,9 @@ using System.Diagnostics;
 namespace PizzaWebsite.Controllers
 {
     /// <summary>
-    /// Controller that allows one to manage their cart.
+    /// Controller that blocks unauthorized website users and forces them to login.
     /// </summary>
+    [Authorize]
     public class CartController : Controller
     {
         private readonly ILogger<CartController> _logger;
@@ -38,7 +39,8 @@ namespace PizzaWebsite.Controllers
         public IActionResult Checkout()
         {
             // Checkout can only be accessed if the user has items in their cart.
-            if (_pizzaRepository.GetCurrentCartItems().Count <= 0)
+            var cartItems = _pizzaRepository.GetCartItemsByUserId(_userManager.GetUserId(User));
+            if (cartItems.Count <= 0)
             {
                 // Assisted by https://stackoverflow.com/questions/10785245/redirect-to-action-in-another-controller
                 return RedirectToAction("Index", "Menu", new { area = "" });
@@ -50,7 +52,9 @@ namespace PizzaWebsite.Controllers
         [HttpGet("Items")]
         public IActionResult Items()
         {
-            var cartItems = _pizzaRepository.GetCurrentCartItems();
+            var userId = _userManager.GetUserId(User);
+
+            var cartItems = _pizzaRepository.GetCartItemsByUserId(userId);
 
             decimal total = 0;
 
@@ -69,22 +73,44 @@ namespace PizzaWebsite.Controllers
         }
 
         [HttpPost()]
-        public IActionResult AddCartItem(MenuItemViewModel menuItemViewModel)
+        public IActionResult Add(MenuItemViewModel menuItemViewModel)
         {
             int portionId = _pizzaRepository.GetPortionIdByLabel(menuItemViewModel.ChosenProductPortion);
-            ProductPortion productPortion = _pizzaRepository.GetProductAndPortionById(menuItemViewModel.ChosenProductId, portionId);
-            CartItem cartItem = _pizzaRepository.GetCurrentCartItemByPortionIdAndProductId(menuItemViewModel.ChosenProductId, portionId);
 
-            // If the selected product of the selected portion was not added yet to the cart
+            CartItem cartItem = _pizzaRepository.GetCartItemByProductIdAndUserIdAndProductIdAndPortionId(
+                _userManager.GetUserId(User),
+                menuItemViewModel.ChosenProductId,
+                portionId,
+                false);
+
+            // if the selected product of the selected portion was not added yet to the cart
             if (cartItem == null)
             {
-                // Add a new CartItem to the current Order
-                _pizzaRepository.AddCurrentCartItemToDatabase(productPortion, menuItemViewModel.ChosenProductQuantity);
+                cartItem = new CartItem
+                {
+                    UserId = _userManager.GetUserId(User),
+                    ProductId = menuItemViewModel.ChosenProductId,
+                    PortionId = portionId,
+                    Quantity = menuItemViewModel.ChosenProductQuantity
+                };
+
+                _pizzaRepository.Add(cartItem);
+
+                // save changes
+                if (!_pizzaRepository.SaveAll())
+                {
+                    // redirect to an error page
+                    return RedirectToAction("Error", "Home", new ErrorViewModel
+                    {
+                        Message = "Failed to add item to the cart."
+                    });
+                }
             }
-            // If the selected product of the selected portion was already added to the cart, then increase its quantity accordingly
+            // if the selected product of the selected portion was already added to the cart
             else
             {
                 cartItem.Quantity += menuItemViewModel.ChosenProductQuantity;
+
                 _pizzaRepository.Update(cartItem);
 
                 // save changes
@@ -98,8 +124,7 @@ namespace PizzaWebsite.Controllers
                 }
             }
 
-
-            switch (productPortion.Product.Category)
+            switch (_pizzaRepository.GetProductById(cartItem.ProductId).Category)
             {
                 case ProductCategory.Pizza:
                     return RedirectToAction("Pizzas", "Menu", new { area = "" });
@@ -114,9 +139,9 @@ namespace PizzaWebsite.Controllers
             }
         }
 
-        public IActionResult Delete(int productId, int portionId)
+        public IActionResult Delete(int id)
         {
-            CartItem cartItem = _pizzaRepository.GetCurrentCartItemByPortionIdAndProductId(productId, portionId);
+            CartItem cartItem = _pizzaRepository.GetCartItemById(id, false);
 
             if (cartItem == null)
             {
@@ -140,19 +165,6 @@ namespace PizzaWebsite.Controllers
             }
 
             return RedirectToAction("Items");
-        }
-
-        [HttpPost()]
-        public IActionResult AddOrder(CheckoutViewModel checkoutViewModel)
-        {
-            _pizzaRepository.AddNewOrder();
-            return RedirectToAction("CheckoutSuccess", "Cart", new { area = "" });
-        }
-
-        [HttpGet("CheckoutSuccess")]
-        public IActionResult CheckoutSuccess()
-        {
-            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
