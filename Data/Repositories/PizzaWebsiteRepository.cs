@@ -54,6 +54,9 @@ namespace PizzaWebsite.Data.Repositories
         public List<Order> GetAllOrders();
         public void Remove(Order order);
 
+        Order GetOrderById(int orderId);
+
+
         #endregion
 
         #region User Data
@@ -320,6 +323,7 @@ namespace PizzaWebsite.Data.Repositories
                 CartId = orderCart.Id,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
+
                 //Cart is not being added properly and is seen as null.
 
                 // To justify not using delivery orders for now
@@ -332,6 +336,26 @@ namespace PizzaWebsite.Data.Repositories
             _context.SaveChanges();
         }
 
+        public Order GetOrderById(int orderId)
+        {
+
+            try
+            {
+                _logger.LogInformation($"Getting order by id {orderId} ...");
+
+                Order order = _context.Orders.FirstOrDefault(o => o.Id == orderId);
+
+                return order;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get order by id {orderId}: {e}");
+
+                return null;
+            }
+
+        }
+
         public void Update(Order order)
         {
             try
@@ -341,7 +365,14 @@ namespace PizzaWebsite.Data.Repositories
                 // Set all related objects to null to avoid EF jank
                 order.Cart = null;
 
-                _context.Orders.Update(order);
+                _logger.LogInformation(order.Id.ToString());
+                _logger.LogInformation(order.Status.ToString());
+
+
+                this._context.Orders.Update(order);
+                _logger.LogInformation("saving changes");
+
+                this._context.SaveChanges();
             }
             catch (Exception e)
             {
@@ -700,5 +731,6 @@ namespace PizzaWebsite.Data.Repositories
         {
             return _context.SaveChanges() > 0;
         }
+
     }
 }
