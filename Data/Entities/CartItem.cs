@@ -25,6 +25,6 @@ namespace PizzaWebsite.Data.Entities
         [NotMapped]
         public decimal UnitPrice { get; set; }
 
-        public int Quantity { get; set; }
+        public int Quantity { get; set; }        
     }
 }

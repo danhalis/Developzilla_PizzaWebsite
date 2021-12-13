@@ -11,6 +11,7 @@ namespace PizzaWebsite.Data.Entities
 
         public Boolean CheckedOut { get; set; }
 
+
         public List<CartItem> CartItems { get; set; } = new List<CartItem>();
 
     }

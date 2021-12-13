@@ -15,8 +15,9 @@ namespace PizzaWebsite.Data.Repositories
         /// <summary>
         /// Gets the current <see cref="Cart"/>, which is determined by the user's session and account.
         /// </summary>
+        /// <param name="getCartItems">If true, fill the current <see cref="Cart"/> with its items, otherwise leave the list of <see cref="Cart.CartItems"/> as null.</param>
         /// <returns>The current <see cref="Cart"/>, which is determined by the user's session and account.</returns>
-        Cart GetCurrentCart();
+        Cart GetCurrentCart(Boolean getCartItems = true);
 
         /// <summary>
         /// Gets the <see cref="List{CartItem}"/> stored in the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
@@ -44,6 +45,18 @@ namespace PizzaWebsite.Data.Repositories
         /// in the user's current <see cref="Cart"/> if it exists, or <see cref="null"/> otherwise.
         /// </returns>
         public CartItem GetCurrentCartItemByPortionIdAndProductId(int productId, int portionId);
+        #endregion
+
+        #region Order
+
+        public void AddNewOrder();
+        public void Update(Order order);
+        public List<Order> GetAllOrders();
+        public void Remove(Order order);
+
+        Order GetOrderById(int orderId);
+
+
         #endregion
 
         #region User Data
@@ -170,7 +183,7 @@ namespace PizzaWebsite.Data.Repositories
         }
 
         #region Cart
-        public Cart GetCurrentCart()
+        public Cart GetCurrentCart(Boolean getCartItems = true)
         {
             // Get the user's id (null if a guest called this method)
             string currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -219,15 +232,18 @@ namespace PizzaWebsite.Data.Repositories
                 currentCart = AddNewCartToDatabase(currentUserId);
             }
 
-            // Get the Cart's CartItems
-            currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
-            foreach (CartItem cartItem in currentCart.CartItems)
+            // Get the Cart's CartItems if requested
+            if (getCartItems)
             {
-                ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
-                cartItem.Product = productPortion.Product;
-                cartItem.Portion = productPortion.Portion;
-                cartItem.UnitPrice = productPortion.UnitPrice;
-                cartItem.Cart = currentCart;
+                currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
+                foreach (CartItem cartItem in currentCart.CartItems)
+                {
+                    ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                    cartItem.UnitPrice = productPortion.UnitPrice;
+                    cartItem.Cart = currentCart;
+                }
             }
 
             // Save the Cart's Id in the session
@@ -288,6 +304,112 @@ namespace PizzaWebsite.Data.Repositories
             _logger.LogInformation($"Getting cart item in the current cart ...");
 
             return GetCurrentCart().CartItems.FirstOrDefault(ci => ci.ProductId == productId && ci.PortionId == portionId);
+        }
+        #endregion
+
+        #region Order
+
+        public void AddNewOrder()
+        {
+            _logger.LogInformation($"Checking out the user's Cart to make a new Order.");
+
+            // Get the user's cart and mark it as checked out so that it can no longer be accessed
+            Cart orderCart = GetCurrentCart(false);
+            orderCart.CheckedOut = true;
+
+            // Create a new order with all relevant information
+            Order order = new Order()
+            {
+                CartId = orderCart.Id,
+                Status = Status.Ordered,
+                OrderTime = DateTime.Now,
+
+                //Cart is not being added properly and is seen as null.
+
+                // To justify not using delivery orders for now
+                ReceptionMethod = ReceptionMethod.Pickup
+            };
+
+            // Add the order to the database and update the cart
+            _context.Carts.Update(orderCart);
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+        }
+
+        public Order GetOrderById(int orderId)
+        {
+
+            try
+            {
+                _logger.LogInformation($"Getting order by id {orderId} ...");
+
+                Order order = _context.Orders.FirstOrDefault(o => o.Id == orderId);
+
+                return order;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get order by id {orderId}: {e}");
+
+                return null;
+            }
+
+        }
+
+        public void Update(Order order)
+        {
+            try
+            {
+                _logger.LogInformation("Updating cart item ...");
+
+                // Set all related objects to null to avoid EF jank
+                order.Cart = null;
+
+                _logger.LogInformation(order.Id.ToString());
+                _logger.LogInformation(order.Status.ToString());
+
+
+                this._context.Orders.Update(order);
+                _logger.LogInformation("saving changes");
+
+                this._context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to update order: {e}");
+            }
+        }
+        public void Remove(Order order)
+        {
+            try
+            {
+                _logger.LogInformation("Deleting cart item ...");
+
+                // Set all related objects to null to avoid EF jank
+                order.Cart = null;
+
+                _context.Orders.Remove(order);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to delete cart item: {e}");
+            }
+        }
+
+        public List<Order> GetAllOrders()
+        {
+            try
+            {
+                _logger.LogInformation("Getting all orders...");
+
+                return _context.Orders.ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get all orders: {e}");
+
+                return null;
+            }
         }
         #endregion
 
@@ -605,10 +727,10 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
         #endregion
-
         public bool SaveAll()
         {
             return _context.SaveChanges() > 0;
         }
+
     }
 }

@@ -42,7 +42,9 @@ namespace PizzaWebsite.Data
             // set up 1-1 relationship between Cart and Order?
             // assisted by https://stackoverflow.com/questions/39505932/entity-framework-1-to-1-relationship
             //modelBuilder.Entity<Order>()
-                //.HasKey(o => o.CartId);
+            //.HasKey(o => o.CartId);
+
+            //ALSO NEED TO ACCOUNT FOR THE FACT THAT DELIVERIES WILL MAKE IT SO A USER ID (FOR THE DELIVERER) IS STORED IN ORDER
 
             // make Portion label unique
             modelBuilder.Entity<Portion>()
