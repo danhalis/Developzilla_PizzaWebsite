@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Migrations
 {
     [DbContext(typeof(PizzaWebsiteDbContext))]
-    partial class PizzaWebsiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211212021809_order-timestamps")]
+    partial class ordertimestamps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,9 +123,6 @@ namespace PizzaWebsite.Migrations
                     b.Property<string>("CustomerLastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DevilvererId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("OrderTime")
                         .HasColumnType("datetime2");
 
@@ -136,10 +135,10 @@ namespace PizzaWebsite.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("TimeAccepted")
+                    b.Property<DateTime>("TimeAccepted")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("TimeCompleted")
+                    b.Property<DateTime>("TimeCompleted")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

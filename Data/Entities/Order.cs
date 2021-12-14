@@ -1,16 +1,20 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PizzaWebsite.Data.Entities
 {
     public class Order
     {
         [Key]
+
         public int Id { get; set; }
 
         public int CartId { get; set; }
 
         public Cart Cart { get; set; }
+        
+        public virtual string DevilvererId { get; set; }
 
         public PaymentType PaymentType { get; set; }
 
@@ -26,6 +30,12 @@ namespace PizzaWebsite.Data.Entities
         public Status Status { get; set; }
 
         public ReceptionMethod ReceptionMethod { get; set; }
+
+        [DataType(DataType.DateTime)]
+        public DateTime? TimeAccepted { get; set; }
+
+        [DataType(DataType.DateTime)]
+        public DateTime? TimeCompleted { get; set; }
     }
 
     public enum Status
