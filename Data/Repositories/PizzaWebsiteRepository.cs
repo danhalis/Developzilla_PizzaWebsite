@@ -19,6 +19,7 @@ namespace PizzaWebsite.Data.Repositories
         /// <returns>The current <see cref="Cart"/>, which is determined by the user's session and account.</returns>
         Cart GetCurrentCart(Boolean getCartItems = true);
 
+        public Cart GetCartById(int id);
         /// <summary>
         /// Gets the <see cref="List{CartItem}"/> stored in the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
         /// </summary>
@@ -52,8 +53,9 @@ namespace PizzaWebsite.Data.Repositories
         public void AddNewOrder();
         public void Update(Order order);
         public List<Order> GetAllOrders();
+        public List<Order> GetAllOrdersSortByTime();
         public void Remove(Order order);
-
+        public decimal GetOrderTotal(int id);
         Order GetOrderById(int orderId);
 
 
@@ -732,5 +734,53 @@ namespace PizzaWebsite.Data.Repositories
             return _context.SaveChanges() > 0;
         }
 
+        public List<Order> GetAllOrdersSortByTime()
+        {
+            try
+            {
+                _logger.LogInformation("Getting all orders ...");
+
+                List<Order> orders = _context.Orders
+                    .OrderBy(O => O.OrderTime)
+                    .ToList();
+
+                return orders;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get all orders: {e}");
+                return null;
+            }
+        }
+
+        public decimal GetOrderTotal(int id)
+        {
+            decimal total = 0;
+            var cart = GetCartById(id);
+          
+            foreach (var cartItem in cart.CartItems)
+            {
+                total += cartItem.UnitPrice * cartItem.Quantity;
+            }
+            return total;
+        }
+
+        public Cart GetCartById(int id)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting cart by  id {id} ...");
+
+                var cart = _context.Carts.FirstOrDefault(p => p.Id == id);
+
+                return cart;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get cart by id {id}: {e}");
+
+                return null;
+            }
+        }
     }
 }
