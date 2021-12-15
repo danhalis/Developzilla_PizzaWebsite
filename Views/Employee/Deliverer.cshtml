@@ -1,4 +1,5 @@
 ﻿@using PizzaWebsite.Data.Entities
+@using System.Security.Claims;
 
 @{
     Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
@@ -68,6 +69,7 @@
                             @{
                                 Status status;
 
+
                                 switch (item.Status)
                                 {
                                     case Status.Ready:
@@ -79,13 +81,19 @@
                                            asp-route-redirectPage="Deliverer">Deliver Order</a>
                                         break;
                                     case Status.Pending:
-
-                                        <a asp-controller="Employee"
-                                           asp-action="UpdateOrderStatus"
-                                           asp-route-cartId="@item.CartId"
-                                           asp-route-orderId="@item.Id"
-                                           asp-route-newStatus="@Status.Completed"
-                                           asp-route-redirectPage="Deliverer">Complete Order</a>
+                                        @if (item.DevilvererId == null || item.DevilvererId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+                                        {
+                                            <a>Order Taken by Another Deliverer</a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Employee"
+                                               asp-action="UpdateOrderStatus"
+                                               asp-route-cartId="@item.CartId"
+                                               asp-route-orderId="@item.Id"
+                                               asp-route-newStatus="@Status.Completed"
+                                               asp-route-redirectPage="Deliverer">Complete Order</a>
+                                        }
                                         break;
                                 }
 

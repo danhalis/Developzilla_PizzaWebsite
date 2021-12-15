@@ -86,11 +86,11 @@ namespace PizzaWebsite.Controllers
         [Authorize(Roles = "Deliverer, Owner, Manager")]
         public IActionResult Deliverer()
         {
+            
             ViewBag.Orders = _pizzaRepository.GetAllOrders();
             return View();
         }
 
-        
         public IActionResult UpdateOrderStatus(int orderId, int cartId, Status newStatus, string redirectPage)
         {
 
@@ -115,14 +115,13 @@ namespace PizzaWebsite.Controllers
                     order.TimeCompleted = DateTime.Now;
                     break;
                 case Status.Pending:
-                    _logger.LogDebug("Status is Ready -> Pending");
 
                     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                     order.DevilvererId = userId;
                     break;
                 case Status.Completed:
-                    _logger.LogDebug("Status is Pending -> Complete");
+
                     if (order.DevilvererId != User.FindFirstValue(ClaimTypes.NameIdentifier))
                     {
                         order.Status = pastStatus;

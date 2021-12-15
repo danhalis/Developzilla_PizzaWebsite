@@ -76,7 +76,7 @@
                     Items
                 </th>
                 <th>
-                     
+                    Action
                 </th>
             </tr>
         </thead>
@@ -91,13 +91,54 @@
                         </td>
 
                         <td class="text-sm-center">
+                            @if (item.Cart != null)
+                            {
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                
+                                            </th>
+                                            <th>
+                                                
+                                            </th>
+                                            <th>
+                                                
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (CartItem cartItem in item.Cart.CartItems)
+                                    {
+                                        <tbody>
+                                            <tr>
+                                                <th>
+                                                    @cartItem.Product.Name
+                                                </th>
+
+                                                <th>
+                                                    @cartItem.Quantity
+                                                </th>
+
+                                                <th>
+                                                    @cartItem.Portion.Label
+                                                </th>
+
+                                                <th>
+
+                                                </th>
+                                            </tr>
+                                        </tbody>
+                                     }
+
+                                </table>
+                             }
+                        </td>
+                                                <td class="text-sm-center">
                             @Html.DisplayFor(modelItem => item.TimeAccepted)
                         </td>
-
-                        <td class="text-sm-center">
-                            List items here
-                        </td>
-
                         <td class="text-right">
                             <a asp-controller="Employee"
                                    asp-action="UpdateOrderStatus" 

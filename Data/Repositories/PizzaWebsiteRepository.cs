@@ -252,6 +252,27 @@ namespace PizzaWebsite.Data.Repositories
             return currentCart;
         }
 
+        private Cart GetCartById(int id)
+        {
+           
+            Cart currentCart = _context.Carts.FirstOrDefault(c => c.Id == id);
+
+            if (currentCart != null)
+            {
+                currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
+                foreach (CartItem cartItem in currentCart.CartItems)
+                {
+                    ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                    cartItem.UnitPrice = productPortion.UnitPrice;
+                    cartItem.Cart = currentCart;
+                }
+            }
+
+            return currentCart;
+        }
+
         private Cart GetCartInUseByUserId(string userId)
         {
             return _context.Carts.FirstOrDefault(c => c.UserId == userId && !c.CheckedOut);
@@ -323,11 +344,10 @@ namespace PizzaWebsite.Data.Repositories
                 CartId = orderCart.Id,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
+                Cart = null,
 
-                //Cart is not being added properly and is seen as null.
-
-                // To justify not using delivery orders for now
-                ReceptionMethod = ReceptionMethod.Pickup
+            // To justify not using delivery orders for now
+            ReceptionMethod = ReceptionMethod.Pickup
             };
 
             // Add the order to the database and update the cart
@@ -342,8 +362,9 @@ namespace PizzaWebsite.Data.Repositories
             try
             {
                 _logger.LogInformation($"Getting order by id {orderId} ...");
-
                 Order order = _context.Orders.FirstOrDefault(o => o.Id == orderId);
+                order.Cart = GetCartById(order.CartId);
+               _logger.LogInformation($"It's card id is {order.Cart.Id} ...");
 
                 return order;
             }
@@ -360,6 +381,8 @@ namespace PizzaWebsite.Data.Repositories
         {
             try
             {
+                _logger.LogInformation("AAAAAAAAAAAAAAAAAAAAAAAA");
+
                 _logger.LogInformation("Updating cart item ...");
 
                 // Set all related objects to null to avoid EF jank
@@ -402,7 +425,20 @@ namespace PizzaWebsite.Data.Repositories
             {
                 _logger.LogInformation("Getting all orders...");
 
-                return _context.Orders.ToList();
+
+
+                List<Order> orders = _context.Orders.ToList();
+
+                foreach(Order order in orders)
+                {
+                    if(order.Cart == null)
+                    {
+                        order.Cart = GetCartById(order.CartId);
+
+                    }
+                }
+
+                return orders;
             }
             catch (Exception e)
             {
