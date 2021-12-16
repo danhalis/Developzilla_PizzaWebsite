@@ -38,13 +38,7 @@ namespace PizzaWebsite.Data.Entities
 
         [DataType(DataType.DateTime)]
         public DateTime? TimeCompleted { get; set; }
-
-        public virtual string DeliveryArea { get; set; }
-
-        public virtual string DeliveryAddress { get; set; }
-
-        [DataType(DataType.PostalCode)]
-        public virtual string PostalCode { get; set; }
+        public UserData UserData { get; set; }
     }
 
     public enum Status

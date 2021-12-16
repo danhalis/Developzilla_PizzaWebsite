@@ -90,10 +90,10 @@ namespace PizzaWebsite.Data.Seeder
                     await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
                     break;
                 case Roles.Deliverer:
-                    await _userManager.AddToRoleAsync(user, Roles.Deliverer.ToString());
+                    await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
                     break;
                 case Roles.Front:
-                    await _userManager.AddToRoleAsync(user, Roles.Front.ToString());
+                    await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
                     break;
             }
         }

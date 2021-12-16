@@ -25,44 +25,40 @@
             </tr>
         </thead>
         <tbody>
-
-            @if (ViewBag.Orders != null)
+            @foreach (Order item in ViewBag.Orders)
             {
-                @foreach (Order item in ViewBag.Orders)
+                @if (item.Status == Status.Ordered)
                 {
-                    @if (item.Status == Status.Ordered)
-                    {
-                        <tr>
-                            <td>
-                                @item.Id
-                            </td>
+                    <tr>
+                        <td>
+                            @item.Id
+                        </td>
 
-                            <td class="text-sm-center">
-                                @Html.DisplayFor(modelItem => item.OrderTime)
-                            </td>
+                        <td class="text-sm-center">
+                            @Html.DisplayFor(modelItem => item.OrderTime)
+                        </td>
 
-                            <td class="text-sm-center">
-                                <table class="table table-hover">
-                                    @item.CartId
-                                </table>
+                        <td class="text-sm-center">
+                            <table class="table table-hover">
+                                @item.CartId
+                            </table>
 
-                            </td>
+                        </td>
 
-                            <td class="text-right">
-                                <a asp-controller="Employee"
-                                   asp-action="UpdateOrderStatus"
-                                   asp-route-cartId="@item.CartId"
-                                   asp-route-orderId="@item.Id"
+                        <td class="text-right">
+                            <a asp-controller="Employee"
+                                   asp-action="UpdateOrderStatus" 
+                                   asp-route-cartId="@item.CartId" 
+                                   asp-route-orderId="@item.Id" 
                                    asp-route-newStatus="@Status.Preparing"
                                    asp-route-redirectPage="Cook">Start Cooking</a>
-                            </td>
-                        </tr>
-                    }
+                        </td>
+                    </tr>
                 }
-                <tr>
-                    <td colspan="5"></td>
-                </tr>
             }
+            <tr>
+                <td colspan="5"></td>
+            </tr>
         </tbody>
     </table>
 
@@ -80,87 +76,42 @@
                     Items
                 </th>
                 <th>
-                    Action
+                     
                 </th>
             </tr>
         </thead>
         <tbody>
-            @if (ViewBag.Orders != null)
+            @foreach (Order item in ViewBag.Orders)
             {
-                @foreach (Order item in ViewBag.Orders)
+                @if (item.Status == Status.Preparing)
                 {
-                    @if (item.Status == Status.Preparing)
-                    {
-                        <tr>
-                            <td>
-                                @item.Id
-                            </td>
+                    <tr>
+                        <td>
+                            @item.Id
+                        </td>
 
-                            <td class="text-sm-center">
-                                @if (item.Cart != null)
-                                {
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>
+                        <td class="text-sm-center">
+                            @Html.DisplayFor(modelItem => item.TimeAccepted)
+                        </td>
 
-                                                </th>
-                                                <th>
+                        <td class="text-sm-center">
+                            List items here
+                        </td>
 
-                                                </th>
-                                                <th>
-
-                                                </th>
-                                                <th>
-
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        @foreach (CartItem cartItem in item.Cart.CartItems)
-                                        {
-                                            <tbody>
-                                                <tr>
-                                                    <th>
-                                                        @cartItem.Product.Name
-                                                    </th>
-
-                                                    <th>
-                                                        @cartItem.Quantity
-                                                    </th>
-
-                                                    <th>
-                                                        @cartItem.Portion.Label
-                                                    </th>
-
-                                                    <th>
-
-                                                    </th>
-                                                </tr>
-                                            </tbody>
-                                        }
-
-                                    </table>
-                                }
-                            </td>
-                            <td class="text-sm-center">
-                                @Html.DisplayFor(modelItem => item.TimeAccepted)
-                            </td>
-                            <td class="text-right">
-                                <a asp-controller="Employee"
-                                   asp-action="UpdateOrderStatus"
-                                   asp-route-cartId="@item.CartId"
-                                   asp-route-orderId="@item.Id"
+                        <td class="text-right">
+                            <a asp-controller="Employee"
+                                   asp-action="UpdateOrderStatus" 
+                                   asp-route-cartId="@item.CartId" 
+                                   asp-route-orderId="@item.Id" 
                                    asp-route-newStatus="@Status.Ready"
                                    asp-route-redirectPage="Cook">Order Ready</a>
-                            </td>
-                        </tr>
-                    }
+                        </td>
+                    </tr>
                 }
-                <tr>
-                    <td colspan="5"></td>
-                </tr>
             }
-
+            <tr>
+                <td colspan="5"></td>
+            </tr>
         </tbody>
     </table>
 
@@ -177,27 +128,24 @@
             </tr>
         </thead>
         <tbody>
-            @if (ViewBag.Orders != null)
+            @foreach (Order item in ViewBag.Orders)
             {
-                @foreach (Order item in ViewBag.Orders)
+                @if (item.Status == Status.Ready)
                 {
-                    @if (item.Status == Status.Ready)
-                    {
-                        <tr>
-                            <td>
-                                @item.Id
-                            </td>
+                    <tr>
+                        <td>
+                            @item.Id
+                        </td>
 
-                            <td class="text-sm-center">
-                                @Html.DisplayFor(modelItem => item.TimeCompleted)
-                            </td>
-                        </tr>
-                    }
+                        <td class="text-sm-center">
+                            @Html.DisplayFor(modelItem => item.TimeCompleted)
+                        </td>
+                    </tr>
                 }
-                <tr>
-                    <td colspan="5"></td>
-                </tr>
             }
+            <tr>
+                <td colspan="5"></td>
+            </tr>
         </tbody>
     </table>
 </div>
