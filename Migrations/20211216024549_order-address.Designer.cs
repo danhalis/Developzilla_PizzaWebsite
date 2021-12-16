@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Migrations
 {
     [DbContext(typeof(PizzaWebsiteDbContext))]
-    partial class PizzaWebsiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211216024549_order-address")]
+    partial class orderaddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,9 +49,6 @@ namespace PizzaWebsite.Migrations
                     b.Property<int>("CartId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PortionId")
                         .HasColumnType("int");
 
@@ -62,8 +61,6 @@ namespace PizzaWebsite.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
-
-                    b.HasIndex("OrderId");
 
                     b.HasIndex("PortionId");
 
@@ -105,26 +102,6 @@ namespace PizzaWebsite.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contacts");
-                });
-
-            modelBuilder.Entity("PizzaWebsite.Data.Entities.FavoriteItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("FavoriteItems");
                 });
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.Order", b =>
@@ -176,17 +153,9 @@ namespace PizzaWebsite.Migrations
                     b.Property<DateTime?>("TimeCompleted")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UserDataId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
-
-                    b.HasIndex("UserDataId");
 
                     b.ToTable("Orders");
                 });
@@ -315,10 +284,6 @@ namespace PizzaWebsite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PizzaWebsite.Data.Entities.Order", null)
-                        .WithMany("CartItems")
-                        .HasForeignKey("OrderId");
-
                     b.HasOne("PizzaWebsite.Data.Entities.Portion", "Portion")
                         .WithMany()
                         .HasForeignKey("PortionId")
@@ -338,17 +303,6 @@ namespace PizzaWebsite.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("PizzaWebsite.Data.Entities.FavoriteItem", b =>
-                {
-                    b.HasOne("PizzaWebsite.Data.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("PizzaWebsite.Data.Entities.Order", b =>
                 {
                     b.HasOne("PizzaWebsite.Data.Entities.Cart", "Cart")
@@ -357,13 +311,7 @@ namespace PizzaWebsite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PizzaWebsite.Data.Entities.UserData", "UserData")
-                        .WithMany()
-                        .HasForeignKey("UserDataId");
-
                     b.Navigation("Cart");
-
-                    b.Navigation("UserData");
                 });
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.ProductPortion", b =>
@@ -394,11 +342,6 @@ namespace PizzaWebsite.Migrations
                 });
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.Cart", b =>
-                {
-                    b.Navigation("CartItems");
-                });
-
-            modelBuilder.Entity("PizzaWebsite.Data.Entities.Order", b =>
                 {
                     b.Navigation("CartItems");
                 });
