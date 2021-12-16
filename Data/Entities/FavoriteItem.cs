@@ -6,25 +6,13 @@ using System.Threading.Tasks;
 
 namespace PizzaWebsite.Data.Entities
 {
-    public class CartItem
+    public class FavoriteItem
     {
         public int Id { get; set; }
-
-        public int CartId { get; set; }
-
-        public Cart Cart { get; set; }
-
         public int ProductId { get; set; }
-
+        [ForeignKey("ProductId")]
         public Product Product { get; set; }
+        public string UserId { get; set; }
 
-        public int PortionId { get; set; }
-
-        public Portion Portion { get; set; }
-
-        [NotMapped]
-        public decimal UnitPrice { get; set; }
-
-        public int Quantity { get; set; }        
     }
 }
