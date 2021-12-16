@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Data.Repositories;
+using PizzaWebsite.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace PizzaWebsite.Controllers
@@ -64,11 +67,61 @@ namespace PizzaWebsite.Controllers
         }
 
         [Authorize(Roles = "Owner, Manager")]
-        public IActionResult Manager()
+        public IActionResult Manager(string searchString)
         {
-            return View();
-        }
 
+            var orders = _pizzaRepository.GetAllOrdersSortByTime();
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                orders = orders.Where(o => o.CustomerFirstName.Contains(searchString)).ToList();
+            }
+            Dictionary<int, decimal> totalForeachOrder = new Dictionary<int, decimal>();
+            decimal total = 0;
+
+
+            foreach (var order in orders)
+            {
+                totalForeachOrder.Add(order.Id, _pizzaRepository.GetOrderTotal(order.CartId));
+                total += _pizzaRepository.GetOrderTotal(order.CartId);
+
+            }
+
+            ManageOrderViewModel manageOrderViewModel = new ManageOrderViewModel()
+            {
+                Orders = orders,
+                TotalForeachOrder = totalForeachOrder,
+                Total = total
+            };
+
+            return View(manageOrderViewModel);
+        }
+        [Authorize(Roles = "Owner, Manager")]
+        public IActionResult DeleteOrder(int id)
+        {
+
+
+            Order order = _pizzaRepository.GetOrderById(id);
+
+            if (order == null)
+            {
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "There is no such order  to remove."
+                });
+            }
+            _pizzaRepository.Remove(order);
+           
+            if (!_pizzaRepository.SaveAll())
+            {
+                
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to remove order."
+                });
+            }
+
+            return RedirectToAction("Manager");
+        }
 
         [Authorize(Roles = "Front, Owner, Manager")]
         public IActionResult Front()

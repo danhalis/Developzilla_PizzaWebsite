@@ -7,7 +7,7 @@ namespace PizzaWebsite.Data
     {
         public PizzaWebsiteDbContext(DbContextOptions<PizzaWebsiteDbContext> options) : base(options)
         {
-        }
+        } 
 
         public DbSet<UserData> UserDatas { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -17,7 +17,7 @@ namespace PizzaWebsite.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<Order> Orders { get; set; }
-
+        public DbSet<FavoriteItem> FavoriteItems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

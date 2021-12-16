@@ -34,7 +34,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 
         [BindProperty]
         public InputModel Input { get; set; }
-
+        public IEnumerable<Order> Orders { get; set; }
         public class InputModel
         {
             [Display(Name = "First Name")]
@@ -54,8 +54,8 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
 
-            //test
-            public IEnumerable<Product> Orders { get; set; }
+          
+          
         }
         private async Task LoadAsync(IdentityUser user)
         {
@@ -68,8 +68,8 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            // for testing
-            var orders = _pizzaWebsiteRepository.GetAllProducts(); 
+
+            Orders = _pizzaWebsiteRepository.GetAllOrdersbyUserId(user.Id); 
 
             Input = new InputModel
             {
@@ -80,7 +80,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                 Email = email,
                 ProfilePicture = userData.ProfilePicture,
                 DeliveryAddress = userData.DeliveryAddress,
-                Orders = orders
+               
             };
         }
 
