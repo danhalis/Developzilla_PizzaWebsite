@@ -345,9 +345,12 @@ namespace PizzaWebsite.Data.Repositories
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
                 Cart = null,
+                PostalCode = null, //TODO CHANGE TO VALUE
+                DeliveryArea = null, //TODO CHANGE TO VALUE
+                DeliveryAddress = null,  //TODO CHANGE TO VALUE
 
             // To justify not using delivery orders for now
-            ReceptionMethod = ReceptionMethod.Pickup
+                ReceptionMethod = ReceptionMethod.Pickup
             };
 
             // Add the order to the database and update the cart
@@ -735,6 +738,7 @@ namespace PizzaWebsite.Data.Repositories
                 cartItem.Cart = null;
                 cartItem.Portion = null;
                 cartItem.Product = null;
+
 
                 _context.CartItems.Update(cartItem);
             }
