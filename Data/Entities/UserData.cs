@@ -31,6 +31,7 @@ namespace PizzaWebsite.Data.Entities
         [DataType(DataType.PostalCode)]
         public string PostalCode { get; set; }
 
-
+        public List<Order> OrdersHistory;
+        public List<FavoriteItem> FavoriteItem;
     }
 }

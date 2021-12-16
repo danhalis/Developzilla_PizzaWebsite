@@ -67,7 +67,7 @@ namespace PizzaWebsite.Data.Repositories
         /// </summary>
         /// <returns>The <see cref="List{T}"/> of all <see cref="UserData"/> from the database.</returns>
         List<UserData> GetAllUserDatas();
-
+        void Add(UserData userData);
         /// <summary>
         /// Retrieves a <see cref="UserData"/> with the given user id from the database.
         /// </summary>
@@ -160,7 +160,13 @@ namespace PizzaWebsite.Data.Repositories
         /// <param name="cartItem">The <see cref="CartItem"/> to remove.</param>
         void Remove(CartItem cartItem);
         #endregion
-
+        #region FavoriteItem
+        List<FavoriteItem> GetAllFavoriteItemByUserId(string id);
+        void AddFavoriteItems(int productId, string id);
+        FavoriteItem GetFavoriteItemById(int id);
+        FavoriteItem GetFavoriteItemByProductId(int productId);
+        void RemoveFavorite(FavoriteItem favoriteItem);
+        #endregion
 
         /// <summary>
         /// Saves all changes made by the previous CRUD operations before the call of this method.
@@ -459,6 +465,19 @@ namespace PizzaWebsite.Data.Repositories
             catch (Exception e)
             {
                 _logger.LogError($"Failed to update user data with id {userData.Id}: {e}");
+            }
+        }
+        public void Add(UserData userData)
+        {
+            try
+            {
+                _logger.LogInformation("Adding userData ...");
+
+                _context.UserDatas.Add(userData);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to add userData: {e}");
             }
         }
         #endregion
@@ -781,6 +800,73 @@ namespace PizzaWebsite.Data.Repositories
 
                 return null;
             }
+        }
+
+        public List<FavoriteItem> GetAllFavoriteItemByUserId(string id)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllFavoriteItemByUserId was called...");
+                return _context.FavoriteItems
+                    .Where(f => f.UserId==id)
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get all favorite items :{e}");
+                return null;
+            }
+        }
+
+        
+
+        public void AddFavoriteItems(int productId, string id)
+        {
+            try
+            {
+                _logger.LogInformation("GetFavoriteProduct was called...");
+              
+                FavoriteItem item = new FavoriteItem()
+                {
+                   
+                    ProductId = productId,
+                    UserId = id
+
+                };
+                _context.FavoriteItems.Add(item);
+                _context.SaveChanges();
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to add  favorite items :{e}");
+
+
+            }
+        }
+
+        public FavoriteItem GetFavoriteItemById(int id)
+        {
+            return _context.FavoriteItems.FirstOrDefault(f => f.Id == id);
+        }
+
+        public void RemoveFavorite(FavoriteItem favoriteItem)
+        {
+            try
+            {
+                _logger.LogInformation("Deleting favoriteItem ...");
+
+                _context.FavoriteItems.Remove(favoriteItem);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to delete favoriteItem: {e}");
+            }
+        }
+
+        public FavoriteItem GetFavoriteItemByProductId(int productId)
+        {
+            return _context.FavoriteItems.FirstOrDefault(f => f.ProductId == productId);
         }
     }
 }

@@ -36,6 +36,7 @@ namespace PizzaWebsite.Data.Entities
 
         [DataType(DataType.DateTime)]
         public DateTime? TimeCompleted { get; set; }
+        public UserData UserData { get; set; }
     }
 
     public enum Status
