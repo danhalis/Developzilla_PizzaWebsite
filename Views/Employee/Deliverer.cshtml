@@ -1,5 +1,4 @@
 ﻿@using PizzaWebsite.Data.Entities
-@using System.Security.Claims;
 
 @{
     Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
@@ -39,85 +38,67 @@
             </tr>
         </thead>
         <tbody>
-            @if (ViewBag.Orders != null)
+            @foreach (Order item in ViewBag.Orders)
             {
-                @foreach (Order item in ViewBag.Orders)
+                @if (item.Status == Status.Ready || item.Status == Status.Pending || ReceptionMethod.Delivery == item.ReceptionMethod)
                 {
-                    @if (item.Status == Status.Ready || item.Status == Status.Pending || ReceptionMethod.Delivery == item.ReceptionMethod)
-                    {
-                        <tr>
-                            <td>
-                                @item.Id
-                            </td>
+                    <tr>
+                        <td>
+                            @item.Id
+                        </td>
 
-                            <td>
-                                @{string.Format("{0} {1}", item.CustomerFirstName, item.CustomerLastName); }
-                                @item.CustomerFirstName
-                            </td>
+                        <td>
+                            @{string.Format("{0} {1}", item.CustomerFirstName, item.CustomerLastName); }
+                            @item.CustomerFirstName
+                        </td>
 
-                            <td class="text-sm-center">
-                                @Html.DisplayFor(modelItem => item.TimeCompleted)
-                            </td>
+                        <td class="text-sm-center">
+                            @Html.DisplayFor(modelItem => item.TimeCompleted)
+                        </td>
 
-                            <td class="text-sm-center">
-                                <table class="table table-hover">
-                                    @if (item.DeliveryAddress != null)
-                                    {
-                                        @item.DeliveryAddress
-                                    }
-                                    else
-                                    {
-                                        @Html.Display("The delivery Address is null");
-                                    }
-                                </table>
+                        <td class="text-sm-center">
+                            <table class="table table-hover">
+                                The address would go here (though we currently lack an address.)
+                            </table>
 
-                            </td>
+                        </td>
 
-                            <td class="text-right">
+                        <td class="text-right">
 
-                                @{
-                                    Status status;
+                            @{
+                                Status status;
 
+                                switch (item.Status)
+                                {
+                                    case Status.Ready:
+                                        <a asp-controller="Employee"
+                                           asp-action="UpdateOrderStatus"
+                                           asp-route-cartId="@item.CartId"
+                                           asp-route-orderId="@item.Id"
+                                           asp-route-newStatus="@Status.Pending"
+                                           asp-route-redirectPage="Deliverer">Deliver Order</a>
+                                        break;
+                                    case Status.Pending:
 
-                                    switch (item.Status)
-                                    {
-                                        case Status.Ready:
-                                            <a asp-controller="Employee"
-                                               asp-action="UpdateOrderStatus"
-                                               asp-route-cartId="@item.CartId"
-                                               asp-route-orderId="@item.Id"
-                                               asp-route-newStatus="@Status.Pending"
-                                               asp-route-redirectPage="Deliverer">Deliver Order</a>
-                                            break;
-                                        case Status.Pending:
-                                            @if (item.DevilvererId == null || item.DevilvererId != User.FindFirstValue(ClaimTypes.NameIdentifier))
-                                            {
-                                                <a>Order Taken by Another Deliverer</a>
-                                            }
-                                            else
-                                            {
-                                                <a asp-controller="Employee"
-                                                   asp-action="UpdateOrderStatus"
-                                                   asp-route-cartId="@item.CartId"
-                                                   asp-route-orderId="@item.Id"
-                                                   asp-route-newStatus="@Status.Completed"
-                                                   asp-route-redirectPage="Deliverer">Complete Order</a>
-                                            }
-                                            break;
-                                    }
-
+                                        <a asp-controller="Employee"
+                                           asp-action="UpdateOrderStatus"
+                                           asp-route-cartId="@item.CartId"
+                                           asp-route-orderId="@item.Id"
+                                           asp-route-newStatus="@Status.Completed"
+                                           asp-route-redirectPage="Deliverer">Complete Order</a>
+                                        break;
                                 }
-                            </td>
-                        </tr>
+
+                            }
+                        </td>
+                    </tr>
 
 
-                    }
                 }
-                <tr>
-                    <td colspan="5"></td>
-                </tr>
             }
-
+            <tr>
+                <td colspan="5"></td>
+            </tr>
         </tbody>
     </table>
 
