@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,7 +10,8 @@ namespace PizzaWebsite.Data.Entities
         [Key]
 
         public int Id { get; set; }
-
+        public string UserId { get; set; }
+        public List<CartItem> CartItems { get; set; }
         public int CartId { get; set; }
 
         public Cart Cart { get; set; }

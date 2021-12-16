@@ -57,7 +57,7 @@ namespace PizzaWebsite.Data.Repositories
         public void Remove(Order order);
         public decimal GetOrderTotal(int id);
         Order GetOrderById(int orderId);
-
+        List<Order> GetAllOrdersbyUserId(string id);
 
         #endregion
 
@@ -868,5 +868,22 @@ namespace PizzaWebsite.Data.Repositories
         {
             return _context.FavoriteItems.FirstOrDefault(f => f.ProductId == productId);
         }
+
+        public List<Order> GetAllOrdersbyUserId(string id)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllOrdersbyUserId was called...");
+                return _context.Orders
+                    .Where(o => o.UserId == id)
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get all favorite items :{e}");
+                return null;
+            }
+        }
+       
     }
 }

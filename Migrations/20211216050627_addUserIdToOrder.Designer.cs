@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Migrations
 {
     [DbContext(typeof(PizzaWebsiteDbContext))]
-    partial class PizzaWebsiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211216050627_addUserIdToOrder")]
+    partial class addUserIdToOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,9 +49,6 @@ namespace PizzaWebsite.Migrations
                     b.Property<int>("CartId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PortionId")
                         .HasColumnType("int");
 
@@ -62,8 +61,6 @@ namespace PizzaWebsite.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
-
-                    b.HasIndex("OrderId");
 
                     b.HasIndex("PortionId");
 
@@ -306,10 +303,6 @@ namespace PizzaWebsite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PizzaWebsite.Data.Entities.Order", null)
-                        .WithMany("CartItems")
-                        .HasForeignKey("OrderId");
-
                     b.HasOne("PizzaWebsite.Data.Entities.Portion", "Portion")
                         .WithMany()
                         .HasForeignKey("PortionId")
@@ -385,11 +378,6 @@ namespace PizzaWebsite.Migrations
                 });
 
             modelBuilder.Entity("PizzaWebsite.Data.Entities.Cart", b =>
-                {
-                    b.Navigation("CartItems");
-                });
-
-            modelBuilder.Entity("PizzaWebsite.Data.Entities.Order", b =>
                 {
                     b.Navigation("CartItems");
                 });

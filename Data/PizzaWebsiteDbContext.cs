@@ -7,7 +7,7 @@ namespace PizzaWebsite.Data
     {
         public PizzaWebsiteDbContext(DbContextOptions<PizzaWebsiteDbContext> options) : base(options)
         {
-        }
+        } 
 
         public DbSet<UserData> UserDatas { get; set; }
         public DbSet<Product> Products { get; set; }
