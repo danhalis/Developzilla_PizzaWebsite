@@ -10,7 +10,9 @@ namespace PizzaWebsite.Data.Entities
     {
         public int Id { get; set; }
 
-        public string UserId { get; set; }
+        public int CartId { get; set; }
+
+        public Cart Cart { get; set; }
 
         public int ProductId { get; set; }
 
@@ -23,6 +25,6 @@ namespace PizzaWebsite.Data.Entities
         [NotMapped]
         public decimal UnitPrice { get; set; }
 
-        public int Quantity { get; set; }
+        public int Quantity { get; set; }        
     }
 }

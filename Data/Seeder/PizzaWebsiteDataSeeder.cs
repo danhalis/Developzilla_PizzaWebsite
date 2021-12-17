@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
-using PizzaWebsite.Data;
 using PizzaWebsite.Data.Entities;
 using System;
 using System.Collections.Generic;
@@ -46,9 +45,9 @@ namespace PizzaWebsite.Data.Seeder
                 }
 
                 // attach user ids to user datas
-                for (int i = 0; i < userdatas.Count; i++)
+                foreach (UserData userData in userdatas)
                 {
-                    userdatas[i].UserId = users[i].Id;
+                    userData.UserId = users.First(u => u.Email.Split("@")[0].ToLower() == userData.LastName.ToLower()).Id;
                 }
             }
 
@@ -118,8 +117,19 @@ namespace PizzaWebsite.Data.Seeder
                 _context.Portions.AddRange(portions);
             }
 
+            
+            if (!_context.Carts.Any())
+            {
+                SeedCart();
+            }
+
             // Commit changes to the database
             _context.SaveChanges();
+        }
+
+        private void SeedCart()
+        {
+
         }
     }
 }
