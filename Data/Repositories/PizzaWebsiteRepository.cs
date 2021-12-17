@@ -52,10 +52,11 @@ namespace PizzaWebsite.Data.Repositories
         public void AddNewOrder();
         public void Update(Order order);
         public List<Order> GetAllOrders();
+        public List<Order> GetAllOrdersSortByTime();
         public void Remove(Order order);
-
+        public decimal GetOrderTotal(int id);
         Order GetOrderById(int orderId);
-
+        List<Order> GetAllOrdersbyUserId(string id);
 
         #endregion
 
@@ -65,7 +66,7 @@ namespace PizzaWebsite.Data.Repositories
         /// </summary>
         /// <returns>The <see cref="List{T}"/> of all <see cref="UserData"/> from the database.</returns>
         List<UserData> GetAllUserDatas();
-
+        void Add(UserData userData);
         /// <summary>
         /// Retrieves a <see cref="UserData"/> with the given user id from the database.
         /// </summary>
@@ -78,6 +79,8 @@ namespace PizzaWebsite.Data.Repositories
         /// </summary>
         /// <param name="userData">The <see cref="UserData"/> to update.</param>
         void Update(UserData userData);
+
+        void Remove(UserData userData);
         #endregion
 
         #region Product
@@ -158,7 +161,13 @@ namespace PizzaWebsite.Data.Repositories
         /// <param name="cartItem">The <see cref="CartItem"/> to remove.</param>
         void Remove(CartItem cartItem);
         #endregion
-
+        #region FavoriteItem
+        List<FavoriteItem> GetAllFavoriteItemByUserId(string id);
+        void AddFavoriteItems(int productId, string id);
+        FavoriteItem GetFavoriteItemById(int id);
+        FavoriteItem GetFavoriteItemByProductId(int productId);
+        void RemoveFavorite(FavoriteItem favoriteItem);
+        #endregion
 
         /// <summary>
         /// Saves all changes made by the previous CRUD operations before the call of this method.
@@ -308,7 +317,6 @@ namespace PizzaWebsite.Data.Repositories
         #endregion
 
         #region Order
-
         public void AddNewOrder()
         {
             _logger.LogInformation($"Checking out the user's Cart to make a new Order.");
@@ -323,8 +331,10 @@ namespace PizzaWebsite.Data.Repositories
                 CartId = orderCart.Id,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
-
-                //Cart is not being added properly and is seen as null.
+                Cart = null,
+                PostalCode = null, //TODO CHANGE TO VALUE
+                DeliveryArea = null, //TODO CHANGE TO VALUE
+                DeliveryAddress = null,  //TODO CHANGE TO VALUE
 
                 // To justify not using delivery orders for now
                 ReceptionMethod = ReceptionMethod.Pickup
@@ -342,8 +352,9 @@ namespace PizzaWebsite.Data.Repositories
             try
             {
                 _logger.LogInformation($"Getting order by id {orderId} ...");
-
                 Order order = _context.Orders.FirstOrDefault(o => o.Id == orderId);
+                order.Cart = GetCartById(order.CartId);
+                _logger.LogInformation($"It's card id is {order.Cart.Id} ...");
 
                 return order;
             }
@@ -360,6 +371,8 @@ namespace PizzaWebsite.Data.Repositories
         {
             try
             {
+                _logger.LogInformation("AAAAAAAAAAAAAAAAAAAAAAAA");
+
                 _logger.LogInformation("Updating cart item ...");
 
                 // Set all related objects to null to avoid EF jank
@@ -402,7 +415,20 @@ namespace PizzaWebsite.Data.Repositories
             {
                 _logger.LogInformation("Getting all orders...");
 
-                return _context.Orders.ToList();
+
+
+                List<Order> orders = _context.Orders.ToList();
+
+                foreach (Order order in orders)
+                {
+                    if (order.Cart == null)
+                    {
+                        order.Cart = GetCartById(order.CartId);
+
+                    }
+                }
+
+                return orders;
             }
             catch (Exception e)
             {
@@ -457,6 +483,32 @@ namespace PizzaWebsite.Data.Repositories
             catch (Exception e)
             {
                 _logger.LogError($"Failed to update user data with id {userData.Id}: {e}");
+            }
+        }
+        public void Add(UserData userData)
+        {
+            try
+            {
+                _logger.LogInformation("Adding userData ...");
+
+                _context.UserDatas.Add(userData);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to add userData: {e}");
+            }
+        }
+        public void Remove(UserData userData)
+        {
+            try
+            {
+                _logger.LogInformation("Removing userData ...");
+
+                _context.UserDatas.Remove(userData);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to remove userData: {e}");
             }
         }
         #endregion
@@ -732,5 +784,140 @@ namespace PizzaWebsite.Data.Repositories
             return _context.SaveChanges() > 0;
         }
 
+        public List<Order> GetAllOrdersSortByTime()
+        {
+            try
+            {
+                _logger.LogInformation("Getting all orders ...");
+
+                List<Order> orders = _context.Orders
+                    .OrderBy(O => O.OrderTime)
+                    .ToList();
+
+                return orders;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get all orders: {e}");
+                return null;
+            }
+        }
+
+        public decimal GetOrderTotal(int id)
+        {
+            decimal total = 0;
+            var cart = GetCartById(id);
+          
+            foreach (var cartItem in cart.CartItems)
+            {
+                total += cartItem.UnitPrice * cartItem.Quantity;
+            }
+            return total;
+        }
+
+        private Cart GetCartById(int id)
+        {
+
+            Cart currentCart = _context.Carts.FirstOrDefault(c => c.Id == id);
+
+            if (currentCart != null)
+            {
+                currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
+                foreach (CartItem cartItem in currentCart.CartItems)
+                {
+                    ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                    cartItem.UnitPrice = productPortion.UnitPrice;
+                    cartItem.Cart = currentCart;
+                }
+            }
+
+            return currentCart;
+        }
+
+        public List<FavoriteItem> GetAllFavoriteItemByUserId(string id)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllFavoriteItemByUserId was called...");
+                return _context.FavoriteItems
+                    .Where(f => f.UserId==id)
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get all favorite items :{e}");
+                return null;
+            }
+        }
+
+        
+
+        public void AddFavoriteItems(int productId, string id)
+        {
+            try
+            {
+                _logger.LogInformation("GetFavoriteProduct was called...");
+              
+                FavoriteItem item = new FavoriteItem()
+                {
+                   
+                    ProductId = productId,
+                    UserId = id
+
+                };
+                _context.FavoriteItems.Add(item);
+                _context.SaveChanges();
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to add  favorite items :{e}");
+
+
+            }
+        }
+
+        public FavoriteItem GetFavoriteItemById(int id)
+        {
+            return _context.FavoriteItems.FirstOrDefault(f => f.Id == id);
+        }
+
+        public void RemoveFavorite(FavoriteItem favoriteItem)
+        {
+            try
+            {
+                _logger.LogInformation("Deleting favoriteItem ...");
+
+                _context.FavoriteItems.Remove(favoriteItem);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to delete favoriteItem: {e}");
+            }
+        }
+
+        public FavoriteItem GetFavoriteItemByProductId(int productId)
+        {
+            return _context.FavoriteItems.FirstOrDefault(f => f.ProductId == productId);
+        }
+
+        public List<Order> GetAllOrdersbyUserId(string id)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllOrdersbyUserId was called...");
+                return _context.Orders
+                    .Where(o => o.UserId == id)
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get all favorite items :{e}");
+                return null;
+            }
+        }
+       
     }
 }

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
+using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Models;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account
@@ -26,17 +27,19 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-
+        private readonly IPizzaWebsiteRepository _pizzaRepository;
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IPizzaWebsiteRepository pizzaRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _pizzaRepository = pizzaRepository;
         }
 
         [BindProperty]
@@ -99,6 +102,15 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
                     PhoneNumber = Input.PhoneNumber,
                     //DeliveryAddress = Input.DeliveryAddress
                 };
+                var userData = new UserData
+                {
+                    UserId= user.Id,
+                    FirstName= Input.FirstName,
+                    LastName = Input.LastName,
+                    DeliveryAddress = Input.DeliveryAddress,
+                };
+                _pizzaRepository.Add(userData);
+                _pizzaRepository.SaveAll();
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

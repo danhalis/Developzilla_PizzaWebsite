@@ -1,5 +1,79 @@
 ﻿@{ Layout = "~/Views/Shared/_EmployeeLayout.cshtml"; }
 
-<div class="text-center">
-    <h1 class="display-4">Hi</h1>
-</div>
+@model PizzaWebsite.Models.ManageOrderViewModel
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<h1>Orders</h1>
+
+
+<form asp-controller="Employee" asp-action="Manager" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" /> |
+            <a asp-controller="Employee" asp-action="Manager">Back to Full List</a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Order Number
+            </th>
+            <th>
+                Customer Name
+            </th>
+            <th>
+                Order Time
+            </th>
+            <th>
+                Order Details
+            </th>
+            <th>
+                Order Status
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model.Orders)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => order.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => order.CustomerFirstName + " " + order.CustomerLastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => order.OrderTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.TotalForeachOrder[order.Id])
+                </td>
+                <td>
+                    <select>
+                        <option value="@order.Status" selected>@order.Status</option>
+                        <option value="Ordered">Ordered</option>
+                        <option value="Preparing">Preparing</option>
+                        <option value="ReadyForDelivery">ReadyForDelivery</option>
+                        <option value="ReadyForPickUp">ReadyForPickUp</option>
+                        <option value="InDelivery">InDelivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="PickedUp">PickedUp</option>
+                    </select>
+                </td>
+
+                <td>
+                    <a asp-controller="Employee" asp-action="Delete" asp-route-Id="@order.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
