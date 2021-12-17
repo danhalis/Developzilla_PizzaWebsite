@@ -30,5 +30,27 @@ namespace PizzaWebsite.Data.Entities
 
         public List<Order> OrdersHistory;
         public List<FavoriteItem> FavoriteItem;
+
+        private static List<string> _deliveryAreas = new List<string>()
+        {
+            "Sainte-Anne-De-Bellevue",
+            "Baie-D'Urfé",
+            "Senneville",
+            "Kirkland",
+            "Dollard-Des-Ormeaux",
+            "Beaconsfield",
+            "Pierrefonds and Roxboro",
+            "L'Île-Bizard–Sainte-Geneviève",
+            "Pointe-Claire",
+            "Dorval"
+        };
+
+        /// <summary>
+        /// Retrieves a list of pre-defined delivery areas.
+        /// </summary>
+        public static List<string> DeliveryAreas
+        {
+            get { return _deliveryAreas; }
+        }
     }
 }

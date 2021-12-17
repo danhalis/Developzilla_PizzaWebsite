@@ -95,6 +95,7 @@ namespace PizzaWebsite.Controllers
                 deliveryCheckoutViewModel.LastName = currentUserData.LastName;
                 deliveryCheckoutViewModel.Email = _userIdentityRepository.GetCurrentUser().Email;
                 deliveryCheckoutViewModel.PostalCode = currentUserData.PostalCode;
+                deliveryCheckoutViewModel.DeliveryArea = currentUserData.DeliveryArea;
                 deliveryCheckoutViewModel.DeliveryAddress = currentUserData.DeliveryAddress;
             }
 

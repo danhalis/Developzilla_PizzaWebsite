@@ -50,6 +50,9 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             [DataType(DataType.PostalCode)]
             public string PostalCode { get; set; }
 
+            [Display(Name = "Delivery Area")]
+            public string DeliveryArea { get; set; }
+
             [Display(Name = "Delivery Address")]
             public string DeliveryAddress { get; set; }
             public string Email { get; set; }

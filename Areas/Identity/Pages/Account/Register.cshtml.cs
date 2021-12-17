@@ -49,6 +49,14 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
+        /// <summary>
+        /// Retrieves a list of pre-defined delivery areas.
+        /// </summary>
+        public static List<string> DeliveryAreas
+        {
+            get { return UserData.DeliveryAreas; }
+        }
+
         public class InputModel
         {
             [Required]
@@ -68,8 +76,14 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
             [Display(Name = "Postal Code")]
             public string PostalCode { get; set; }
 
+            [Required]
             [Display(Name = "Delivery Address")]
             public string DeliveryAddress { get; set; }
+
+            [Required]
+            [Display(Name = "Delivery Area")]
+            public string DeliveryArea { get; set; }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
@@ -115,6 +129,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
                     UserId= user.Id,
                     FirstName= Input.FirstName,
                     LastName = Input.LastName,
+                    DeliveryArea = Input.DeliveryArea,
                     DeliveryAddress = Input.DeliveryAddress,
                     PostalCode = Input.PostalCode,
                 };
