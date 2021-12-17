@@ -37,8 +37,8 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
         public IEnumerable<Order> Orders { get; set; }
         public List<CartItem> Items { get; set; }
         public Dictionary<Order, List<CartItem>> OrderDetails { get; set; } = new Dictionary<Order, List<CartItem>>();
-      //  public List<int> CartItemIds { get; set; }
-       
+        public Dictionary<Order, decimal> TotalForeachOrder { get; set; } = new Dictionary<Order, decimal>();
+
         public class InputModel
         {
             [Display(Name = "First Name")]
@@ -75,8 +75,8 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 
             Orders = _pizzaWebsiteRepository.GetAllOrdersbyUserId(user.Id);
 
-            foreach (var order in Orders) { 
-              
+            foreach (var order in Orders) {
+                TotalForeachOrder.Add(order, _pizzaWebsiteRepository.GetOrderTotal(order.CartId));
                 Items = _pizzaWebsiteRepository.GetCartItemDetailsByCardId(order.CartId);
                 OrderDetails.Add(order, Items);
             }
