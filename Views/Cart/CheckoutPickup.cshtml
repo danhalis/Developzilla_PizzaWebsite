@@ -1,10 +1,11 @@
 ﻿@model PizzaWebsite.Models.CheckoutViewModel
 
+<h1 style="text-align: center">Pickup Checkout</h1>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-controller="Cart" asp-action="AddOrder">
+        <form asp-controller="Cart" asp-action="AddPickupOrder">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>

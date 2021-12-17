@@ -196,17 +196,17 @@ namespace PizzaWebsite.Controllers
         }
 
         [HttpPost()]
-        public IActionResult AddOrder(CheckoutViewModel checkoutViewModel)
+        public IActionResult AddPickupOrder(CheckoutViewModel checkoutViewModel)
         {
             _pizzaRepository.AddNewOrder(checkoutViewModel);
-            return RedirectToAction("CheckoutSuccess", "Cart", new { area = "" });
+            return View("CheckoutSuccess", checkoutViewModel);
         }
 
-        [HttpGet("CheckoutSuccess")]
-        public IActionResult CheckoutSuccess()
+        [HttpPost()]
+        public IActionResult AddDeliveryOrder(DeliveryCheckoutViewModel deliveryCheckoutViewModel)
         {
-            ViewBag.Title = "Checkout Success";
-            return View();
+            _pizzaRepository.AddNewOrder(deliveryCheckoutViewModel);
+            return View("CheckoutSuccess", deliveryCheckoutViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
