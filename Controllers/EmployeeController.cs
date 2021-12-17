@@ -116,6 +116,12 @@ namespace PizzaWebsite.Controllers
             return RedirectToAction("Owner", "Employee");
         }
 
+        public IActionResult EditEmployee(string userId)
+        {
+            IdentityUser user = _identityRepository.GetUserById(userId);
+            return RedirectToAction("Owner", "Employee");
+        }
+
         public async Task<IActionResult> DeleteEmployee(string userId, Roles role)
         {
             IdentityUser user = _identityRepository.GetUserById(userId);

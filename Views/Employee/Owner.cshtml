@@ -1,4 +1,7 @@
-﻿@model OwnerViewModel
+﻿@using PizzaWebsite.Data.Seeder
+@using PizzaWebsite.Helpers
+
+@model OwnerViewModel
 
 @{ Layout = "~/Views/Shared/_EmployeeLayout.cshtml"; }
 
@@ -54,7 +57,30 @@
                             @info.LastName
                         </td>
                         <td>
-                            @info.Role.Name
+                            <form id="@("form-role-" + info.UserId)" userId="@info.UserId" class="form-employee-role" asp-controller="Employee" asp-action="EditEmployee" asp-route-userId="@info.UserId">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-group">
+                                    <label class="control-label required-label"></label>
+                                    <select class="form-control">
+                                        @foreach (UserIdentityDataSeeder.Roles role in EnumHelper.GetValues<UserIdentityDataSeeder.Roles>())
+                                        {
+                                            @if (role == UserIdentityDataSeeder.Roles.Customer)
+                                            {
+                                                continue;
+                                            }
+
+                                            @if (role.ToString() == @info.Role.Name)
+                                            {
+                                                <option selected value=@role>@role</option>
+                                            }
+                                            else
+                                            {
+                                                <option value=@role>@role</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </form>
                         </td>
                         <td>
                             @info.UserName
@@ -66,10 +92,11 @@
                             @(info.PhoneNumber == null? "N/a" : @info.PhoneNumber)
                         </td>
                         <td>
+                            <input id="@("save-btn-" + info.UserId)" class="employee-save-btn" type="submit" form="@("form-role-" + info.UserId)" value="Save">
                             <a asp-controller="Employee" asp-action="DeleteEmployee" asp-route-userId="@info.UserId" asp-route-role="@info.Role">Delete</a>
                         </td>
                     </tr>
-                }
+}
                 @*<tr>
                         <td colspan="5"></td>
                     </tr>
@@ -83,3 +110,20 @@
     </div>
 </div>
 
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+  
+    <script>
+        const forms;
+        const saveBtns;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            forms = document.getElementsByClassName("form-employee-role");
+
+            forms.forEach(form => {
+                
+            })
+        });
+    </script>
+}
