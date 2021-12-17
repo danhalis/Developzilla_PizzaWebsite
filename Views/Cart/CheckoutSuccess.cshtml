@@ -1,3 +1,7 @@
-﻿
+﻿@model CheckoutViewModel
 
-<h1>Order received</h1>
+@{
+    ViewData["Title"] = "Checkout Success";
+}
+
+<h1 style="text-align: center;">Thank you for choosing us, @Model.FirstName @Model.LastName!</h1>

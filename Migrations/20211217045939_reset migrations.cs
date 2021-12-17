@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PizzaWebsite.Migrations
 {
-    public partial class ResetallmigrationstofinalizeOrderrefactor : Migration
+    public partial class resetmigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -78,7 +78,9 @@ namespace PizzaWebsite.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProfilePicture = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    DeliveryAddress = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    DeliveryAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeliveryArea = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -86,57 +88,19 @@ namespace PizzaWebsite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Orders",
+                name: "FavoriteItems",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CartId = table.Column<int>(type: "int", nullable: false),
-                    PaymentType = table.Column<int>(type: "int", nullable: false),
-                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CustomerFirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CustomerLastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrderTime = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Orders_Carts_CartId",
-                        column: x => x.CartId,
-                        principalTable: "Carts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CartItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CartId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    PortionId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CartItems", x => x.Id);
+                    table.PrimaryKey("PK_FavoriteItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CartItems_Carts_CartId",
-                        column: x => x.CartId,
-                        principalTable: "Carts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CartItems_Portions_PortionId",
-                        column: x => x.PortionId,
-                        principalTable: "Portions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CartItems_Products_ProductId",
+                        name: "FK_FavoriteItems_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -184,10 +148,96 @@ namespace PizzaWebsite.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CartId = table.Column<int>(type: "int", nullable: false),
+                    DelivererId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentType = table.Column<int>(type: "int", nullable: false),
+                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CustomerFirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CustomerLastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrderTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeliveryArea = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeliveryAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ReceptionMethod = table.Column<int>(type: "int", nullable: false),
+                    TimeAccepted = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TimeCompleted = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UserDataId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_UserDatas_UserDataId",
+                        column: x => x.UserDataId,
+                        principalTable: "UserDatas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CartItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CartId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    PortionId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Portions_PortionId",
+                        column: x => x.PortionId,
+                        principalTable: "Portions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_CartId",
                 table: "CartItems",
                 column: "CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_OrderId",
+                table: "CartItems",
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_PortionId",
@@ -200,9 +250,19 @@ namespace PizzaWebsite.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FavoriteItems_ProductId",
+                table: "FavoriteItems",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_CartId",
                 table: "Orders",
                 column: "CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_UserDataId",
+                table: "Orders",
+                column: "UserDataId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Portions_Label",
@@ -241,22 +301,25 @@ namespace PizzaWebsite.Migrations
                 name: "Contacts");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "FavoriteItems");
 
             migrationBuilder.DropTable(
                 name: "ProductPortions");
 
             migrationBuilder.DropTable(
-                name: "UserDatas");
-
-            migrationBuilder.DropTable(
-                name: "Carts");
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Portions");
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Carts");
+
+            migrationBuilder.DropTable(
+                name: "UserDatas");
         }
     }
 }

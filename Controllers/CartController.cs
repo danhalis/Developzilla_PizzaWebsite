@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace PizzaWebsite.Controllers
@@ -19,14 +16,17 @@ namespace PizzaWebsite.Controllers
         private readonly ILogger<CartController> _logger;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IPizzaWebsiteRepository _pizzaRepository;
+        private readonly IUserIdentityRepository _userIdentityRepository;
 
         public CartController(ILogger<CartController> logger,
             UserManager<IdentityUser> userManager,
-            IPizzaWebsiteRepository pizzaRepository)
+            IPizzaWebsiteRepository pizzaRepository,
+            IUserIdentityRepository userIdentityRepository)
         {
             _logger = logger;
             _userManager = userManager;
             _pizzaRepository = pizzaRepository;
+            _userIdentityRepository = userIdentityRepository;
         }
 
         public IActionResult Index()
@@ -44,7 +44,62 @@ namespace PizzaWebsite.Controllers
                 return RedirectToAction("Index", "Menu", new { area = "" });
             }
 
+            ViewBag.Title = "Checkout";
+
             return View();
+        }
+
+        [HttpGet("CheckoutPickup")]
+        public IActionResult CheckoutPickup()
+        {
+            // Checkout can only be accessed if the user has items in their cart.
+            if (_pizzaRepository.GetCurrentCartItems().Count <= 0)
+            {
+                // Assisted by https://stackoverflow.com/questions/10785245/redirect-to-action-in-another-controller
+                return RedirectToAction("Index", "Menu", new { area = "" });
+            }
+
+            ViewBag.Title = "Checkout Pickup";
+
+            UserData currentUserData = _pizzaRepository.GetCurrentUserData();
+            CheckoutViewModel checkoutViewModel = new CheckoutViewModel();
+
+            if (currentUserData != null)
+            {
+                checkoutViewModel.FirstName = currentUserData.FirstName;
+                checkoutViewModel.LastName = currentUserData.LastName;
+                checkoutViewModel.Email = _userIdentityRepository.GetCurrentUser().Email;
+            }
+
+            return View(checkoutViewModel);
+        }
+
+        [HttpGet("CheckoutDelivery")]
+        public IActionResult CheckoutDelivery()
+        {
+            // Checkout can only be accessed if the user has items in their cart.
+            if (_pizzaRepository.GetCurrentCartItems().Count <= 0)
+            {
+                // Assisted by https://stackoverflow.com/questions/10785245/redirect-to-action-in-another-controller
+                return RedirectToAction("Index", "Menu", new { area = "" });
+            }
+
+            ViewBag.Title = "Checkout Delivery";
+
+            UserData currentUserData = _pizzaRepository.GetCurrentUserData();
+            DeliveryCheckoutViewModel deliveryCheckoutViewModel = new DeliveryCheckoutViewModel();
+
+            if (currentUserData != null)
+            {
+                deliveryCheckoutViewModel.FirstName = currentUserData.FirstName;
+                deliveryCheckoutViewModel.LastName = currentUserData.LastName;
+                deliveryCheckoutViewModel.Email = _userIdentityRepository.GetCurrentUser().Email;
+                deliveryCheckoutViewModel.PostalCode = currentUserData.PostalCode;
+                deliveryCheckoutViewModel.DeliveryArea = currentUserData.DeliveryArea;
+                deliveryCheckoutViewModel.DeliveryAddress = currentUserData.DeliveryAddress;
+            }
+
+            return View(deliveryCheckoutViewModel);
         }
 
         [HttpGet("Items")]
@@ -143,16 +198,35 @@ namespace PizzaWebsite.Controllers
         }
 
         [HttpPost()]
-        public IActionResult AddOrder(CheckoutViewModel checkoutViewModel)
+        public IActionResult AddPickupOrder(CheckoutViewModel checkoutViewModel)
         {
-            _pizzaRepository.AddNewOrder();
-            return RedirectToAction("CheckoutSuccess", "Cart", new { area = "" });
+            if (!ModelState.IsValid)
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to checkout the order."
+                });
+            }
+
+            _pizzaRepository.AddNewOrder(checkoutViewModel);
+            return View("CheckoutSuccess", checkoutViewModel);
         }
 
-        [HttpGet("CheckoutSuccess")]
-        public IActionResult CheckoutSuccess()
+        [HttpPost()]
+        public IActionResult AddDeliveryOrder(DeliveryCheckoutViewModel deliveryCheckoutViewModel)
         {
-            return View();
+            if (!ModelState.IsValid)
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to checkout the order."
+                });
+            }
+
+            _pizzaRepository.AddNewOrder(deliveryCheckoutViewModel);
+            return View("CheckoutSuccess", deliveryCheckoutViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

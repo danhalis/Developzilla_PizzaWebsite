@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static PizzaWebsite.Data.Seeder.UserIdentityDataSeeder;
 
@@ -13,8 +15,10 @@ namespace PizzaWebsite.Data.Repositories
     public interface IUserIdentityRepository
     {
         IdentityUser GetUserById(string id);
+        IdentityUser GetCurrentUser();
         List<FullUserInfo> GetAllFullEmployeeInfos();
         Task AddEmployeeUser(IdentityUser user, UserData userData, Roles role);
+        Task UpdateUserRole(IdentityUser user, Roles newRole);
         Task RemoveEmployeeUser(IdentityUser user, UserData userData, Roles role);
         bool SaveAll();
     }
@@ -39,16 +43,19 @@ namespace PizzaWebsite.Data.Repositories
         private readonly UserIdentityDbContext _context;
         private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
         private readonly UserManager<IdentityUser> _userManager;
+        private IHttpContextAccessor _httpContextAccessor;
 
         public UserIdentityRepository(ILogger<UserIdentityRepository> logger,
                                         UserIdentityDbContext context,
                                         IPizzaWebsiteRepository pizzaWebsiteRepository,
-                                        UserManager<IdentityUser> userManager)
+                                        UserManager<IdentityUser> userManager,
+                                        IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _context = context;
             _pizzaWebsiteRepository = pizzaWebsiteRepository;
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IdentityUser GetUserById(string id)
@@ -62,6 +69,11 @@ namespace PizzaWebsite.Data.Repositories
 
                 throw;
             }
+        }
+
+        public IdentityUser GetCurrentUser()
+        {
+            return GetUserById(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         }
 
         public async Task AddEmployeeUser(IdentityUser user, UserData userData, Roles role)
@@ -86,30 +98,64 @@ namespace PizzaWebsite.Data.Repositories
                 userData.UserId = user.Id;
                 _pizzaWebsiteRepository.Add(userData);
 
-                // add user to specified role
-                switch (role)
+                result = await _userManager.AddToRoleAsync(user, role.ToString());
+
+                if (!result.Succeeded)
                 {
-                    case Roles.Owner:
-                        await _userManager.AddToRoleAsync(user, Roles.Owner.ToString());
-                        break;
-                    case Roles.Manager:
-                        await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
-                        break;
-                    case Roles.Cook:
-                        await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
-                        break;
-                    case Roles.Deliverer:
-                        await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
-                        break;
-                    case Roles.Front:
-                        await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
-                        break;
+                    var exceptionText = result.Errors.Aggregate("Could not add the role to the user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
+                    throw new Exception(exceptionText);
+                }
+
+                if (!_pizzaWebsiteRepository.SaveAll())
+                {
+                    throw new Exception("Could not create user data.");
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError($"Failed to create employee user: {e}");
                 return;
+            }
+        }
+
+        public async Task UpdateUserRole(IdentityUser user, Roles newRole)
+        {
+            try
+            {
+                var user_role = _context.UserRoles.FirstOrDefault(ur => ur.UserId == user.Id);
+
+                if (user_role == null)
+                {
+                    throw new Exception("Could not find the user.");
+                }
+
+                var oldRole = _context.Roles.FirstOrDefault(r => r.Id == user_role.RoleId);
+
+                if (oldRole == null)
+                {
+                    throw new Exception("Could not find the old role for the user.");
+                }
+
+                IdentityResult result = await _userManager.RemoveFromRoleAsync(user, oldRole.Name);
+
+                if (!result.Succeeded)
+                {
+                    var exceptionText = result.Errors.Aggregate("Could not remove the old role from the user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
+                    throw new Exception(exceptionText);
+                }
+
+                result = await _userManager.AddToRoleAsync(user, newRole.ToString());
+
+                if (!result.Succeeded)
+                {
+                    var exceptionText = result.Errors.Aggregate("Could not add the new role to the user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
+                    throw new Exception(exceptionText);
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw;
             }
         }
 
@@ -121,13 +167,24 @@ namespace PizzaWebsite.Data.Repositories
 
                 if (!result.Succeeded)
                 {
-                    var exceptionText = result.Errors.Aggregate("Could not delete user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
+                    var exceptionText = result.Errors.Aggregate("Could not remove the role from the user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
                     throw new Exception(exceptionText);
                 }
 
                 _pizzaWebsiteRepository.Remove(userData);
-                _pizzaWebsiteRepository.SaveAll();
-                _context.Remove(user);
+
+                if (!_pizzaWebsiteRepository.SaveAll())
+                {
+                    throw new Exception("Could not remove user data.");
+                }
+
+                //_context.Users.Remove(user);
+                await _userManager.DeleteAsync(user);
+
+                //if (!SaveAll())
+                //{
+                //    throw new Exception("Could not remove the user.");
+                //}
             }
             catch (Exception e)
             {
@@ -142,7 +199,10 @@ namespace PizzaWebsite.Data.Repositories
             {
                 _logger.LogInformation("Getting all employee users ...");
 
-                List<FullUserInfo> employeeUserInfos = 
+                var employeeRoles = _context.Roles    
+                    .Where(user_role => user_role.Name != Roles.Customer.ToString());
+
+                List<FullUserInfo> employeeUserInfos =
                     _context.Roles
                     .Join(
                         _context.UserRoles,
@@ -168,6 +228,46 @@ namespace PizzaWebsite.Data.Repositories
                             PhoneNumber = user.PhoneNumber
                         }
                     ).ToList();
+
+                //var user_roles = _context.Users
+                //    .Join(
+                //        _context.UserRoles,
+                //        user => user.Id,
+                //        user_role => user_role.UserId,
+                //        (user, user_role) => new
+                //        {
+                //            user_role.UserId,
+                //            user_role.RoleId,
+                //            User = user
+                //        }
+                //    ).ToList();
+
+                //List<FullUserInfo> employeeUserInfos =
+                //_context.Users
+                //    .Join(
+                //        _context.UserRoles,
+                //        user => user.Id,
+                //        user_role => user_role.UserId,
+                //        (user, user_role) => new
+                //        {
+                //            user_role.UserId,
+                //            user_role.RoleId,
+                //            User = user
+                //        }
+                //    )
+                //    .Join(
+                //        employeeRoles,
+                //        user_role => user_role.RoleId,
+                //        role => role.Id,
+                //        (user_role, role) => new FullUserInfo
+                //        {
+                //            UserId = user_role.UserId,
+                //            UserName = user_role.User.UserName,
+                //            Role = role,
+                //            Email = user_role.User.Email,
+                //            PhoneNumber = user_role.User.PhoneNumber
+                //        }
+                //    ).ToList();
 
                 foreach (FullUserInfo info in employeeUserInfos)
                 {

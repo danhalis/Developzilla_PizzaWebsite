@@ -49,6 +49,14 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
+        /// <summary>
+        /// Retrieves a list of pre-defined delivery areas.
+        /// </summary>
+        public static List<string> DeliveryAreas
+        {
+            get { return UserData.DeliveryAreas; }
+        }
+
         public class InputModel
         {
             [Required]
@@ -60,8 +68,22 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            // Assisted by https://stackoverflow.com/questions/15774555/efficient-regex-for-canadian-postal-code-function
+            [RegularExpression(@"^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$", ErrorMessage = "Please enter a valid Canadian Postal Code.")]
+            [DataType(DataType.PostalCode)]
+            [Required]
+            [Display(Name = "Postal Code")]
+            public string PostalCode { get; set; }
+
+            [Required]
             [Display(Name = "Delivery Address")]
             public string DeliveryAddress { get; set; }
+
+            [Required]
+            [Display(Name = "Delivery Area")]
+            public string DeliveryArea { get; set; }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
@@ -107,7 +129,9 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
                     UserId= user.Id,
                     FirstName= Input.FirstName,
                     LastName = Input.LastName,
+                    DeliveryArea = Input.DeliveryArea,
                     DeliveryAddress = Input.DeliveryAddress,
+                    PostalCode = Input.PostalCode,
                 };
                 _pizzaRepository.Add(userData);
                 _pizzaRepository.SaveAll();

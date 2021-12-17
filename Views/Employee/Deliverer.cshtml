@@ -90,7 +90,7 @@
                                                asp-route-redirectPage="Deliverer">Deliver Order</a>
                                             break;
                                         case Status.Pending:
-                                            @if (item.DevilvererId == null || item.DevilvererId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+                                            @if (item.DelivererId == null || item.DelivererId != User.FindFirstValue(ClaimTypes.NameIdentifier))
                                             {
                                                 <a>Order Taken by Another Deliverer</a>
                                             }

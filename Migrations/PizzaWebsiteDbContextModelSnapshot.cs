@@ -107,6 +107,24 @@ namespace PizzaWebsite.Migrations
                     b.ToTable("Contacts");
                 });
 
+            modelBuilder.Entity("PizzaWebsite.Data.Entities.EmployeeRemovalReason", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("EmployeeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmployeeRemovalReasons");
+                });
+
             modelBuilder.Entity("PizzaWebsite.Data.Entities.FavoriteItem", b =>
                 {
                     b.Property<int>("Id")
@@ -146,7 +164,13 @@ namespace PizzaWebsite.Migrations
                     b.Property<string>("CustomerLastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DevilvererId")
+                    b.Property<string>("DelivererId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryArea")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("OrderTime")
@@ -154,6 +178,9 @@ namespace PizzaWebsite.Migrations
 
                     b.Property<int>("PaymentType")
                         .HasColumnType("int");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReceptionMethod")
                         .HasColumnType("int");

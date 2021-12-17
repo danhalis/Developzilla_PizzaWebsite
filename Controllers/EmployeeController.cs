@@ -116,24 +116,90 @@ namespace PizzaWebsite.Controllers
             return RedirectToAction("Owner", "Employee");
         }
 
-        public IActionResult EditEmployee(string userId)
+        public async Task<IActionResult> EditEmployee(string userId, string roleName)
         {
             IdentityUser user = _identityRepository.GetUserById(userId);
-            return RedirectToAction("Owner", "Employee");
-        }
 
-        public async Task<IActionResult> DeleteEmployee(string userId, Roles role)
-        {
-            IdentityUser user = _identityRepository.GetUserById(userId);
-            UserData userData = _pizzaRepository.GetUserDataByUserId(userId);
-            await _identityRepository.RemoveEmployeeUser(user, userData, role);
-
-            if (!_identityRepository.SaveAll())
+            if (user == null)
             {
                 // redirect to an error page
                 return RedirectToAction("Error", "Home", new ErrorViewModel
                 {
-                    Message = "Failed to register the employee."
+                    Message = "Failed to update the employee role."
+                });
+            }
+
+            Roles role = (Roles) Enum.Parse(typeof(Roles), roleName, false);
+
+            await _identityRepository.UpdateUserRole(user, role);
+
+            if (_userManager.GetUserId(User) == userId)
+            {
+                switch (role)
+                {
+                    case Roles.Owner:
+                        return RedirectToAction("Owner", "Employee");
+                    case Roles.Manager:
+                        return RedirectToAction("Manager", "Employee");
+                    case Roles.Cook:
+                        return RedirectToAction("Cook", "Employee");
+                    case Roles.Deliverer:
+                        return RedirectToAction("Deliverer", "Employee");
+                    case Roles.Front:
+                        return RedirectToAction("Front", "Employee");
+                    default:
+                        // redirect to an error page
+                        return RedirectToAction("Error", "Home", new ErrorViewModel
+                        {
+                            Message = "Something went wrong."
+                        });
+                }
+            }
+
+            return RedirectToAction("Owner", "Employee");
+        }
+
+        public IActionResult ConfirmRemovingEmployee(string userId, Roles role, string employeeName)
+        {
+            if (_userManager.GetUserId(User) == userId)
+            {
+                return RedirectToAction("Owner", "Employee");
+            }
+
+            return View("ConfirmRemovingEmployee", 
+                new ConfirmRemovingEmployeeViewModel
+                {
+                    UserId = userId,
+                    Role = role,
+                    EmployeeName = employeeName
+                });
+        }
+
+        public async Task<IActionResult> DeleteEmployee(ConfirmRemovingEmployeeViewModel viewModel)
+        {
+            if (_userManager.GetUserId(User) == viewModel.UserId)
+            {
+                return RedirectToAction("Owner", "Employee");
+            }
+
+            IdentityUser user = _identityRepository.GetUserById(viewModel.UserId);
+            UserData userData = _pizzaRepository.GetUserDataByUserId(viewModel.UserId);
+            await _identityRepository.RemoveEmployeeUser(user, userData, viewModel.Role);
+
+            var reason = new EmployeeRemovalReason
+            {
+                EmployeeName = viewModel.EmployeeName,
+                Reason = viewModel.Reason
+            };
+
+            _pizzaRepository.Add(reason);
+            
+            if (!_pizzaRepository.SaveAll())
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Something went wrong."
                 });
             }
 
@@ -175,11 +241,10 @@ namespace PizzaWebsite.Controllers
 
             return View(manageOrderViewModel);
         }
+
         [Authorize(Roles = "Owner, Manager")]
         public IActionResult DeleteOrder(int id)
         {
-
-
             Order order = _pizzaRepository.GetOrderById(id);
 
             if (order == null)
@@ -251,11 +316,11 @@ namespace PizzaWebsite.Controllers
 
                     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                    order.DevilvererId = userId;
+                    order.DelivererId = userId;
                     break;
                 case Status.Completed:
                     _logger.LogDebug("Status is Pending -> Complete");
-                    if (order.DevilvererId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    if (order.DelivererId != User.FindFirstValue(ClaimTypes.NameIdentifier))
                     {
                         order.Status = pastStatus;
                         _logger.LogWarning("UpdateOrderStatus: An complete was made by a different user than accepted it.");
