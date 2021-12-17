@@ -159,23 +159,47 @@ namespace PizzaWebsite.Controllers
             return RedirectToAction("Owner", "Employee");
         }
 
-        public async Task<IActionResult> DeleteEmployee(string userId, Roles role)
+        public IActionResult ConfirmRemovingEmployee(string userId, Roles role, string employeeName)
         {
             if (_userManager.GetUserId(User) == userId)
             {
                 return RedirectToAction("Owner", "Employee");
             }
 
-            IdentityUser user = _identityRepository.GetUserById(userId);
-            UserData userData = _pizzaRepository.GetUserDataByUserId(userId);
-            await _identityRepository.RemoveEmployeeUser(user, userData, role);
+            return View("ConfirmRemovingEmployee", 
+                new ConfirmRemovingEmployeeViewModel
+                {
+                    UserId = userId,
+                    Role = role,
+                    EmployeeName = employeeName
+                });
+        }
 
-            if (!_identityRepository.SaveAll())
+        public async Task<IActionResult> DeleteEmployee(ConfirmRemovingEmployeeViewModel viewModel)
+        {
+            if (_userManager.GetUserId(User) == viewModel.UserId)
+            {
+                return RedirectToAction("Owner", "Employee");
+            }
+
+            IdentityUser user = _identityRepository.GetUserById(viewModel.UserId);
+            UserData userData = _pizzaRepository.GetUserDataByUserId(viewModel.UserId);
+            await _identityRepository.RemoveEmployeeUser(user, userData, viewModel.Role);
+
+            var reason = new EmployeeRemovalReason
+            {
+                EmployeeName = viewModel.EmployeeName,
+                Reason = viewModel.Reason
+            };
+
+            _pizzaRepository.Add(reason);
+            
+            if (!_pizzaRepository.SaveAll())
             {
                 // redirect to an error page
                 return RedirectToAction("Error", "Home", new ErrorViewModel
                 {
-                    Message = "Failed to register the employee."
+                    Message = "Something went wrong."
                 });
             }
 

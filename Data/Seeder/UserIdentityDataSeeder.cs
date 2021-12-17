@@ -40,6 +40,8 @@ namespace PizzaWebsite.Data.Seeder
 
         private async Task SeedRolesAsync()
         {
+            if (_context.Roles.ToList().Count > 0) return;
+
             var rolesFile = Path.Combine(_host.ContentRootPath, "Data/SampleData/roles.json");
 
             var json = File.ReadAllText(rolesFile);
@@ -75,31 +77,13 @@ namespace PizzaWebsite.Data.Seeder
             }
 
             // add user to specified role
-            switch (role)
-            {
-                case Roles.Customer:
-                    await _userManager.AddToRoleAsync(user, Roles.Customer.ToString());
-                    break;
-                case Roles.Owner:
-                    await _userManager.AddToRoleAsync(user, Roles.Owner.ToString());
-                    break;
-                case Roles.Manager:
-                    await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
-                    break;
-                case Roles.Cook:
-                    await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
-                    break;
-                case Roles.Deliverer:
-                    await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
-                    break;
-                case Roles.Front:
-                    await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
-                    break;
-            }
+            await _userManager.AddToRoleAsync(user, role.ToString());
         }
 
         private async Task SeedUsersAsync()
         {
+            if (_context.Users.ToList().Count > 0) return;
+
             var usersFile = Path.Combine(_host.ContentRootPath, "Data/SampleData/users.json");
             var json = File.ReadAllText(usersFile);
             var users = JsonConvert.DeserializeObject<IEnumerable<IdentityUser>>(json);

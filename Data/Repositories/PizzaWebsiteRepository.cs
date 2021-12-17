@@ -175,6 +175,8 @@ namespace PizzaWebsite.Data.Repositories
         void RemoveFavorite(FavoriteItem favoriteItem);
         #endregion
 
+        void Add(EmployeeRemovalReason employeeRemovalReason);
+
         /// <summary>
         /// Saves all changes made by the previous CRUD operations before the call of this method.
         /// </summary>
@@ -521,6 +523,20 @@ namespace PizzaWebsite.Data.Repositories
             }
         }
         #endregion
+
+        public void Add(EmployeeRemovalReason employeeRemovalReason)
+        {
+            try
+            {
+                _logger.LogInformation("Adding employee removal reason ...");
+
+                _context.EmployeeRemovalReasons.Add(employeeRemovalReason);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to add employee removal reason: {e}");
+            }
+        }
 
         #region Product
         public List<Product> GetAllProducts()
@@ -927,6 +943,5 @@ namespace PizzaWebsite.Data.Repositories
                 return null;
             }
         }
-       
     }
 }
