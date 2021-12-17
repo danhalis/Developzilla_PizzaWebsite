@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -8,10 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PizzaWebsite.Models;
 using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Data.Repositories;
-using PizzaWebsite.Data;
 
 namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 {
