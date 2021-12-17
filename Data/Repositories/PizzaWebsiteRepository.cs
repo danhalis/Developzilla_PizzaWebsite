@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using PizzaWebsite.Models;
 
 namespace PizzaWebsite.Data.Repositories
 {
@@ -49,7 +50,7 @@ namespace PizzaWebsite.Data.Repositories
 
         #region Order
 
-        public void AddNewOrder();
+        public void AddNewOrder(CheckoutViewModel checkoutViewModel);
         public void Update(Order order);
         public List<Order> GetAllOrders();
         public List<Order> GetAllOrdersSortByTime();
@@ -323,7 +324,7 @@ namespace PizzaWebsite.Data.Repositories
         #endregion
 
         #region Order
-        public void AddNewOrder()
+        public void AddNewOrder(CheckoutViewModel checkoutViewModel)
         {
             _logger.LogInformation($"Checking out the user's Cart to make a new Order.");
 
@@ -331,18 +332,25 @@ namespace PizzaWebsite.Data.Repositories
             Cart orderCart = GetCurrentCart(false);
             orderCart.CheckedOut = true;
 
-            // Create a new order with all relevant information
+            // Create a new order with all relevant information filled out by the user
             Order order = new Order()
             {
                 CartId = orderCart.Id,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
-                Cart = null,
-                
-
-                // To justify not using delivery orders for now
-                ReceptionMethod = ReceptionMethod.Pickup
+                CustomerFirstName = checkoutViewModel.FirstName,
+                CustomerLastName = checkoutViewModel.LastName,
+                CustomerEmail = checkoutViewModel.Email,
+                ReceptionMethod = checkoutViewModel.ReceptionMethod
             };
+
+            if (checkoutViewModel is DeliveryCheckoutViewModel)
+            {
+                DeliveryCheckoutViewModel deliveryCheckoutViewModel = checkoutViewModel as DeliveryCheckoutViewModel;
+                order.PostalCode = deliveryCheckoutViewModel.PostalCode;
+                order.DeliveryArea = deliveryCheckoutViewModel.DeliveryArea;
+                order.DeliveryAddress = deliveryCheckoutViewModel.DeliveryAddress;
+            }
 
             // Add the order to the database and update the cart
             _context.Carts.Update(orderCart);

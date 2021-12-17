@@ -157,7 +157,7 @@ namespace PizzaWebsite.Controllers
         [HttpPost()]
         public IActionResult AddOrder(CheckoutViewModel checkoutViewModel)
         {
-            _pizzaRepository.AddNewOrder();
+            _pizzaRepository.AddNewOrder(checkoutViewModel);
             return RedirectToAction("CheckoutSuccess", "Cart", new { area = "" });
         }
 
