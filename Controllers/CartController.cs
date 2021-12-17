@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
 using PizzaWebsite.Data.Repositories;
 using PizzaWebsite.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace PizzaWebsite.Controllers
@@ -19,14 +16,17 @@ namespace PizzaWebsite.Controllers
         private readonly ILogger<CartController> _logger;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IPizzaWebsiteRepository _pizzaRepository;
+        private readonly IUserIdentityRepository _userIdentityRepository;
 
         public CartController(ILogger<CartController> logger,
             UserManager<IdentityUser> userManager,
-            IPizzaWebsiteRepository pizzaRepository)
+            IPizzaWebsiteRepository pizzaRepository,
+            IUserIdentityRepository userIdentityRepository)
         {
             _logger = logger;
             _userManager = userManager;
             _pizzaRepository = pizzaRepository;
+            _userIdentityRepository = userIdentityRepository;
         }
 
         public IActionResult Index()
@@ -44,7 +44,20 @@ namespace PizzaWebsite.Controllers
                 return RedirectToAction("Index", "Menu", new { area = "" });
             }
 
-            return View();
+            ViewBag.Title = "Checkout";
+
+            UserData currentUserData = _pizzaRepository.GetCurrentUserData();
+            CheckoutViewModel checkoutViewModel = new CheckoutViewModel();
+
+            if (currentUserData != null)
+            {
+                
+                checkoutViewModel.FirstName = currentUserData.FirstName;
+                checkoutViewModel.LastName = currentUserData.LastName;
+                //checkoutViewModel.Email = _userIdentityRepository
+            }
+
+            return View(checkoutViewModel);
         }
 
         [HttpGet("Items")]
