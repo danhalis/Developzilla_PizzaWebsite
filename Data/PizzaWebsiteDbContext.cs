@@ -10,6 +10,7 @@ namespace PizzaWebsite.Data
         } 
 
         public DbSet<UserData> UserDatas { get; set; }
+        public DbSet<EmployeeRemovalReason> EmployeeRemovalReasons { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductPortion> ProductPortions { get; set; }
         public DbSet<Portion> Portions { get; set; }

@@ -98,25 +98,7 @@ namespace PizzaWebsite.Data.Repositories
                 userData.UserId = user.Id;
                 _pizzaWebsiteRepository.Add(userData);
 
-                // add user to specified role
-                switch (role)
-                {
-                    case Roles.Owner:
-                        result = await _userManager.AddToRoleAsync(user, Roles.Owner.ToString());
-                        break;
-                    case Roles.Manager:
-                        result = await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
-                        break;
-                    case Roles.Cook:
-                        result = await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
-                        break;
-                    case Roles.Deliverer:
-                        result = await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
-                        break;
-                    case Roles.Front:
-                        result = await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
-                        break;
-                }
+                result = await _userManager.AddToRoleAsync(user, role.ToString());
 
                 if (!result.Succeeded)
                 {
@@ -196,12 +178,13 @@ namespace PizzaWebsite.Data.Repositories
                     throw new Exception("Could not remove user data.");
                 }
 
-                _context.Remove(user);
+                //_context.Users.Remove(user);
+                await _userManager.DeleteAsync(user);
 
-                if (!SaveAll())
-                {
-                    throw new Exception("Could not remove the user.");
-                }
+                //if (!SaveAll())
+                //{
+                //    throw new Exception("Could not remove the user.");
+                //}
             }
             catch (Exception e)
             {
@@ -216,7 +199,10 @@ namespace PizzaWebsite.Data.Repositories
             {
                 _logger.LogInformation("Getting all employee users ...");
 
-                List<FullUserInfo> employeeUserInfos = 
+                var employeeRoles = _context.Roles    
+                    .Where(user_role => user_role.Name != Roles.Customer.ToString());
+
+                List<FullUserInfo> employeeUserInfos =
                     _context.Roles
                     .Join(
                         _context.UserRoles,
@@ -242,6 +228,46 @@ namespace PizzaWebsite.Data.Repositories
                             PhoneNumber = user.PhoneNumber
                         }
                     ).ToList();
+
+                //var user_roles = _context.Users
+                //    .Join(
+                //        _context.UserRoles,
+                //        user => user.Id,
+                //        user_role => user_role.UserId,
+                //        (user, user_role) => new
+                //        {
+                //            user_role.UserId,
+                //            user_role.RoleId,
+                //            User = user
+                //        }
+                //    ).ToList();
+
+                //List<FullUserInfo> employeeUserInfos =
+                //_context.Users
+                //    .Join(
+                //        _context.UserRoles,
+                //        user => user.Id,
+                //        user_role => user_role.UserId,
+                //        (user, user_role) => new
+                //        {
+                //            user_role.UserId,
+                //            user_role.RoleId,
+                //            User = user
+                //        }
+                //    )
+                //    .Join(
+                //        employeeRoles,
+                //        user_role => user_role.RoleId,
+                //        role => role.Id,
+                //        (user_role, role) => new FullUserInfo
+                //        {
+                //            UserId = user_role.UserId,
+                //            UserName = user_role.User.UserName,
+                //            Role = role,
+                //            Email = user_role.User.Email,
+                //            PhoneNumber = user_role.User.PhoneNumber
+                //        }
+                //    ).ToList();
 
                 foreach (FullUserInfo info in employeeUserInfos)
                 {

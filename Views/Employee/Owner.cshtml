@@ -95,7 +95,7 @@
                         </td>
                         <td>
                             <input id="@($"save-employee-btn--{info.UserId}")" class="employee-save-btn" type="submit" form="@($"form-role--{info.UserId}")" value="Save">
-                            <a asp-controller="Employee" asp-action="DeleteEmployee" asp-route-userId="@info.UserId" asp-route-role="@info.Role">Delete</a>
+                            <a asp-controller="Employee" asp-action="ConfirmRemovingEmployee" asp-route-userId="@info.UserId" asp-route-role="@info.Role"  asp-route-employeeName="@($"{info.FirstName} {info.LastName}")">Delete</a>
                         </td>
                     </tr>
                 }
