@@ -27,6 +27,8 @@ namespace PizzaWebsite.Data.Repositories
     {
         public string UserId { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
@@ -178,13 +180,7 @@ namespace PizzaWebsite.Data.Repositories
                     throw new Exception("Could not remove user data.");
                 }
 
-                //_context.Users.Remove(user);
                 await _userManager.DeleteAsync(user);
-
-                //if (!SaveAll())
-                //{
-                //    throw new Exception("Could not remove the user.");
-                //}
             }
             catch (Exception e)
             {
@@ -198,9 +194,6 @@ namespace PizzaWebsite.Data.Repositories
             try
             {
                 _logger.LogInformation("Getting all employee users ...");
-
-                var employeeRoles = _context.Roles    
-                    .Where(user_role => user_role.Name != Roles.Customer.ToString());
 
                 List<FullUserInfo> employeeUserInfos =
                     _context.Roles
@@ -229,52 +222,13 @@ namespace PizzaWebsite.Data.Repositories
                         }
                     ).ToList();
 
-                //var user_roles = _context.Users
-                //    .Join(
-                //        _context.UserRoles,
-                //        user => user.Id,
-                //        user_role => user_role.UserId,
-                //        (user, user_role) => new
-                //        {
-                //            user_role.UserId,
-                //            user_role.RoleId,
-                //            User = user
-                //        }
-                //    ).ToList();
-
-                //List<FullUserInfo> employeeUserInfos =
-                //_context.Users
-                //    .Join(
-                //        _context.UserRoles,
-                //        user => user.Id,
-                //        user_role => user_role.UserId,
-                //        (user, user_role) => new
-                //        {
-                //            user_role.UserId,
-                //            user_role.RoleId,
-                //            User = user
-                //        }
-                //    )
-                //    .Join(
-                //        employeeRoles,
-                //        user_role => user_role.RoleId,
-                //        role => role.Id,
-                //        (user_role, role) => new FullUserInfo
-                //        {
-                //            UserId = user_role.UserId,
-                //            UserName = user_role.User.UserName,
-                //            Role = role,
-                //            Email = user_role.User.Email,
-                //            PhoneNumber = user_role.User.PhoneNumber
-                //        }
-                //    ).ToList();
-
                 foreach (FullUserInfo info in employeeUserInfos)
                 {
                     var userData = _pizzaWebsiteRepository.GetUserDataByUserId(info.UserId);
 
                     if (userData == null) continue;
 
+                    info.CreatedAt = userData.CreatedAt;
                     info.FirstName = userData.FirstName;
                     info.LastName = userData.LastName;
                 }

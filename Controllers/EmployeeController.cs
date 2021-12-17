@@ -107,6 +107,7 @@ namespace PizzaWebsite.Controllers
 
             UserData userData = new UserData
             {
+                CreatedAt = DateTime.Now,
                 FirstName = viewModel.FirstName,
                 LastName = viewModel.LastName
             };

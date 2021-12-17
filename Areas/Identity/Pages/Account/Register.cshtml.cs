@@ -128,6 +128,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
                 var userData = new UserData
                 {
                     UserId= user.Id,
+                    CreatedAt = DateTime.Now,
                     FirstName= Input.FirstName,
                     LastName = Input.LastName,
                     DeliveryArea = Input.DeliveryArea,
