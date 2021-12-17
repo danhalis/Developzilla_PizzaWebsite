@@ -47,7 +47,7 @@
         {
     <form asp-controller="Favorite" asp-action="AddFavorites">
         <input hidden asp-for="ChosenProductId" value="@product.Id" />
-        <button product-id="@product.Id">Add to Favorite</button>
+        <button class="btn btn-success" product-id="@product.Id">Add to Favorite</button>
     </form>
                
                 }

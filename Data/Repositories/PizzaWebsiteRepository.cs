@@ -346,8 +346,8 @@ namespace PizzaWebsite.Data.Repositories
                 CustomerLastName = userData.LastName,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
-                CustomerFirstName = checkoutViewModel.FirstName,
-                CustomerLastName = checkoutViewModel.LastName,
+            //    CustomerFirstName = checkoutViewModel.FirstName,
+           //     CustomerLastName = checkoutViewModel.LastName,
                 CustomerEmail = checkoutViewModel.Email,
                 ReceptionMethod = ReceptionMethod.Pickup
             };

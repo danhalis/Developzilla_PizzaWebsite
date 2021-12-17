@@ -99,6 +99,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+            public byte[] ProfilePicture { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -132,6 +133,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
                     DeliveryArea = Input.DeliveryArea,
                     DeliveryAddress = Input.DeliveryAddress,
                     PostalCode = Input.PostalCode,
+                    ProfilePicture= Input.ProfilePicture
                 };
                 _pizzaRepository.Add(userData);
                 _pizzaRepository.SaveAll();
