@@ -133,11 +133,39 @@ namespace PizzaWebsite.Controllers
 
             await _identityRepository.UpdateUserRole(user, role);
 
+            if (_userManager.GetUserId(User) == userId)
+            {
+                switch (role)
+                {
+                    case Roles.Owner:
+                        return RedirectToAction("Owner", "Employee");
+                    case Roles.Manager:
+                        return RedirectToAction("Manager", "Employee");
+                    case Roles.Cook:
+                        return RedirectToAction("Cook", "Employee");
+                    case Roles.Deliverer:
+                        return RedirectToAction("Deliverer", "Employee");
+                    case Roles.Front:
+                        return RedirectToAction("Front", "Employee");
+                    default:
+                        // redirect to an error page
+                        return RedirectToAction("Error", "Home", new ErrorViewModel
+                        {
+                            Message = "Something went wrong."
+                        });
+                }
+            }
+
             return RedirectToAction("Owner", "Employee");
         }
 
         public async Task<IActionResult> DeleteEmployee(string userId, Roles role)
         {
+            if (_userManager.GetUserId(User) == userId)
+            {
+                return RedirectToAction("Owner", "Employee");
+            }
+
             IdentityUser user = _identityRepository.GetUserById(userId);
             UserData userData = _pizzaRepository.GetUserDataByUserId(userId);
             await _identityRepository.RemoveEmployeeUser(user, userData, role);
@@ -183,11 +211,10 @@ namespace PizzaWebsite.Controllers
 
             return View(manageOrderViewModel);
         }
+
         [Authorize(Roles = "Owner, Manager")]
         public IActionResult DeleteOrder(int id)
         {
-
-
             Order order = _pizzaRepository.GetOrderById(id);
 
             if (order == null)
