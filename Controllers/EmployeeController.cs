@@ -216,7 +216,6 @@ namespace PizzaWebsite.Controllers
             ViewBag.Orders = _pizzaRepository.GetAllOrders();
             return View();
         }
-
         
         public IActionResult UpdateOrderStatus(int orderId, int cartId, Status newStatus, string redirectPage)
         {

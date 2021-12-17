@@ -19,7 +19,6 @@ namespace PizzaWebsite.Data.Repositories
         /// <returns>The current <see cref="Cart"/>, which is determined by the user's session and account.</returns>
         Cart GetCurrentCart(Boolean getCartItems = true);
 
-        //public Cart GetCartById(int id);
         /// <summary>
         /// Gets the <see cref="List{CartItem}"/> stored in the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
         /// </summary>
