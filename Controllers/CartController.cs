@@ -198,6 +198,15 @@ namespace PizzaWebsite.Controllers
         [HttpPost()]
         public IActionResult AddPickupOrder(CheckoutViewModel checkoutViewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to checkout the order."
+                });
+            }
+
             _pizzaRepository.AddNewOrder(checkoutViewModel);
             return View("CheckoutSuccess", checkoutViewModel);
         }
@@ -205,6 +214,15 @@ namespace PizzaWebsite.Controllers
         [HttpPost()]
         public IActionResult AddDeliveryOrder(DeliveryCheckoutViewModel deliveryCheckoutViewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to checkout the order."
+                });
+            }
+
             _pizzaRepository.AddNewOrder(deliveryCheckoutViewModel);
             return View("CheckoutSuccess", deliveryCheckoutViewModel);
         }

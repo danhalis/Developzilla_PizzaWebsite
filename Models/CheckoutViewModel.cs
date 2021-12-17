@@ -28,12 +28,15 @@ namespace PizzaWebsite.Models
         [RegularExpression(@"^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$", ErrorMessage = "Please enter a valid Canadian Postal Code.")]
         [DataType(DataType.PostalCode)]
         [Required]
+        [Display(Name = "Postal Code")]
         public string PostalCode { get; set; }
 
         [Required]
+        [Display(Name = "Delivery Area")]
         public string DeliveryArea { get; set; }
 
         [Required]
+        [Display(Name = "Delivery Address")]
         public string DeliveryAddress { get; set; }
 
         private static List<string> _deliveryAreas = new List<string>()
