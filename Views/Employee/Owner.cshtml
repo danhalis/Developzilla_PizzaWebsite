@@ -1,5 +1,85 @@
-﻿@{ Layout = "~/Views/Shared/_EmployeeLayout.cshtml"; }
+﻿@model OwnerViewModel
+
+@{ Layout = "~/Views/Shared/_EmployeeLayout.cshtml"; }
 
 <div class="text-center">
-    <h1 class="display-4">Hi</h1>
+    <h1 class="display-4">Welcome Owner</h1>
 </div>
+
+<hr />
+<div>
+    <ul class="nav nav-pills">
+        <li class="nav-item"><a class="nav-link" id="employees" asp-page="">Employees</a></li>
+        <li class="nav-item"><a class="nav-link" id="employees" asp-page="">Orders</a></li>
+        <li class="nav-item"><a class="nav-link" id="employees" asp-page="">Dashboard</a></li>
+    </ul>
+</div>
+<hr />
+<br />
+<a asp-action="RegisterEmployee">Register an employee</a>
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        First Name
+                    </th>
+                    <th>
+                        Last Name
+                    </th>
+                    <th>
+                        Role
+                    </th>
+                    <th>
+                        Username
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Phone
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var info in Model.EmployeeInfos)
+                {
+                    <tr>
+                        <td>
+                            @info.FirstName
+                        </td>
+                        <td>
+                            @info.LastName
+                        </td>
+                        <td>
+                            @info.Role.Name
+                        </td>
+                        <td>
+                            @info.UserName
+                        </td>
+                        <td>
+                            @info.Email
+                        </td>
+                        <td>
+                            @(info.PhoneNumber == null? "N/a" : @info.PhoneNumber)
+                        </td>
+                        <td>
+                            <a asp-controller="Employee" asp-action="DeleteEmployee" asp-route-userId="@info.UserId" asp-route-role="@info.Role">Delete</a>
+                        </td>
+                    </tr>
+                }
+                @*<tr>
+                        <td colspan="5"></td>
+                    </tr>
+                    <tr class="table-primary" style="font-weight: bold;">
+                        <td colspan="3">Total Price:</td>
+                        <td class="text-right">@Model.Total.ToString("c2")</td>
+                        <td></td>
+                    </tr>*@
+            </tbody>
+        </table>
+    </div>
+</div>
+

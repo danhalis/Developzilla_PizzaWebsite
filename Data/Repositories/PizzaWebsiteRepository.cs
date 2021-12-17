@@ -80,6 +80,8 @@ namespace PizzaWebsite.Data.Repositories
         /// </summary>
         /// <param name="userData">The <see cref="UserData"/> to update.</param>
         void Update(UserData userData);
+
+        void Remove(UserData userData);
         #endregion
 
         #region Product
@@ -478,6 +480,19 @@ namespace PizzaWebsite.Data.Repositories
             catch (Exception e)
             {
                 _logger.LogError($"Failed to add userData: {e}");
+            }
+        }
+        public void Remove(UserData userData)
+        {
+            try
+            {
+                _logger.LogInformation("Removing userData ...");
+
+                _context.UserDatas.Remove(userData);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to remove userData: {e}");
             }
         }
         #endregion
