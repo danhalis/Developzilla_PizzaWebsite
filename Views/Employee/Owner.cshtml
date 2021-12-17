@@ -22,8 +22,8 @@
 <a asp-action="RegisterEmployee">Register an employee</a>
 <hr />
 <div class="row">
-    <div class="table-responsive">
-        <table class="table table-hover">
+    <div class="table-responsive table-responsive{-sm|-md|-lg|-xl}">
+        <table style="min-width: 1500px" class="table table-hover">
             <thead>
                 <tr>
                     <th>
@@ -34,6 +34,9 @@
                     </th>
                     <th>
                         Role
+                    </th>
+                    <th>
+                        Start Date
                     </th>
                     <th>
                         Username
@@ -86,6 +89,9 @@
                             </form>
                         </td>
                         <td>
+                            @info.CreatedAt
+                        </td>
+                        <td>
                             @info.UserName
                         </td>
                         <td>
@@ -111,6 +117,9 @@
   
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementsByClassName("container")[0];
+            container.style.minWidth = "1500px";
+
             const forms = document.getElementsByClassName("form-employee-role");
 
             for (const form of forms) {

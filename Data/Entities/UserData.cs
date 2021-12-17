@@ -15,6 +15,9 @@ namespace PizzaWebsite.Data.Entities
         public string UserId { get; set; }
 
         [Required]
+        public DateTime CreatedAt { get; set; }
+
+        [Required]
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
