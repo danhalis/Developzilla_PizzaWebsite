@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
+using PizzaWebsite.Data;
 using PizzaWebsite.Data.Entities;
 using System;
 using System.Collections.Generic;
@@ -117,19 +118,8 @@ namespace PizzaWebsite.Data.Seeder
                 _context.Portions.AddRange(portions);
             }
 
-            
-            if (!_context.Carts.Any())
-            {
-                SeedCart();
-            }
-
             // Commit changes to the database
             _context.SaveChanges();
-        }
-
-        private void SeedCart()
-        {
-
         }
     }
 }

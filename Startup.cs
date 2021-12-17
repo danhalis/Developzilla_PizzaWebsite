@@ -51,15 +51,6 @@ namespace PizzaWebsite
             services.AddTransient<UserIdentityDataSeeder>();
             services.AddTransient<PizzaWebsiteDataSeeder>();
 
-            // add sessions
-            services.AddDistributedMemoryCache();
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromSeconds(600);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
-
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
@@ -101,7 +92,6 @@ namespace PizzaWebsite
             });
 
             services.AddControllersWithViews();
-            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -122,7 +112,6 @@ namespace PizzaWebsite
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();
