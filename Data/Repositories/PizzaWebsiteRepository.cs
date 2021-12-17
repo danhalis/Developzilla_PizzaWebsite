@@ -335,19 +335,16 @@ namespace PizzaWebsite.Data.Repositories
             Cart orderCart = GetCurrentCart(false);
             orderCart.CheckedOut = true;
 
-            UserData userData = GetUserDataByUserId(currentUserId);
             // Create a new order with all relevant information
 
             Order order = new Order()
             {
                 UserId = currentUserId,
                 CartId = orderCart.Id,
-                CustomerFirstName = userData.FirstName,
-                CustomerLastName = userData.LastName,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
-            //    CustomerFirstName = checkoutViewModel.FirstName,
-           //     CustomerLastName = checkoutViewModel.LastName,
+                CustomerFirstName = checkoutViewModel.FirstName,
+                CustomerLastName = checkoutViewModel.LastName,
                 CustomerEmail = checkoutViewModel.Email,
                 ReceptionMethod = ReceptionMethod.Pickup
             };
