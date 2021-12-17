@@ -7,20 +7,20 @@
 
 <h4>@ViewData["Title"]</h4>
 
-<table class="table">
-    <thead>
+<table class="table table-hover">
+    <thead style="background-color:slategray;">
         <tr>
-            <th>
+            <th  class="text-sm-center">
                 Order Number
             </th>
             
-            <th>
+            <th  class="text-sm-center">
                 Order Time
             </th>
-            <th>
-                Order Items
+            <th class="text-sm-center">
+                Order Details
             </th>
-            <th>
+            <th class="text-sm-center">
                 Order status
             </th>
 
@@ -39,10 +39,10 @@
                     @Html.DisplayFor(modelItem => order.OrderTime)
                 </td>
                 <td>
-                    <table class="table table-hover">
+                    <table class="table table-hover" style="background-color:powderblue;">
                         <thead>
                             <tr>
-                                <th></th>
+                                <th class="text-sm-center">Product</th>
                                 <th class="text-sm-center">
                                     Quantity
                                 </th>
@@ -52,17 +52,17 @@
                                 <th class="text-right">
                                     Sub-total
                                 </th>
-                                <th></th>
+                              
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in order.CartItems)
+                            @foreach (var item in Model.OrderDetails[order])
                             {
                                 <tr>
                                     <td>
                                         @(string.Format("{0} ({1})",
-                    item.Product.Name,
-                    item.Portion.Label))
+                                                item.Product.Name,
+                                                item.Portion.Label))
                                     </td>
                                     <td class="text-sm-center">
                                         @Html.DisplayFor(modelItem => item.Quantity)
@@ -73,9 +73,7 @@
                                     <td class="text-right">
                                         @((item.UnitPrice * item.Quantity).ToString("c2"))
                                     </td>
-                                    <td>
-                                        <a asp-controller="Cart" asp-action="Delete" asp-route-productId="@item.ProductId" asp-route-portionId="@item.PortionId">Delete</a>
-                                    </td>
+                                    
                                 </tr>
                             }
                             <tr>
