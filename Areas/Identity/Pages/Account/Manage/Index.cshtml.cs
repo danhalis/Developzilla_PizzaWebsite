@@ -35,6 +35,10 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
         [BindProperty]
         public InputModel Input { get; set; }
         public IEnumerable<Order> Orders { get; set; }
+        public List<CartItem> Items { get; set; }
+        public Dictionary<Order, List<CartItem>> OrderDetails { get; set; } = new Dictionary<Order, List<CartItem>>();
+        public Dictionary<Order, decimal> TotalForeachOrder { get; set; } = new Dictionary<Order, decimal>();
+
         public class InputModel
         {
             [Display(Name = "First Name")]
@@ -73,8 +77,14 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
 
-            Orders = _pizzaWebsiteRepository.GetAllOrdersbyUserId(user.Id); 
+            Orders = _pizzaWebsiteRepository.GetAllOrdersbyUserId(user.Id);
 
+            foreach (var order in Orders) {
+                TotalForeachOrder.Add(order, _pizzaWebsiteRepository.GetOrderTotal(order.CartId));
+                Items = _pizzaWebsiteRepository.GetCartItemDetailsByCardId(order.CartId);
+                OrderDetails.Add(order, Items);
+            }
+         
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,

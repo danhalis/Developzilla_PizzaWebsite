@@ -215,13 +215,17 @@ namespace PizzaWebsite.Controllers
             {
                 orders = orders.Where(o => o.CustomerFirstName.Contains(searchString)).ToList();
             }
-            Dictionary<int, decimal> totalForeachOrder = new Dictionary<int, decimal>();
+            Dictionary<Order, decimal> totalForeachOrder = new Dictionary<Order, decimal>();
             decimal total = 0;
-
+            List<CartItem> cartItems;
+       Dictionary<Order, List<CartItem>> orderDetails= new Dictionary<Order, List<CartItem>>();
 
             foreach (var order in orders)
             {
-                totalForeachOrder.Add(order.Id, _pizzaRepository.GetOrderTotal(order.CartId));
+
+                cartItems = _pizzaRepository.GetCartItemDetailsByCardId(order.CartId);
+                orderDetails.Add(order, cartItems);
+                totalForeachOrder.Add(order, _pizzaRepository.GetOrderTotal(order.CartId));
                 total += _pizzaRepository.GetOrderTotal(order.CartId);
 
             }
@@ -229,6 +233,8 @@ namespace PizzaWebsite.Controllers
             ManageOrderViewModel manageOrderViewModel = new ManageOrderViewModel()
             {
                 Orders = orders,
+              
+                OrderDetails = orderDetails,
                 TotalForeachOrder = totalForeachOrder,
                 Total = total
             };

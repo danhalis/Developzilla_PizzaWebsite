@@ -146,7 +146,8 @@ namespace PizzaWebsite.Data.Repositories
         /// <param name="attachNavigation">Whether to attach <see href="https://docs.microsoft.com/en-us/ef/ef6/fundamentals/relationships">navigation properties</see> to the <see cref="CartItem"/>.</param>
         /// <returns>The <see cref="CartItem"/> with the given id from the database if it exists, null otherwise.</returns>
         CartItem GetCartItemById(int id, bool attachNavigation = true);
-
+     
+        List<CartItem> GetCartItemDetailsByCardId(int cartId);
         /// <summary>
         /// Adds the given <see cref="CartItem"/> to the database.<br/>
         /// However, no changes will be made until <see cref="IPizzaWebsiteRepository.SaveAll()"/> is called.
@@ -329,15 +330,20 @@ namespace PizzaWebsite.Data.Repositories
         public void AddNewOrder(CheckoutViewModel checkoutViewModel)
         {
             _logger.LogInformation($"Checking out the user's Cart to make a new Order.");
-
+            string currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             // Get the user's cart and mark it as checked out so that it can no longer be accessed
             Cart orderCart = GetCurrentCart(false);
             orderCart.CheckedOut = true;
 
-            // Create a new order with all relevant information filled out by the user
+            UserData userData = GetUserDataByUserId(currentUserId);
+            // Create a new order with all relevant information
+
             Order order = new Order()
             {
+                UserId = currentUserId,
                 CartId = orderCart.Id,
+                CustomerFirstName = userData.FirstName,
+                CustomerLastName = userData.LastName,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
                 CustomerFirstName = checkoutViewModel.FirstName,
@@ -758,7 +764,32 @@ namespace PizzaWebsite.Data.Repositories
                 return null;
             }
         }
+        
+        public List<CartItem> GetCartItemDetailsByCardId(int cartId)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting cart items by cardId {cartId} ...");
 
+                List<CartItem> cartItems = _context.CartItems.Where(ci => ci.CartId == cartId).ToList();
+
+                foreach (CartItem cartItem in cartItems)
+                {
+                    ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                    cartItem.UnitPrice = productPortion.UnitPrice;
+                 }
+                
+                return cartItems;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to get cart items cardId {cartId}: {e}");
+
+                return null;
+            }
+        }
         public void Add(CartItem cartItem)
         {
             try
