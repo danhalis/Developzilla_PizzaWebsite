@@ -47,16 +47,20 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
 
+            [DataType(DataType.PostalCode)]
+            public string PostalCode { get; set; }
+
+            [Display(Name = "Delivery Area")]
+            public string DeliveryArea { get; set; }
+
             [Display(Name = "Delivery Address")]
             public string DeliveryAddress { get; set; }
             public string Email { get; set; }
 
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
-
-          
-          
         }
+
         private async Task LoadAsync(IdentityUser user)
         {
             var email = await _userManager.GetEmailAsync(user);
@@ -80,7 +84,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                 Email = email,
                 ProfilePicture = userData.ProfilePicture,
                 DeliveryAddress = userData.DeliveryAddress,
-               
+                PostalCode = userData.PostalCode
             };
         }
 
@@ -148,6 +152,11 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             if (Input.DeliveryAddress != userData.DeliveryAddress)
             {
                 userData.DeliveryAddress = Input.DeliveryAddress;
+                modified = true;
+            }
+            if (Input.PostalCode == Input.PostalCode)
+            {
+                userData.PostalCode = Input.PostalCode;
                 modified = true;
             }
             if (Request.Form.Files.Count > 0)
