@@ -25,7 +25,7 @@ namespace PizzaWebsite.Models
     public class DeliveryCheckoutViewModel : CheckoutViewModel
     {
         // Assisted by https://stackoverflow.com/questions/15774555/efficient-regex-for-canadian-postal-code-function
-        [RegularExpression(@"/^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i", ErrorMessage = "Please enter a valid Canadian Postal Code.")]
+        [RegularExpression(@"^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$", ErrorMessage = "Please enter a valid Canadian Postal Code.")]
         [DataType(DataType.PostalCode)]
         [Required]
         [Display(Name = "Postal Code")]

@@ -60,6 +60,14 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            // Assisted by https://stackoverflow.com/questions/15774555/efficient-regex-for-canadian-postal-code-function
+            [RegularExpression(@"^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$", ErrorMessage = "Please enter a valid Canadian Postal Code.")]
+            [DataType(DataType.PostalCode)]
+            [Required]
+            [Display(Name = "Postal Code")]
+            public string PostalCode { get; set; }
+
             [Display(Name = "Delivery Address")]
             public string DeliveryAddress { get; set; }
             [Required]
@@ -108,6 +116,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account
                     FirstName= Input.FirstName,
                     LastName = Input.LastName,
                     DeliveryAddress = Input.DeliveryAddress,
+                    PostalCode = Input.PostalCode,
                 };
                 _pizzaRepository.Add(userData);
                 _pizzaRepository.SaveAll();
