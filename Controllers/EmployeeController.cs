@@ -310,11 +310,11 @@ namespace PizzaWebsite.Controllers
 
                     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                    order.DevilvererId = userId;
+                    order.DelivererId = userId;
                     break;
                 case Status.Completed:
                     _logger.LogDebug("Status is Pending -> Complete");
-                    if (order.DevilvererId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    if (order.DelivererId != User.FindFirstValue(ClaimTypes.NameIdentifier))
                     {
                         order.Status = pastStatus;
                         _logger.LogWarning("UpdateOrderStatus: An complete was made by a different user than accepted it.");

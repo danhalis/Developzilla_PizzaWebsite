@@ -75,6 +75,12 @@ namespace PizzaWebsite.Data.Repositories
         UserData GetUserDataByUserId(string userId);
 
         /// <summary>
+        /// Retrieves a <see cref="UserData"/> relating to the current user from the database.
+        /// </summary>
+        /// <returns>The <see cref="UserData"/> relating to the current user from the database if it exists, null otherwise.</returns>
+        public UserData GetCurrentUserData();
+
+        /// <summary>
         /// Updates the given <see cref="UserData"/> in the database.
         /// </summary>
         /// <param name="userData">The <see cref="UserData"/> to update.</param>
@@ -334,9 +340,7 @@ namespace PizzaWebsite.Data.Repositories
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
                 Cart = null,
-                PostalCode = null, //TODO CHANGE TO VALUE
-                DeliveryArea = null, //TODO CHANGE TO VALUE
-                DeliveryAddress = null,  //TODO CHANGE TO VALUE
+                
 
                 // To justify not using delivery orders for now
                 ReceptionMethod = ReceptionMethod.Pickup
@@ -472,6 +476,11 @@ namespace PizzaWebsite.Data.Repositories
 
                 return null;
             }
+        }
+
+        public UserData GetCurrentUserData()
+        {
+            return GetUserDataByUserId(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         }
 
         public void Update(UserData userData)

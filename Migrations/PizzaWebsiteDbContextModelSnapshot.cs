@@ -164,13 +164,13 @@ namespace PizzaWebsite.Migrations
                     b.Property<string>("CustomerLastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DelivererId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DeliveryAddress")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeliveryArea")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DevilvererId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("OrderTime")

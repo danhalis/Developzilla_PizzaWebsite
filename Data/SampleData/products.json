@@ -117,9 +117,9 @@
     "Category": "Drink",
     "ImageName": "water",
     "Portions": [
-      "Small",
-      "Medium",
-      "Large"
+      "500 ml",
+      "1 Litre",
+      "2 Litre"
     ],
     "Prices": [
       2.00,
@@ -133,9 +133,9 @@
     "Category": "Drink",
     "ImageName": "coke",
     "Portions": [
-      "Small",
-      "Medium",
-      "Large"
+      "500 ml",
+      "1 Litre",
+      "2 Litre"
     ],
     "Prices": [
       3.50,
@@ -149,9 +149,9 @@
     "Category": "Drink",
     "ImageName": "pepsi",
     "Portions": [
-      "Small",
-      "Medium",
-      "Large"
+      "500 ml",
+      "1 Litre",
+      "2 Litre"
     ],
     "Prices": [
       3.50,
@@ -165,9 +165,9 @@
     "Category": "Drink",
     "ImageName": "diet-coke",
     "Portions": [
-      "Small",
-      "Medium",
-      "Large"
+      "500 ml",
+      "1 Litre",
+      "2 Litre"
     ],
     "Prices": [
       4.00,
@@ -181,9 +181,9 @@
     "Category": "Drink",
     "ImageName": "diet-pepsi",
     "Portions": [
-      "Small",
-      "Medium",
-      "Large"
+      "500 ml",
+      "1 Litre",
+      "2 Litre"
     ],
     "Prices": [
       4.00,
@@ -197,9 +197,9 @@
     "Category": "Drink",
     "ImageName": "7up",
     "Portions": [
-      "Small",
-      "Medium",
-      "Large"
+      "500 ml",
+      "1 Litre",
+      "2 Litre"
     ],
     "Prices": [
       3.50,
@@ -213,9 +213,9 @@
     "Category": "Drink",
     "ImageName": "schweppes",
     "Portions": [
-      "Small",
-      "Medium",
-      "Large"
+      "500 ml",
+      "1 Litre",
+      "2 Litre"
     ],
     "Prices": [
       4.00,
@@ -229,9 +229,9 @@
     "Category": "Drink",
     "ImageName": "fanta",
     "Portions": [
-      "Small",
-      "Medium",
-      "Large"
+      "500 ml",
+      "1 Litre",
+      "2 Litre"
     ],
     "Prices": [
       4.00,
