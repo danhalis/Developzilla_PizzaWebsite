@@ -7,9 +7,6 @@ namespace PizzaWebsite.Models
     public class CheckoutViewModel
     {
         [Required]
-        public ReceptionMethod ReceptionMethod { get; set; }
-
-        [Required]
         [RegularExpression("^[^0-9]+$", ErrorMessage = "First name cannot contain numbers.")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }

@@ -343,7 +343,7 @@ namespace PizzaWebsite.Data.Repositories
                 CustomerFirstName = checkoutViewModel.FirstName,
                 CustomerLastName = checkoutViewModel.LastName,
                 CustomerEmail = checkoutViewModel.Email,
-                ReceptionMethod = checkoutViewModel.ReceptionMethod
+                ReceptionMethod = ReceptionMethod.Pickup
             };
 
             if (checkoutViewModel is DeliveryCheckoutViewModel)
@@ -352,6 +352,7 @@ namespace PizzaWebsite.Data.Repositories
                 order.PostalCode = deliveryCheckoutViewModel.PostalCode;
                 order.DeliveryArea = deliveryCheckoutViewModel.DeliveryArea;
                 order.DeliveryAddress = deliveryCheckoutViewModel.DeliveryAddress;
+                order.ReceptionMethod = ReceptionMethod.Delivery;
             }
 
             // Add the order to the database and update the cart
