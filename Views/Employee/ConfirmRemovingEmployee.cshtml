@@ -4,9 +4,8 @@
     ViewData["Title"] = "ConfirmRemovingEmployee";
 }
 
-<h1>ConfirmRemovingEmployee</h1>
+<h2>Why are you removing this employee ?</h2>
 
-<h4>EmployeeRemovalReason</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -25,7 +24,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Reason" class="control-label"></label>
-                <input asp-for="Reason" class="form-control" />
+                <textarea style="min-height: 100px" asp-for="Reason" class="form-control"></textarea>
                 <span asp-validation-for="Reason" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -33,10 +32,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
