@@ -325,12 +325,14 @@ namespace PizzaWebsite.Data.Repositories
             // Get the user's cart and mark it as checked out so that it can no longer be accessed
             Cart orderCart = GetCurrentCart(false);
             orderCart.CheckedOut = true;
-           
+            UserData userData = GetUserDataByUserId(currentUserId);
             // Create a new order with all relevant information
             Order order = new Order()
             {
-                UserId= currentUserId,
+                UserId = currentUserId,
                 CartId = orderCart.Id,
+                CustomerFirstName = userData.FirstName,
+                CustomerLastName = userData.LastName,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
                 Cart = null,
