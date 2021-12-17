@@ -375,8 +375,6 @@ namespace PizzaWebsite.Data.Repositories
         {
             try
             {
-                _logger.LogInformation("AAAAAAAAAAAAAAAAAAAAAAAA");
-
                 _logger.LogInformation("Updating cart item ...");
 
                 // Set all related objects to null to avoid EF jank

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using PizzaWebsite.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static PizzaWebsite.Data.Seeder.UserIdentityDataSeeder;
 
@@ -13,6 +15,7 @@ namespace PizzaWebsite.Data.Repositories
     public interface IUserIdentityRepository
     {
         IdentityUser GetUserById(string id);
+        IdentityUser GetCurrentUser();
         List<FullUserInfo> GetAllFullEmployeeInfos();
         Task AddEmployeeUser(IdentityUser user, UserData userData, Roles role);
         Task UpdateUserRole(IdentityUser user, Roles newRole);
@@ -40,16 +43,19 @@ namespace PizzaWebsite.Data.Repositories
         private readonly UserIdentityDbContext _context;
         private readonly IPizzaWebsiteRepository _pizzaWebsiteRepository;
         private readonly UserManager<IdentityUser> _userManager;
+        private IHttpContextAccessor _httpContextAccessor;
 
         public UserIdentityRepository(ILogger<UserIdentityRepository> logger,
                                         UserIdentityDbContext context,
                                         IPizzaWebsiteRepository pizzaWebsiteRepository,
-                                        UserManager<IdentityUser> userManager)
+                                        UserManager<IdentityUser> userManager,
+                                        IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _context = context;
             _pizzaWebsiteRepository = pizzaWebsiteRepository;
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IdentityUser GetUserById(string id)
@@ -63,6 +69,11 @@ namespace PizzaWebsite.Data.Repositories
 
                 throw;
             }
+        }
+
+        public IdentityUser GetCurrentUser()
+        {
+            return GetUserById(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         }
 
         public async Task AddEmployeeUser(IdentityUser user, UserData userData, Roles role)

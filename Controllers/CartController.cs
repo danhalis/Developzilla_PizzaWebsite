@@ -51,10 +51,9 @@ namespace PizzaWebsite.Controllers
 
             if (currentUserData != null)
             {
-                
                 checkoutViewModel.FirstName = currentUserData.FirstName;
                 checkoutViewModel.LastName = currentUserData.LastName;
-                //checkoutViewModel.Email = _userIdentityRepository
+                checkoutViewModel.Email = _userIdentityRepository.GetCurrentUser().Email;
             }
 
             return View(checkoutViewModel);
