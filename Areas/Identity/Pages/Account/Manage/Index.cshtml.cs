@@ -37,6 +37,10 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 
         [BindProperty]
         public InputModel Input { get; set; }
+        public IEnumerable<Order> Orders { get; set; }
+        public List<CartItem> Items { get; set; }
+        public Dictionary<Order, List<CartItem>> OrderDetails { get; set; } = new Dictionary<Order, List<CartItem>>();
+        public Dictionary<Order, decimal> TotalForeachOrder { get; set; } = new Dictionary<Order, decimal>();
 
         public class InputModel
         {
@@ -50,16 +54,20 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
 
+            [DataType(DataType.PostalCode)]
+            public string PostalCode { get; set; }
+
+            [Display(Name = "Delivery Area")]
+            public string DeliveryArea { get; set; }
+
             [Display(Name = "Delivery Address")]
             public string DeliveryAddress { get; set; }
             public string Email { get; set; }
 
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
-
-            //test
-            public IEnumerable<Product> Orders { get; set; }
         }
+
         private async Task LoadAsync(IdentityUser user)
         {
             var email = await _userManager.GetEmailAsync(user);
@@ -71,9 +79,15 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            // for testing
-            var orders = _pizzaWebsiteRepository.GetAllProducts(); 
 
+            Orders = _pizzaWebsiteRepository.GetAllOrdersbyUserId(user.Id);
+
+            foreach (var order in Orders) {
+                TotalForeachOrder.Add(order, _pizzaWebsiteRepository.GetOrderTotal(order.CartId));
+                Items = _pizzaWebsiteRepository.GetCartItemDetailsByCardId(order.CartId);
+                OrderDetails.Add(order, Items);
+            }
+         
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
@@ -83,7 +97,7 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
                 Email = email,
                 ProfilePicture = userData.ProfilePicture,
                 DeliveryAddress = userData.DeliveryAddress,
-                Orders = orders
+                PostalCode = userData.PostalCode
             };
         }
 
@@ -151,6 +165,11 @@ namespace PizzaWebsite.Areas.Identity.Pages.Account.Manage
             if (Input.DeliveryAddress != userData.DeliveryAddress)
             {
                 userData.DeliveryAddress = Input.DeliveryAddress;
+                modified = true;
+            }
+            if (Input.PostalCode == Input.PostalCode)
+            {
+                userData.PostalCode = Input.PostalCode;
                 modified = true;
             }
             if (Request.Form.Files.Count > 0)
