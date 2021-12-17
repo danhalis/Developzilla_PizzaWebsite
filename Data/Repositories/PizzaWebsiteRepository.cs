@@ -19,7 +19,6 @@ namespace PizzaWebsite.Data.Repositories
         /// <returns>The current <see cref="Cart"/>, which is determined by the user's session and account.</returns>
         Cart GetCurrentCart(Boolean getCartItems = true);
 
-        public Cart GetCartById(int id);
         /// <summary>
         /// Gets the <see cref="List{CartItem}"/> stored in the current <see cref="Cart"/> object's <see cref="Cart.CartItems"/>.
         /// </summary>
@@ -80,6 +79,8 @@ namespace PizzaWebsite.Data.Repositories
         /// </summary>
         /// <param name="userData">The <see cref="UserData"/> to update.</param>
         void Update(UserData userData);
+
+        void Remove(UserData userData);
         #endregion
 
         #region Product
@@ -316,7 +317,6 @@ namespace PizzaWebsite.Data.Repositories
         #endregion
 
         #region Order
-
         public void AddNewOrder()
         {
             _logger.LogInformation($"Checking out the user's Cart to make a new Order.");
@@ -331,8 +331,10 @@ namespace PizzaWebsite.Data.Repositories
                 CartId = orderCart.Id,
                 Status = Status.Ordered,
                 OrderTime = DateTime.Now,
-
-                //Cart is not being added properly and is seen as null.
+                Cart = null,
+                PostalCode = null, //TODO CHANGE TO VALUE
+                DeliveryArea = null, //TODO CHANGE TO VALUE
+                DeliveryAddress = null,  //TODO CHANGE TO VALUE
 
                 // To justify not using delivery orders for now
                 ReceptionMethod = ReceptionMethod.Pickup
@@ -350,8 +352,9 @@ namespace PizzaWebsite.Data.Repositories
             try
             {
                 _logger.LogInformation($"Getting order by id {orderId} ...");
-
                 Order order = _context.Orders.FirstOrDefault(o => o.Id == orderId);
+                order.Cart = GetCartById(order.CartId);
+                _logger.LogInformation($"It's card id is {order.Cart.Id} ...");
 
                 return order;
             }
@@ -368,6 +371,8 @@ namespace PizzaWebsite.Data.Repositories
         {
             try
             {
+                _logger.LogInformation("AAAAAAAAAAAAAAAAAAAAAAAA");
+
                 _logger.LogInformation("Updating cart item ...");
 
                 // Set all related objects to null to avoid EF jank
@@ -410,7 +415,20 @@ namespace PizzaWebsite.Data.Repositories
             {
                 _logger.LogInformation("Getting all orders...");
 
-                return _context.Orders.ToList();
+
+
+                List<Order> orders = _context.Orders.ToList();
+
+                foreach (Order order in orders)
+                {
+                    if (order.Cart == null)
+                    {
+                        order.Cart = GetCartById(order.CartId);
+
+                    }
+                }
+
+                return orders;
             }
             catch (Exception e)
             {
@@ -478,6 +496,19 @@ namespace PizzaWebsite.Data.Repositories
             catch (Exception e)
             {
                 _logger.LogError($"Failed to add userData: {e}");
+            }
+        }
+        public void Remove(UserData userData)
+        {
+            try
+            {
+                _logger.LogInformation("Removing userData ...");
+
+                _context.UserDatas.Remove(userData);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to remove userData: {e}");
             }
         }
         #endregion
@@ -784,22 +815,25 @@ namespace PizzaWebsite.Data.Repositories
             return total;
         }
 
-        public Cart GetCartById(int id)
+        private Cart GetCartById(int id)
         {
-            try
+
+            Cart currentCart = _context.Carts.FirstOrDefault(c => c.Id == id);
+
+            if (currentCart != null)
             {
-                _logger.LogInformation($"Getting cart by  id {id} ...");
-
-                var cart = _context.Carts.FirstOrDefault(p => p.Id == id);
-
-                return cart;
+                currentCart.CartItems = _context.CartItems.Where(ci => ci.CartId == currentCart.Id).ToList();
+                foreach (CartItem cartItem in currentCart.CartItems)
+                {
+                    ProductPortion productPortion = GetProductAndPortionById(cartItem.ProductId, cartItem.PortionId);
+                    cartItem.Product = productPortion.Product;
+                    cartItem.Portion = productPortion.Portion;
+                    cartItem.UnitPrice = productPortion.UnitPrice;
+                    cartItem.Cart = currentCart;
+                }
             }
-            catch (Exception e)
-            {
-                _logger.LogError($"Failed to get cart by id {id}: {e}");
 
-                return null;
-            }
+            return currentCart;
         }
 
         public List<FavoriteItem> GetAllFavoriteItemByUserId(string id)
