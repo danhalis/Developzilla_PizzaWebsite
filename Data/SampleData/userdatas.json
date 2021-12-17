@@ -8,7 +8,7 @@
 
   {
     "FirstName": "Cust",
-    "LastName": "Cust",
+    "LastName": "Customer",
     "ProfilePictures": [],
     "DeliveryAddress": "122 Park Ave"
   },
@@ -20,7 +20,7 @@
   },
   {
     "FirstName": "Manag",
-    "LastName": "Manag",
+    "LastName": "Manager",
     "ProfilePictures": [],
     "DeliveryAddress": "124 Park Ave"
   },
@@ -32,7 +32,7 @@
   },
   {
     "FirstName": "Deliv",
-    "LastName": "Deliv",
+    "LastName": "Deliverer",
     "ProfilePictures": [],
     "DeliveryAddress": "124 Park Ave"
   },

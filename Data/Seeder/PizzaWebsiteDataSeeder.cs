@@ -47,7 +47,7 @@ namespace PizzaWebsite.Data.Seeder
                 // attach user ids to user datas
                 for (int i = 0; i < userdatas.Count; i++)
                 {
-                    userdatas[i].UserId = users[i].Id;
+                    userdatas[i].UserId = users.First(u => u.Email.Split("@")[0].ToLower() == userdatas[i].LastName.ToLower()).Id;
                 }
             }
 

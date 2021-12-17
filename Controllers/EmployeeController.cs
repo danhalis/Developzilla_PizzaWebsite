@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using static PizzaWebsite.Data.Seeder.UserIdentityDataSeeder;
 
 namespace PizzaWebsite.Controllers
 {
@@ -17,14 +19,17 @@ namespace PizzaWebsite.Controllers
     {
         private readonly ILogger<EmployeeController> _logger;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserIdentityRepository _identityRepository;
         private readonly IPizzaWebsiteRepository _pizzaRepository;
 
         public EmployeeController(ILogger<EmployeeController> logger,
-    UserManager<IdentityUser> userManager,
-    IPizzaWebsiteRepository pizzaRepository)
+                                    UserManager<IdentityUser> userManager,
+                                    IUserIdentityRepository identityRepository,
+                                    IPizzaWebsiteRepository pizzaRepository)
         {
             _logger = logger;
             _userManager = userManager;
+            _identityRepository = identityRepository;
             _pizzaRepository = pizzaRepository;
         }
 
@@ -63,7 +68,118 @@ namespace PizzaWebsite.Controllers
         [Authorize(Roles = "Owner")]
         public IActionResult Owner()
         {
+            var employeeInfos = _identityRepository.GetAllFullEmployeeInfos();
+
+            var viewModel = new OwnerViewModel
+            {
+                EmployeeInfos = employeeInfos
+            };
+
+            return View(viewModel);
+        }
+
+        [Authorize(Roles = "Owner")]
+        [HttpGet("RegisterEmployee")]
+        public IActionResult RegisterEmployee()
+        {
             return View();
+        }
+
+        [HttpPost("RegisterEmployee")]
+        public async Task<IActionResult> RegisterEmployee(RegisterEmployeeViewModel viewModel)
+        {
+            // if the view model is not valid
+            if (!ModelState.IsValid)
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to register the employee."
+                });
+            }
+
+            IdentityUser user = new IdentityUser
+            {
+                UserName = viewModel.Email,
+                Email = viewModel.Email,
+                PhoneNumber = viewModel.PhoneNumber
+            };
+
+            UserData userData = new UserData
+            {
+                FirstName = viewModel.FirstName,
+                LastName = viewModel.LastName
+            };
+
+            await _identityRepository.AddEmployeeUser(user, userData, viewModel.Role);
+
+            return RedirectToAction("Owner", "Employee");
+        }
+
+        public async Task<IActionResult> EditEmployee(string userId, string roleName)
+        {
+            IdentityUser user = _identityRepository.GetUserById(userId);
+
+            if (user == null)
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to update the employee role."
+                });
+            }
+
+            Roles role = (Roles) Enum.Parse(typeof(Roles), roleName, false);
+
+            await _identityRepository.UpdateUserRole(user, role);
+
+            if (_userManager.GetUserId(User) == userId)
+            {
+                switch (role)
+                {
+                    case Roles.Owner:
+                        return RedirectToAction("Owner", "Employee");
+                    case Roles.Manager:
+                        return RedirectToAction("Manager", "Employee");
+                    case Roles.Cook:
+                        return RedirectToAction("Cook", "Employee");
+                    case Roles.Deliverer:
+                        return RedirectToAction("Deliverer", "Employee");
+                    case Roles.Front:
+                        return RedirectToAction("Front", "Employee");
+                    default:
+                        // redirect to an error page
+                        return RedirectToAction("Error", "Home", new ErrorViewModel
+                        {
+                            Message = "Something went wrong."
+                        });
+                }
+            }
+
+            return RedirectToAction("Owner", "Employee");
+        }
+
+        public async Task<IActionResult> DeleteEmployee(string userId, Roles role)
+        {
+            if (_userManager.GetUserId(User) == userId)
+            {
+                return RedirectToAction("Owner", "Employee");
+            }
+
+            IdentityUser user = _identityRepository.GetUserById(userId);
+            UserData userData = _pizzaRepository.GetUserDataByUserId(userId);
+            await _identityRepository.RemoveEmployeeUser(user, userData, role);
+
+            if (!_identityRepository.SaveAll())
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to register the employee."
+                });
+            }
+
+            return RedirectToAction("Owner", "Employee");
         }
 
         [Authorize(Roles = "Owner, Manager")]
@@ -95,11 +211,10 @@ namespace PizzaWebsite.Controllers
 
             return View(manageOrderViewModel);
         }
+
         [Authorize(Roles = "Owner, Manager")]
         public IActionResult DeleteOrder(int id)
         {
-
-
             Order order = _pizzaRepository.GetOrderById(id);
 
             if (order == null)
@@ -142,7 +257,6 @@ namespace PizzaWebsite.Controllers
             ViewBag.Orders = _pizzaRepository.GetAllOrders();
             return View();
         }
-
         
         public IActionResult UpdateOrderStatus(int orderId, int cartId, Status newStatus, string redirectPage)
         {
