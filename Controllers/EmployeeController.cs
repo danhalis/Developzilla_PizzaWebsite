@@ -116,9 +116,23 @@ namespace PizzaWebsite.Controllers
             return RedirectToAction("Owner", "Employee");
         }
 
-        public IActionResult EditEmployee(string userId)
+        public async Task<IActionResult> EditEmployee(string userId, string roleName)
         {
             IdentityUser user = _identityRepository.GetUserById(userId);
+
+            if (user == null)
+            {
+                // redirect to an error page
+                return RedirectToAction("Error", "Home", new ErrorViewModel
+                {
+                    Message = "Failed to update the employee role."
+                });
+            }
+
+            Roles role = (Roles) Enum.Parse(typeof(Roles), roleName, false);
+
+            await _identityRepository.UpdateUserRole(user, role);
+
             return RedirectToAction("Owner", "Employee");
         }
 

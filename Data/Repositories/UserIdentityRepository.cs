@@ -15,6 +15,7 @@ namespace PizzaWebsite.Data.Repositories
         IdentityUser GetUserById(string id);
         List<FullUserInfo> GetAllFullEmployeeInfos();
         Task AddEmployeeUser(IdentityUser user, UserData userData, Roles role);
+        Task UpdateUserRole(IdentityUser user, Roles newRole);
         Task RemoveEmployeeUser(IdentityUser user, UserData userData, Roles role);
         bool SaveAll();
     }
@@ -90,26 +91,78 @@ namespace PizzaWebsite.Data.Repositories
                 switch (role)
                 {
                     case Roles.Owner:
-                        await _userManager.AddToRoleAsync(user, Roles.Owner.ToString());
+                        result = await _userManager.AddToRoleAsync(user, Roles.Owner.ToString());
                         break;
                     case Roles.Manager:
-                        await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
+                        result = await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
                         break;
                     case Roles.Cook:
-                        await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
+                        result = await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
                         break;
                     case Roles.Deliverer:
-                        await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
+                        result = await _userManager.AddToRoleAsync(user, Roles.Manager.ToString());
                         break;
                     case Roles.Front:
-                        await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
+                        result = await _userManager.AddToRoleAsync(user, Roles.Cook.ToString());
                         break;
+                }
+
+                if (!result.Succeeded)
+                {
+                    var exceptionText = result.Errors.Aggregate("Could not add the role to the user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
+                    throw new Exception(exceptionText);
+                }
+
+                if (!_pizzaWebsiteRepository.SaveAll())
+                {
+                    throw new Exception("Could not create user data.");
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError($"Failed to create employee user: {e}");
                 return;
+            }
+        }
+
+        public async Task UpdateUserRole(IdentityUser user, Roles newRole)
+        {
+            try
+            {
+                var user_role = _context.UserRoles.FirstOrDefault(ur => ur.UserId == user.Id);
+
+                if (user_role == null)
+                {
+                    throw new Exception("Could not find the user.");
+                }
+
+                var oldRole = _context.Roles.FirstOrDefault(r => r.Id == user_role.RoleId);
+
+                if (oldRole == null)
+                {
+                    throw new Exception("Could not find the old role for the user.");
+                }
+
+                IdentityResult result = await _userManager.RemoveFromRoleAsync(user, oldRole.Name);
+
+                if (!result.Succeeded)
+                {
+                    var exceptionText = result.Errors.Aggregate("Could not remove the old role from the user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
+                    throw new Exception(exceptionText);
+                }
+
+                result = await _userManager.AddToRoleAsync(user, newRole.ToString());
+
+                if (!result.Succeeded)
+                {
+                    var exceptionText = result.Errors.Aggregate("Could not add the new role to the user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
+                    throw new Exception(exceptionText);
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw;
             }
         }
 
@@ -121,13 +174,23 @@ namespace PizzaWebsite.Data.Repositories
 
                 if (!result.Succeeded)
                 {
-                    var exceptionText = result.Errors.Aggregate("Could not delete user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
+                    var exceptionText = result.Errors.Aggregate("Could not remove the role from the user - Identity Exception: \n\r\n\r", (current, error) => current + (" - " + error + "\n\r"));
                     throw new Exception(exceptionText);
                 }
 
                 _pizzaWebsiteRepository.Remove(userData);
-                _pizzaWebsiteRepository.SaveAll();
+
+                if (!_pizzaWebsiteRepository.SaveAll())
+                {
+                    throw new Exception("Could not remove user data.");
+                }
+
                 _context.Remove(user);
+
+                if (!SaveAll())
+                {
+                    throw new Exception("Could not remove the user.");
+                }
             }
             catch (Exception e)
             {

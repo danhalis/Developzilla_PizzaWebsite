@@ -57,11 +57,13 @@
                             @info.LastName
                         </td>
                         <td>
-                            <form id="@("form-role-" + info.UserId)" userId="@info.UserId" class="form-employee-role" asp-controller="Employee" asp-action="EditEmployee" asp-route-userId="@info.UserId">
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <form id="@($"form-role--{info.UserId}")" 
+                                  class="form-employee-role" 
+                                  asp-controller="Employee" asp-action="EditEmployee" 
+                                  asp-route-userId="@info.UserId">
+
                                 <div class="form-group">
-                                    <label class="control-label required-label"></label>
-                                    <select class="form-control">
+                                    <select id="@($"select-role--{info.UserId}")" class="form-control">
                                         @foreach (UserIdentityDataSeeder.Roles role in EnumHelper.GetValues<UserIdentityDataSeeder.Roles>())
                                         {
                                             @if (role == UserIdentityDataSeeder.Roles.Customer)
@@ -92,19 +94,11 @@
                             @(info.PhoneNumber == null? "N/a" : @info.PhoneNumber)
                         </td>
                         <td>
-                            <input id="@("save-btn-" + info.UserId)" class="employee-save-btn" type="submit" form="@("form-role-" + info.UserId)" value="Save">
+                            <input id="@($"save-employee-btn--{info.UserId}")" class="employee-save-btn" type="submit" form="@($"form-role--{info.UserId}")" value="Save">
                             <a asp-controller="Employee" asp-action="DeleteEmployee" asp-route-userId="@info.UserId" asp-route-role="@info.Role">Delete</a>
                         </td>
                     </tr>
-}
-                @*<tr>
-                        <td colspan="5"></td>
-                    </tr>
-                    <tr class="table-primary" style="font-weight: bold;">
-                        <td colspan="3">Total Price:</td>
-                        <td class="text-right">@Model.Total.ToString("c2")</td>
-                        <td></td>
-                    </tr>*@
+                 }
             </tbody>
         </table>
     </div>
@@ -115,15 +109,20 @@
 
   
     <script>
-        const forms;
-        const saveBtns;
-
         document.addEventListener("DOMContentLoaded", () => {
-            forms = document.getElementsByClassName("form-employee-role");
+            const forms = document.getElementsByClassName("form-employee-role");
 
-            forms.forEach(form => {
-                
-            })
+            for (const form of forms) {
+                const userId = form.id.split("--")[1];
+
+                const saveBtn = document.getElementById(`save-employee-btn--${userId}`);
+                const selectRole = document.getElementById(`select-role--${userId}`);
+
+                saveBtn.addEventListener("click", () => {
+                    // add currently selected role to action parameters
+                    form.action += `&roleName=${selectRole.value}`;
+                });
+            }
         });
     </script>
 }
