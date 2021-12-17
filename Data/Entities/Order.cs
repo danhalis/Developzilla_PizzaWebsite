@@ -16,7 +16,7 @@ namespace PizzaWebsite.Data.Entities
 
         public Cart Cart { get; set; }
         
-        public virtual string DevilvererId { get; set; }
+        public virtual string DelivererId { get; set; }
 
         public PaymentType PaymentType { get; set; }
 
@@ -27,6 +27,12 @@ namespace PizzaWebsite.Data.Entities
         public string CustomerLastName { get; set; }
 
         public DateTime OrderTime { get; set; }
+
+        public string DeliveryArea { get; set; }
+
+        public string DeliveryAddress { get; set; }
+
+        public string PostalCode { get; set; }
 
         [Required]
         public Status Status { get; set; }

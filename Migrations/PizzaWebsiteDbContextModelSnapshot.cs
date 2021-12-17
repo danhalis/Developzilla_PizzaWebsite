@@ -146,7 +146,13 @@ namespace PizzaWebsite.Migrations
                     b.Property<string>("CustomerLastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DevilvererId")
+                    b.Property<string>("DelivererId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryArea")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("OrderTime")
@@ -154,6 +160,9 @@ namespace PizzaWebsite.Migrations
 
                     b.Property<int>("PaymentType")
                         .HasColumnType("int");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReceptionMethod")
                         .HasColumnType("int");
